@@ -3,50 +3,53 @@ import "./Dashboard.css";
 
 function Dashboard() {
   return (
-    <div className="dashboard">
+    <div className="dashboard-container">
 
-      <div className="sidebar">
+      {/* Sidebar */}
+      <aside className="sidebar">
         <h2>CEMTrack</h2>
 
         <ul>
           <li>🏠 Dashboard</li>
           <li>📦 Products</li>
           <li>👥 Customers</li>
-          <li>🧾 Billing</li>
-          <li>📊 Reports</li>
+          <li>📊 Stock</li>
+          <li>💰 Sales</li>
         </ul>
-      </div>
+      </aside>
 
-      <div className="main-content">
+      {/* Main Content */}
+      <main className="main-content">
 
-        <h1>Dashboard</h1>
-        <p>Welcome back, Admin 👋</p>
+        <header className="dashboard-header">
+          <h1>Dashboard</h1>
+        </header>
 
         <div className="cards">
 
           <div className="card">
-            <h2>120</h2>
-            <p>Total Products</p>
+            <h3>Products</h3>
+            <p>150</p>
           </div>
 
           <div className="card">
-            <h2>58</h2>
-            <p>Customers</p>
+            <h3>Customers</h3>
+            <p>95</p>
           </div>
 
           <div className="card">
-            <h2>340</h2>
-            <p>Stock Bags</p>
+            <h3>Stock</h3>
+            <p>520 Bags</p>
           </div>
 
           <div className="card">
-            <h2>₹1,25,000</h2>
-            <p>Total Sales</p>
+            <h3>Sales</h3>
+            <p>₹2,45,000</p>
           </div>
 
         </div>
 
-      </div>
+      </main>
 
     </div>
   );
