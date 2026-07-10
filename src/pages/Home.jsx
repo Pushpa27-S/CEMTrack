@@ -1,109 +1,53 @@
 import React from "react";
 import "./Home.css";
+import homeImage from "../assets/cement.jpeg"; // Change the filename if yours is different
 
 function Home() {
   return (
     <div className="home">
 
-      {/* Sidebar */}
-      <div className="sidebar">
-        <h2 className="logo">CemTrack</h2>
+      <div
+        className="hero"
+        style={{ backgroundImage: `url(${homeImage})` }}
+      >
+        <div className="overlay">
+          <h1>Welcome to CEMTrack</h1>
 
-        <ul>
-          <li>🏠 Dashboard</li>
-          <li>📦 Products</li>
-          <li>👥 Customers</li>
-          <li>🧾 Billing</li>
-          <li>📊 Reports</li>
-          <li>⚙️ Settings</li>
-          <li>🚪 Logout</li>
-        </ul>
+          <p>
+            Smart Cement Shop Management System for Product, Customer,
+            Billing, Stock and Sales Management.
+          </p>
+
+          <button className="btn">
+            Get Started
+          </button>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div className="main">
+      <section className="features">
 
-        {/* Navbar */}
-        <div className="navbar">
-          <h2>Dashboard</h2>
+        <h2>Why Choose CEMTrack?</h2>
 
-          <div className="profile">
-            <span>Welcome, Admin</span>
-          </div>
-        </div>
+        <div className="feature-container">
 
-        {/* Dashboard Cards */}
-        <div className="cards">
-
-          <div className="card">
-            <h3>Products</h3>
-            <h1>120</h1>
-            <p>Total Products</p>
+          <div className="feature-card">
+            <h3>Product Management</h3>
+            <p>Manage all cement brands and stock efficiently.</p>
           </div>
 
-          <div className="card">
-            <h3>Customers</h3>
-            <h1>56</h1>
-            <p>Registered Customers</p>
+          <div className="feature-card">
+            <h3>Billing</h3>
+            <p>Generate bills quickly with accurate calculations.</p>
           </div>
 
-          <div className="card">
-            <h3>Sales</h3>
-            <h1>₹1,25,000</h1>
-            <p>Today's Sales</p>
-          </div>
-
-          <div className="card">
-            <h3>Orders</h3>
-            <h1>18</h1>
-            <p>Pending Orders</p>
+          <div className="feature-card">
+            <h3>Reports</h3>
+            <p>Track daily sales and monitor business performance.</p>
           </div>
 
         </div>
 
-        {/* Recent Activity */}
-        <div className="table-section">
-
-          <h2>Recent Transactions</h2>
-
-          <table>
-            <thead>
-              <tr>
-                <th>Bill No</th>
-                <th>Customer</th>
-                <th>Amount</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr>
-                <td>1001</td>
-                <td>Rahul</td>
-                <td>₹25,000</td>
-                <td>Paid</td>
-              </tr>
-
-              <tr>
-                <td>1002</td>
-                <td>Aman</td>
-                <td>₹18,500</td>
-                <td>Pending</td>
-              </tr>
-
-              <tr>
-                <td>1003</td>
-                <td>Priya</td>
-                <td>₹32,700</td>
-                <td>Paid</td>
-              </tr>
-
-            </tbody>
-          </table>
-
-        </div>
-
-      </div>
+      </section>
 
     </div>
   );

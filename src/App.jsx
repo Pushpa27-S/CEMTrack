@@ -1,40 +1,66 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+
+import Navbar from "./components/Navbar";
+import AdminLayout from "./layouts/AdminLayout";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
+import Customers from "./pages/Customers";
+import Billing from "./pages/Billing";
+import Reports from "./pages/Reports";
+import Stock from "./pages/Stock";
+
+import "./App.css";
 
 function App() {
   return (
-    <div>
-      <nav className="navbar">
-        <h2 className="logo">CEMTrack</h2>
+    <Routes>
 
-        <ul className="nav-links">
-          <li>
-            <Link to="/">Home</Link>
-          </li>
+      {/* Public Pages */}
+      <Route
+        path="/"
+        element={
+          <>
+            <Navbar />
+            <Home />
+          </>
+        }
+      />
 
-          <li>
-            <Link to="/about">About</Link>
-          </li>
+      <Route
+        path="/about"
+        element={
+          <>
+            <Navbar />
+            <About />
+          </>
+        }
+      />
 
-          <li>
-            <Link to="/contact">Contact</Link>
-          </li>
-        </ul>
-      </nav>
+      <Route
+        path="/contact"
+        element={
+          <>
+            <Navbar />
+            <Contact />
+          </>
+        }
+      />
 
-      <Routes>
-  <Route path="/" element={<Home />} />
-  <Route path="/about" element={<About />} />
-  <Route path="/contact" element={<Contact />} />
-  <Route path="/dashboard" element={<Dashboard />} />
-  <Route path="/products" element={<Products />} />
-</Routes>
-    </div>
+      {/* Admin Layout */}
+      <Route path="/" element={<AdminLayout />}>
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="products" element={<Products />} />
+        <Route path="customers" element={<Customers />} />
+        <Route path="billing" element={<Billing />} />
+        <Route path="reports" element={<Reports />} />
+        <Route path="stock" element={<Stock />} />
+      </Route>
+
+    </Routes>
   );
 }
 

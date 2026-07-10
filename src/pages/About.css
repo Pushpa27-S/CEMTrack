@@ -1,0 +1,140 @@
+.about-page{
+    background:#f5f7fa;
+}
+
+/* Hero */
+
+.about-hero{
+    height:100vh;
+    background-size:cover;
+    background-position:center;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background-repeat:no-repeat;
+    position:relative;
+}
+
+.about-overlay{
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.45);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    color:white;
+    padding:20px;
+}
+
+.about-overlay h1{
+    font-size:70px;
+    margin-bottom:20px;
+    font-weight:bold;
+    text-shadow:3px 3px 10px rgba(0,0,0,0.6);
+}
+
+.about-overlay p{
+    font-size:25px;
+    line-height:1.8;
+    margin-top:25px;
+    max-width:900px;
+}
+
+/* About */
+
+.about-content{
+    padding:90px 70px;
+    text-align:center;
+}
+
+.about-content h2{
+    color:#2c3e50;
+    margin-bottom:20px;
+}
+
+.about-content p{
+    font-size:18px;
+    line-height:32px;
+    color:#555;
+}
+
+/* Mission */
+
+.mission-section{
+    display:flex;
+    gap:30px;
+    justify-content:center;
+    flex-wrap:wrap;
+    padding:20px 70px 70px;
+}
+
+.mission-card{
+    width:450px;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
+.mission-card h2{
+    color:#ff9800;
+    margin-bottom:15px;
+}
+
+.mission-card p{
+    line-height:28px;
+}
+
+/* Features */
+
+.features-section{
+    padding:70px;
+    background:white;
+    text-align:center;
+}
+
+.features-section h2{
+    color:#2c3e50;
+    margin-bottom:40px;
+}
+
+.feature-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:30px;
+}
+
+.feature-box{
+    background:#f5f7fa;
+    padding:30px;
+    border-radius:15px;
+    transition:.3s;
+    box-shadow:0 3px 10px rgba(0,0,0,0.1);
+}
+
+.feature-box:hover{
+    transform:translateY(-8px);
+    background:#ff9800;
+    color:white;
+}
+
+.feature-box h3{
+    margin-bottom:15px;
+}
+.about-btn{
+    margin-top:40px;
+    padding:15px 35px;
+    border:none;
+    border-radius:8px;
+    background:#ff9800;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    transition:0.3s;
+}
+.about-btn:hover{
+    background:#e68900;
+    transform:scale(1.05);
+}
