@@ -1,56 +1,50 @@
-import {useState} from "react";
-import {Link} from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
+import "./ForgotPassword.css";
 
-function ForgotPassword(){
+function ForgotPassword() {
 
-const[email,setEmail]=useState("");
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-const submit=(e)=>{
+    alert("Password Reset Link Sent!");
+  };
 
-e.preventDefault();
+  return (
 
-if(email===""){
-alert("Enter Email");
-return;
-}
+    <div className="forgot-page">
 
-alert("Password Reset Link Sent");
+      <div className="forgot-card">
 
-}
+        <h1>Forgot Password</h1>
 
-return(
+        <p>
+          Enter your registered email address.
+        </p>
 
-<div className="login-container">
+        <form onSubmit={handleSubmit}>
 
-<div className="login-box">
+          <input
+            type="email"
+            placeholder="Enter Email"
+            required
+          />
 
-<h2>Forgot Password</h2>
+          <button type="submit">
+            Send Reset Link
+          </button>
 
-<form onSubmit={submit}>
+        </form>
 
-<input
-type="email"
-placeholder="Enter Email"
-value={email}
-onChange={(e)=>setEmail(e.target.value)}
-/>
+        <Link to="/login">
+          Back to Login
+        </Link>
 
-<button>Send Link</button>
+      </div>
 
-</form>
+    </div>
 
-<p>
-
-<Link to="/">Back</Link>
-
-</p>
-
-</div>
-
-</div>
-
-)
-
+  );
 }
 
 export default ForgotPassword;

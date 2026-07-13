@@ -1,71 +1,78 @@
-import {useState} from "react";
-import {Link} from "react-router-dom";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./Register.css";
 
-function Register(){
+function Register() {
 
-const[name,setName]=useState("");
-const[email,setEmail]=useState("");
-const[password,setPassword]=useState("");
+  const navigate = useNavigate();
 
-const register=(e)=>{
+  const handleRegister = (e) => {
+    e.preventDefault();
 
-e.preventDefault();
+    // Backend will be added later
+    alert("Registration Successful!");
 
-if(name===""||email===""||password===""){
-alert("Fill all fields");
-return;
-}
+    navigate("/login");
+  };
 
-alert("Registration Successful");
+  return (
+    <div className="register-page">
 
-}
+      <div className="register-card">
 
-return(
+        <h1>CEMTrack</h1>
 
-<div className="login-container">
+        <h2>Create Account</h2>
 
-<div className="login-box">
+        <p>Register to access the Cement Shop Management System.</p>
 
-<h2>Register</h2>
+        <form onSubmit={handleRegister}>
 
-<form onSubmit={register}>
+          <input
+            type="text"
+            placeholder="Full Name"
+            required
+          />
 
-<input
-placeholder="Name"
-value={name}
-onChange={(e)=>setName(e.target.value)}
-/>
+          <input
+            type="email"
+            placeholder="Email"
+            required
+          />
 
-<input
-type="email"
-placeholder="Email"
-value={email}
-onChange={(e)=>setEmail(e.target.value)}
-/>
+          <input
+            type="tel"
+            placeholder="Phone Number"
+            required
+          />
 
-<input
-type="password"
-placeholder="Password"
-value={password}
-onChange={(e)=>setPassword(e.target.value)}
-/>
+          <input
+            type="password"
+            placeholder="Password"
+            required
+          />
 
-<button>Create Account</button>
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            required
+          />
 
-</form>
+          <button type="submit">
+            Register
+          </button>
 
-<p>
+        </form>
 
-<Link to="/">Back to Login</Link>
+        <p className="bottom-text">
+          Already have an account?
+          <Link to="/login"> Login</Link>
+        </p>
 
-</p>
+      </div>
 
-</div>
-
-</div>
-
-)
-
+    </div>
+  );
 }
 
 export default Register;

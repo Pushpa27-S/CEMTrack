@@ -20,6 +20,7 @@
     padding:0;
 }
 
+
 .sidebar ul li{
     padding:15px 20px;
 }
@@ -38,4 +39,33 @@
 
 .sidebar ul li a:hover{
     color:#27ae60;
+}
+.logout-btn{
+
+    width:100%;
+
+    padding:12px;
+
+    margin-top:20px;
+
+    border:none;
+
+    border-radius:8px;
+
+    background:#e74c3c;
+
+    color:white;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.logout-btn:hover{
+
+    background:#c0392b;
+
 }

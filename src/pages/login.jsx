@@ -1,80 +1,67 @@
-import { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
 function Login() {
+  const navigate = useNavigate();
 
-const navigate = useNavigate();
+  const handleLogin = (e) => {
+    e.preventDefault();
 
-const [email,setEmail]=useState("");
-const [password,setPassword]=useState("");
+    // Temporary Login
+    navigate("/dashboard");
+  };
 
-const handleLogin=(e)=>{
-e.preventDefault();
+  return (
+    <div className="login-page">
 
-if(email===""){
-alert("Enter Email");
-return;
-}
+      <div className="login-card">
 
-if(password===""){
-alert("Enter Password");
-return;
-}
+        <h1>CEMTrack</h1>
 
-navigate("/home");
-}
+        <h2>Admin Login</h2>
 
-return(
+        <p>Welcome back! Please login to continue.</p>
 
-<div className="login-container">
+        <form onSubmit={handleLogin}>
 
-<div className="login-box">
+          <input
+            type="email"
+            placeholder="Enter Email"
+            required
+          />
 
-<h1>CemTrack</h1>
+          <input
+            type="password"
+            placeholder="Enter Password"
+            required
+          />
 
-<h3>Login</h3>
+          <button type="submit">
+            Login
+          </button>
 
-<form onSubmit={handleLogin}>
+        </form>
 
-<input
-type="email"
-placeholder="Email"
-value={email}
-onChange={(e)=>setEmail(e.target.value)}
-/>
+        <div className="login-links">
 
-<input
-type="password"
-placeholder="Password"
-value={password}
-onChange={(e)=>setPassword(e.target.value)}
-/>
+          <Link to="/forgot-password">
+            Forgot Password?
+          </Link>
 
-<button>Login</button>
+          <p>
+            Don't have an account?{" "}
+            <Link to="/register">
+              Register
+            </Link>
+          </p>
 
-</form>
+        </div>
 
-<p>
+      </div>
 
-<Link to="/forgot">Forgot Password?</Link>
-
-</p>
-
-<p>
-
-Don't have an account?
-
-<Link to="/register"> Register</Link>
-
-</p>
-
-</div>
-
-</div>
-
-)
-
+    </div>
+  );
 }
 
 export default Login;
