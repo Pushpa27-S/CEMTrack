@@ -8,7 +8,7 @@ function Home() {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    navigate("/Login");
+    navigate("/AdminLogin");
   };
 
   return (

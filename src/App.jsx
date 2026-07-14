@@ -58,7 +58,7 @@ function App() {
 
       {/* Authentication Pages */}
 
-      <Route path="/login" element={<Login />} />
+      <Route path="/adminlogin" element={<AdminLogin />} />
 
       <Route path="/register" element={<Register />} />
 
@@ -69,7 +69,7 @@ function App() {
 
       {/* Dashboard Pages */}
 
-      <Route path="/" element={<AdminLayout />}>
+      <Route path="/adminlogin" element={<AdminLayout />}>
 
         <Route path="dashboard" element={<Dashboard />} />
 

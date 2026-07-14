@@ -1,4 +1,4 @@
-import React ,{useStatefrom "react";
+import React, { useState } from "react";
 import "./Products.css";
 
 import ultratech from "../assets/Ultratech.jpeg";
@@ -10,202 +10,346 @@ import ramco from "../assets/Ramco.jpeg";
 import maha from "../assets/Maha.jpeg";
 
 function Products() {
-  const products = [
-    {
-      id: 1,
-      image: ultratech,
-      name: "UltraTech Cement",
-      category: "OPC 53 Grade",
-      price: "₹420",
-      stock: 120,
-      sold: 250,
-    },
-    {
-      id: 2,
-      image: acc,
-      name: "Acc Cement",
-      category: "PPC",
-      price: "₹400",
-      stock: 90,
-      sold: 180,
-    },
-    {
-      id: 3,
-      image: ambuja,
-      name: "Ambuja Cement",
-      category: "OPC 43 Grade",
-      price: "₹390",
-      stock: 65,
-      sold: 160,
-    },
-    {
-      id: 4,
-      image: dalmia,
-      name: "Dalmia Cement",
-      category: "PPC",
-      price: "₹410",
-      stock: 25,
-      sold: 90,
-    },
-    {
-      id: 5,
-      image: priya,
-      name: "Priya Cement",
-      category: "OPC 53 Grade",
-      price: "₹405",
-      stock: 15,
-      sold: 45,
-    },
-    {
-      id: 6,
-      image: ramco,
-      name: "Ramco Cement",
-      category: "PPC",
-      price: "₹415",
-      stock: 100,
-      sold: 270,
-    },
-    {
-      id: 7,
-      image: maha,
-      name: "Maha Cement",
-      category: "OPC 53 Grade",
-      price: "₹425",
-      stock: 80,
-      sold: 140,
-    },
-  ];
 
-  return (
-    <div className="products-container">
+const [products,setProducts]=useState([
 
-      <h1>Products Management</h1>
+{
+id:1,
+image:ultratech,
+name:"UltraTech Cement",
+category:"OPC 53 Grade",
+price:420,
+stock:120,
+sold:250
+},
 
-      {/* Statistics Cards */}
+{
+id:2,
+image:acc,
+name:"ACC Cement",
+category:"PPC",
+price:400,
+stock:90,
+sold:180
+},
 
-      <div className="stats-container">
+{
+id:3,
+image:ambuja,
+name:"Ambuja Cement",
+category:"OPC 43 Grade",
+price:390,
+stock:65,
+sold:160
+},
 
-        <div className="card">
-          <h3>Total Products</h3>
-          <p>7</p>
-        </div>
+{
+id:4,
+image:dalmia,
+name:"Dalmia Cement",
+category:"PPC",
+price:410,
+stock:25,
+sold:90
+},
 
-        <div className="card">
-          <h3>In Stock</h3>
-          <p>5</p>
-        </div>
+{
+id:5,
+image:priya,
+name:"Priya Cement",
+category:"OPC 53 Grade",
+price:405,
+stock:15,
+sold:45
+},
 
-        <div className="card">
-          <h3>Low Stock</h3>
-          <p>2</p>
-        </div>
+{
+id:6,
+image:ramco,
+name:"Ramco Cement",
+category:"PPC",
+price:415,
+stock:100,
+sold:270
+},
 
-        <div className="card">
-          <h3>Best Selling</h3>
-          <p>Ramco Cement</p>
-        </div>
+{
+id:7,
+image:maha,
+name:"Maha Cement",
+category:"OPC 53 Grade",
+price:425,
+stock:80,
+sold:140
+}
 
-      </div>
+]);
 
-      {/* Top Controls */}
+const [showForm,setShowForm]=useState(false);
 
-      <div className="top-controls">
+const [newProduct,setNewProduct]=useState({
+name:"",
+category:"",
+price:"",
+stock:"",
+sold:"",
+image:ultratech
+});
 
-        <input
-          type="text"
-          placeholder="Search Product..."
-          className="search-box"
-        />
+const handleChange=(e)=>{
+setNewProduct({
+...newProduct,
+[e.target.name]:e.target.value
+});
+};
 
-        <select className="filter-box">
-          <option>All Categories</option>
-          <option>OPC 53 Grade</option>
-          <option>OPC 43 Grade</option>
-          <option>PPC</option>
-        </select>
+const handleAdd=()=>{
 
-        <button className="add-btn">
-          + Add Product
-        </button>
+if(
+newProduct.name===""||
+newProduct.category===""||
+newProduct.price===""||
+newProduct.stock===""){
+alert("Please fill all fields");
+return;
+}
 
-      </div>
+const product={
+id:products.length+1,
+image:ultratech,
+name:newProduct.name,
+category:newProduct.category,
+price:`₹${newProduct.price}`,
+stock:Number(newProduct.stock),
+sold:Number(newProduct.sold)
+};
 
-      {/* Product Table */}
+setProducts([...products,product]);
 
-      <table className="products-table">
+setNewProduct({
+name:"",
+category:"",
+price:"",
+stock:"",
+sold:"",
+image:ultratech
+});
 
-        <thead>
+setShowForm(false);
 
-          <tr>
-            <th>ID</th>
-            <th>Image</th>
-            <th>Brand</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Status</th>
-            <th>Sold</th>
-            <th>Action</th>
-          </tr>
+};
 
-        </thead>
+return(
+  <div className="products-container">
 
-        <tbody>
+<h1>Products Management</h1>
 
-          {products.map((product) => (
+<div className="stats-container">
 
-            <tr key={product.id}>
+<div className="card">
+<h3>Total Products</h3>
+<p>{products.length}</p>
+</div>
 
-              <td>{product.id}</td>
+<div className="card">
+<h3>In Stock</h3>
+<p>{products.filter((p)=>p.stock>50).length}</p>
+</div>
 
-              <td>
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="product-img"
-                />
-              </td>
+<div className="card">
+<h3>Low Stock</h3>
+<p>{products.filter((p)=>p.stock<=50).length}</p>
+</div>
 
-              <td>{product.name}</td>
+<div className="card">
+<h3>Best Selling</h3>
+<p>{products.reduce((a,b)=>a.sold>b.sold?a:b).name}</p>
+</div>
 
-              <td>{product.category}</td>
+</div>
 
-              <td>{product.price}</td>
+<div className="top-controls">
 
-              <td>{product.stock} Bags</td>
+<input
+type="text"
+className="search-box"
+placeholder="Search Product..."
+/>
 
-              <td>
-                {product.stock > 50 ? (
-                  <span className="in-stock">In Stock</span>
-                ) : (
-                  <span className="low-stock">Low Stock</span>
-                )}
-              </td>
+<select className="filter-box">
+<option>All Categories</option>
+<option>OPC 53 Grade</option>
+<option>OPC 43 Grade</option>
+<option>PPC</option>
+</select>
 
-              <td>{product.sold}</td>
+<button
+className="add-btn"
+onClick={()=>setShowForm(true)}
+>
++ Add Product
+</button>
 
-              <td>
+</div>
 
-                <button className="edit-btn">
-                  Edit
-                </button>
+{showForm && (
 
-                <button className="delete-btn">
-                  Delete
-                </button>
+<div className="product-form">
 
-              </td>
+<h2>Add Product</h2>
 
-            </tr>
+<input
+type="text"
+name="name"
+placeholder="Product Name"
+value={newProduct.name}
+onChange={handleChange}
+/>
 
-          ))}
+<select
+name="category"
+value={newProduct.category}
+onChange={handleChange}
+>
 
-        </tbody>
+<option value="">Select Category</option>
+<option>OPC 53 Grade</option>
+<option>OPC 43 Grade</option>
+<option>PPC</option>
 
-      </table>
+</select>
 
-    </div>
-  );
+<input
+type="number"
+name="price"
+placeholder="Price"
+value={newProduct.price}
+onChange={handleChange}
+/>
+
+<input
+type="number"
+name="stock"
+placeholder="Stock"
+value={newProduct.stock}
+onChange={handleChange}
+/>
+
+<input
+type="number"
+name="sold"
+placeholder="Sold"
+value={newProduct.sold}
+onChange={handleChange}
+/>
+
+<div className="form-buttons">
+
+<button
+className="save-btn"
+onClick={handleAdd}
+>
+Save
+</button>
+
+<button
+className="cancel-btn"
+onClick={()=>setShowForm(false)}
+>
+Cancel
+</button>
+
+</div>
+
+</div>
+
+)}
+
+<table className="products-table">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+<th>Image</th>
+<th>Brand</th>
+<th>Category</th>
+<th>Price</th>
+<th>Stock</th>
+<th>Status</th>
+<th>Sold</th>
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+  {products.map((product) => (
+
+<tr key={product.id}>
+
+<td>{product.id}</td>
+
+<td>
+<img
+src={product.image}
+alt={product.name}
+className="product-img"
+/>
+</td>
+
+<td>{product.name}</td>
+
+<td>{product.category}</td>
+
+<td>{product.price}</td>
+
+<td>{product.stock} Bags</td>
+
+<td>
+{product.stock > 50 ? (
+<span className="in-stock">
+In Stock
+</span>
+) : (
+<span className="low-stock">
+Low Stock
+</span>
+)}
+</td>
+
+<td>{product.sold}</td>
+
+<td>
+
+<button
+className="edit-btn"
+>
+Edit
+</button>
+
+<button
+className="delete-btn"
+>
+Delete
+</button>
+
+</td>
+
+</tr>
+
+))}
+
+</tbody>
+
+</table>
+
+</div>
+
+);
+
 }
 
 export default Products;
