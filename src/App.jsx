@@ -14,7 +14,7 @@ import Billing from "./pages/Billing";
 import Reports from "./pages/Reports";
 import Stock from "./pages/Stock";
 
-import Login from "./pages/Login";
+import AdminLogin from "./pages/AdminLogin";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 
