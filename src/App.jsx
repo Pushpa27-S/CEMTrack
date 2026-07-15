@@ -12,6 +12,7 @@ import Customers from "./pages/Customers";
 import Billing from "./pages/Billing";
 import Reports from "./pages/Reports";
 import Stock from "./pages/Stock";
+import Search from "./pages/Search";
 
 import "./App.css";
 
@@ -49,6 +50,12 @@ function App() {
           </>
         }
       />
+      <Route
+        path="Search"
+        element={
+           <Search/>
+          }
+          />
 
       {/* Admin Layout */}
       <Route path="/" element={<AdminLayout />}>
@@ -58,6 +65,7 @@ function App() {
         <Route path="billing" element={<Billing />} />
         <Route path="reports" element={<Reports />} />
         <Route path="stock" element={<Stock />} />
+        <Route path="Search"element={<Search/>} />
       </Route>
 
     </Routes>
