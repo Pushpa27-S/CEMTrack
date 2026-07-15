@@ -1,8 +1,16 @@
 import React from "react";
+import {useNavigate} from "react-router-dom";
 import "./Home.css";
-import homeImage from "../assets/cement.jpeg"; // Change the filename if yours is different
+import homeImage from "../assets/cement.jpeg"; 
+// Change the filename if yours is different
 
 function Home() {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate("/AdminLogin");
+  };
+
   return (
     <div className="home">
 
@@ -18,7 +26,7 @@ function Home() {
             Billing, Stock and Sales Management.
           </p>
 
-          <button className="btn">
+          <button className="btn" onClick={handleGetStarted}>
             Get Started
           </button>
         </div>
