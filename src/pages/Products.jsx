@@ -8,6 +8,13 @@ import dalmia from "../assets/Dalmia.jpeg";
 import priya from "../assets/Priya.jpeg";
 import ramco from "../assets/Ramco.jpeg";
 import maha from "../assets/Maha.jpeg";
+import birla from "../assets/Birla.webp";
+import jk from "../assets/JK.jpeg";
+import ultratech1 from "../assets/Ultratech43.jpeg";
+import dalmia1 from "../assets/Dalmia53.webp";
+import priya1 from "../assets/Priya43.webp";
+import ramco1 from "../assets/Ramco53.webp";
+
 
 function Products() {
 
@@ -93,7 +100,7 @@ category:"",
 price:"",
 stock:"",
 sold:"",
-image:ultratech
+image:newProduct.image,
 });
 
 const handleChange=(e)=>{
@@ -116,7 +123,7 @@ return;
 
 const product={
 id:products.length+1,
-image:ultratech,
+image:productImage,
 name:newProduct.name,
 category:newProduct.category,
 price:`₹${newProduct.price}`,
@@ -124,7 +131,10 @@ stock:Number(newProduct.stock),
 sold:Number(newProduct.sold)
 };
 
-setProducts([...products,product]);
+const updatedProducts=
+([...products,product]);
+console.log(updatedProducts);
+setProducts(updatedProducts);
 
 setNewProduct({
 name:"",
@@ -264,6 +274,9 @@ Cancel
 </div>
 
 )}
+<p>Total Products:
+  {products.length}
+</p>
 
 <table className="products-table">
 

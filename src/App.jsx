@@ -56,32 +56,56 @@ function App() {
         }
       />
 
-      {/* Authentication Pages */}
+      {/* Authentication */}
 
-      <Route path="/adminlogin" element={<AdminLogin />} />
+      <Route
+        path="/adminlogin"
+        element={<AdminLogin />}
+      />
 
-      <Route path="/register" element={<Register />} />
+      <Route
+        path="/register"
+        element={<Register />}
+      />
 
       <Route
         path="/forgot-password"
         element={<ForgotPassword />}
       />
 
-      {/* Dashboard Pages */}
+      {/* Dashboard */}
 
-      <Route path="/adminlogin" element={<AdminLayout />}>
+      <Route element={<AdminLayout />}>
 
-        <Route path="dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
 
-        <Route path="products" element={<Products />} />
+        <Route
+          path="/products"
+          element={<Products />}
+        />
 
-        <Route path="customers" element={<Customers />} />
+        <Route
+          path="/customers"
+          element={<Customers />}
+        />
 
-        <Route path="billing" element={<Billing />} />
+        <Route
+          path="/billing"
+          element={<Billing />}
+        />
 
-        <Route path="reports" element={<Reports />} />
+        <Route
+          path="/reports"
+          element={<Reports />}
+        />
 
-        <Route path="stock" element={<Stock />} />
+        <Route
+          path="/stock"
+          element={<Stock />}
+        />
 
       </Route>
 

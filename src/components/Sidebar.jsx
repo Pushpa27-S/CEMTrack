@@ -5,9 +5,10 @@ import "./Sidebar.css";
 function Sidebar() {
   const navigate = useNavigate();
   const handleLogout = () => {
-    const confirmLayout = window.confirm("Are you sure you want to logout?");
+    const confirmLayout = 
+    window.confirm("Are you sure you want to logout?");
     if (confirmLogout) {
-      navigate("/login",{replace: true});
+      navigate("/adminlogin",{replace: true});
     }
   };  
 
