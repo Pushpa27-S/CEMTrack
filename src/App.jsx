@@ -118,6 +118,8 @@ function App() {
         <Route path="Search"element={<Search/>} />
         <Route path="/customer-home" element={<CustomerHome />} /> 
         <Route path="/customerlogin" element={<CustomerLogin/>} />
+
+
       </Route>
 
     </Routes>
