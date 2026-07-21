@@ -119,7 +119,6 @@ function App() {
         <Route path="/customer-home" element={<CustomerHome />} /> 
         <Route path="/customerlogin" element={<CustomerLogin/>} />
 
-
       </Route>
 
     </Routes>
