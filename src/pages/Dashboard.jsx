@@ -13,7 +13,7 @@ function Dashboard() {
 
         <div className="card">
           <h3>Products</h3>
-          <p>150</p>
+          <p>7</p>
         </div>
 
         <div className="card">
@@ -23,7 +23,7 @@ function Dashboard() {
 
         <div className="card">
           <h3>Stock</h3>
-          <p>520 Bags</p>
+          <p>450</p>
         </div>
 
         <div className="card">

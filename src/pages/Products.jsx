@@ -14,6 +14,17 @@ import ultratech1 from "../assets/Ultratech43.jpeg";
 import dalmia1 from "../assets/Dalmia53.webp";
 import priya1 from "../assets/Priya43.webp";
 import ramco1 from "../assets/Ramco53.webp";
+const imageMap = {
+  "ultratech cement": ultratech,
+  "acc cement": acc,
+  "ambuja cement": ambuja,
+  "dalmia cement": dalmia,
+  "priya cement": priya,
+  "ramco cement": ramco,
+  "maha cement": maha,
+  "birla cement": birla,
+  "jk cement": jk,
+};
 
 
 function Products() {
@@ -100,7 +111,7 @@ category:"",
 price:"",
 stock:"",
 sold:"",
-image:newProduct.image,
+image:ultratech
 });
 
 const handleChange=(e)=>{
@@ -120,15 +131,46 @@ newProduct.stock===""){
 alert("Please fill all fields");
 return;
 }
+console.log(newProduct.name);
+console.log(imageMap[newProduct.name]);
+let productImage = imageMap[newProduct.name.toLowerCase()] || ultratech;
 
-const product={
-id:products.length+1,
-image:productImage,
-name:newProduct.name,
-category:newProduct.category,
-price:`₹${newProduct.price}`,
-stock:Number(newProduct.stock),
-sold:Number(newProduct.sold)
+if (
+  newProduct.name.toLowerCase() === "ultratech cement" &&
+  newProduct.category === "OPC 43 Grade"
+) {
+  productImage = ultratech1;
+}
+
+if (
+  newProduct.name.toLowerCase() === "dalmia cement" &&
+  newProduct.category === "OPC 53 Grade"
+) {
+  productImage = dalmia1;
+}
+
+if (
+  newProduct.name.toLowerCase() === "priya cement" &&
+  newProduct.category === "OPC 43 Grade"
+) {
+  productImage = priya1;
+}
+
+if (
+  newProduct.name.toLowerCase() === "ramco cement" &&
+  newProduct.category === "OPC 53 Grade"
+) {
+  productImage = ramco1;
+}
+
+const product = {
+  id: products.length + 1,
+  image: productImage,
+  name: newProduct.name,
+  category: newProduct.category,
+  price: `₹${newProduct.price}`,
+  stock: Number(newProduct.stock),
+  sold: Number(newProduct.sold)
 };
 
 const updatedProducts=

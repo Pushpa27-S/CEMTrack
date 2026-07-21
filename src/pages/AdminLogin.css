@@ -134,3 +134,22 @@
     margin-top:15px;
 
 }
+.role-selection{
+display:flex;
+justify-content:center;
+gap:30px;
+margin:20px 0;
+}
+
+.role-label{
+font-size:18px;
+font-weight:500;
+display:flex;
+align-items:center;
+gap:8px;
+cursor:pointer;
+}
+
+.role-label input{
+cursor:pointer;
+}

@@ -13,11 +13,13 @@ import Customers from "./pages/Customers";
 import Billing from "./pages/Billing";
 import Reports from "./pages/Reports";
 import Stock from "./pages/Stock";
+import Search from "./pages/Search";
 
 import AdminLogin from "./pages/AdminLogin";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
-
+import CustomerHome from "./pages/CustomerHome";
+import CustomerLogin from "./pages/CustomerLogin";
 import "./App.css";
 
 function App() {
@@ -55,6 +57,12 @@ function App() {
           </>
         }
       />
+      <Route
+        path="Search"
+        element={
+           <Search/>
+          }
+          />
 
       {/* Authentication */}
 
@@ -106,7 +114,10 @@ function App() {
           path="/stock"
           element={<Stock />}
         />
-
+        <Route path="stock" element={<Stock />} />
+        <Route path="Search"element={<Search/>} />
+        <Route path="/customer-home" element={<CustomerHome />} /> 
+        <Route path="/customerlogin" element={<CustomerLogin/>} />
       </Route>
 
     </Routes>
