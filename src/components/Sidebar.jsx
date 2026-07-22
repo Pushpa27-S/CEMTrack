@@ -6,9 +6,13 @@ function Sidebar() {
   const navigate = useNavigate();
   const handleLogout = () => {
     const confirmLayout = 
-    window.confirm("Are you sure you want to logout?");
+    window.confirm
+    ("Are you sure you want to logout?"
+      
+    );
     if (confirmLogout) {
-      navigate("/adminlogin",{replace: true});
+      navigate("/adminlogin",
+        {replace: true});
     }
   };  
 
@@ -23,7 +27,7 @@ function Sidebar() {
         <li><Link to="/billing">Billing</Link></li>
         <li><Link to="/reports">Reports</Link></li>
         <li><Link to="/stock">Stock</Link></li>
-        <li><button onClick={handleLogout}>Logout</button></li>
+        <li><button className="Logout-btn"onclick={handleLogout}>Logout</button></li>
       </ul>
     </div>
   );

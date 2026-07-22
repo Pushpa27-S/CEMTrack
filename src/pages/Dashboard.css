@@ -1,89 +1,53 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
+.dashboard-container {
+  padding: 20px;
+  margin-left: 0;
 }
 
-.dashboard-container{
-    display:flex;
-    min-height:100vh;
+.dashboard-header {
+  margin-bottom: 30px;
 }
 
-/* Sidebar */
-
-.sidebar{
-    width:220px;
-    background:#2c3e50;
-    color:white;
-    padding:20px;
+.dashboard-header h1 {
+  font-size: 36px;
+  color: #2c3e50;
 }
 
-.sidebar h2{
-    margin-bottom:30px;
-    text-align:center;
+/* Cards in one horizontal row */
+.cards {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 25px;
+  flex-wrap: nowrap;   /* Prevent cards from moving to next line */
+  overflow-x: auto;    /* Scroll if screen is small */
 }
 
-.sidebar ul{
-    list-style:none;
+.card {
+  min-width: 220px;
+  height: 150px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s ease;
 }
 
-.sidebar li{
-    padding:15px;
-    cursor:pointer;
-    border-radius:5px;
+.card:hover {
+  transform: translateY(-5px);
 }
 
-.sidebar li:hover{
-    background:#34495e;
+.card h3 {
+  font-size: 22px;
+  color: #2c3e50;
+  margin-bottom: 10px;
 }
 
-/* Main */
-
-.main-content{
-    flex:1;
-    background:#f4f4f4;
-    padding:20px;
-}
-
-.dashboard-header{
-    margin-bottom:20px;
-}
-
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
-}
-
-.card{
-    background:white;
-    padding:25px;
-    border-radius:10px;
-    text-align:center;
-    box-shadow:0 2px 8px rgba(0,0,0,0.2);
-}
-
-.card h3{
-    margin-bottom:15px;
-}
-
-.card p{
-    font-size:24px;
-    font-weight:bold;
-    color:#27ae60;
-}
-
-/* Responsive */
-
-@media(max-width:768px){
-
-.dashboard-container{
-    flex-direction:column;
-}
-
-.sidebar{
-    width:100%;
-}
-
+.card p {
+  font-size: 28px;
+  font-weight: bold;
+  color: #27ae60;
 }
