@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import "./AdminLogin.css";
 
 function AdminLogin() {
-
   const navigate = useNavigate();
 
   const [role, setRole] = useState("Admin");

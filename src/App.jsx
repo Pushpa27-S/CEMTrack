@@ -18,16 +18,16 @@ import Search from "./pages/Search";
 import AdminLogin from "./pages/AdminLogin";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
+
 import CustomerHome from "./pages/CustomerHome";
 import CustomerLogin from "./pages/CustomerLogin";
+
 import "./App.css";
 
 function App() {
   return (
     <Routes>
-
       {/* Public Pages */}
-
       <Route
         path="/"
         element={
@@ -57,70 +57,26 @@ function App() {
           </>
         }
       />
-      <Route
-        path="Search"
-        element={
-           <Search/>
-          }
-          />
 
       {/* Authentication */}
+      <Route path="/adminlogin" element={<AdminLogin />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
-      <Route
-        path="/adminlogin"
-        element={<AdminLogin />}
-      />
+      {/* Customer */}
+      <Route path="/customerlogin" element={<CustomerLogin />} />
+      <Route path="/customer-home" element={<CustomerHome />} />
 
-      <Route
-        path="/register"
-        element={<Register />}
-      />
-
-      <Route
-        path="/forgot-password"
-        element={<ForgotPassword />}
-      />
-
-      {/* Dashboard */}
-
+      {/* Admin Layout */}
       <Route element={<AdminLayout />}>
-
-        <Route
-          path="/dashboard"
-          element={<Dashboard />}
-        />
-
-        <Route
-          path="/products"
-          element={<Products />}
-        />
-
-        <Route
-          path="/customers"
-          element={<Customers />}
-        />
-
-        <Route
-          path="/billing"
-          element={<Billing />}
-        />
-
-        <Route
-          path="/reports"
-          element={<Reports />}
-        />
-
-        <Route
-          path="/stock"
-          element={<Stock />}
-        />
-        <Route path="stock" element={<Stock />} />
-        <Route path="Search"element={<Search/>} />
-        <Route path="/customer-home" element={<CustomerHome />} /> 
-        <Route path="/customerlogin" element={<CustomerLogin/>} />
-
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/customers" element={<Customers />} />
+        <Route path="/billing" element={<Billing />} />
+        <Route path="/reports" element={<Reports />} />
+        <Route path="/stock" element={<Stock />} />
+        <Route path="/search" element={<Search />} />
       </Route>
-
     </Routes>
   );
 }
