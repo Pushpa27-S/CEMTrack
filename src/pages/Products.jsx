@@ -1,56 +1,107 @@
 import React, { useState } from "react";
-import "./Stock.css";
+import "./Products.css";
+import products from "../data/ProductsData";
 
-function Purchase() {
-  const [product, setProduct] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [message, setMessage] = useState("");
+function Products() {
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
 
-    if (product === "" || quantity === "") {
-      setMessage("Please fill all fields.");
-      return;
-    }
+  const filteredProducts = products.filter((product) => {
 
-    setMessage(
-      `Purchase Recorded Successfully!\nProduct: ${product}\nQuantity Received: ${quantity}`
-    );
+    const matchesSearch =
+      product.brand.toLowerCase().includes(search.toLowerCase());
 
-    setProduct("");
-    setQuantity("");
-  };
+    const matchesCategory =
+      category === "All" || product.category === category;
+
+    return matchesSearch && matchesCategory;
+
+  });
 
   return (
-    <div className="stock-container">
-      <h2>Purchase Management</h2>
 
-      <form onSubmit={handleSubmit}>
-        <label>Product Name</label>
-        <input
-          type="text"
-          value={product}
-          onChange={(e) => setProduct(e.target.value)}
-          placeholder="Enter product name"
-        />
+    <div className="products-page">
 
-        <label>Quantity Received</label>
-        <input
-          type="number"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          placeholder="Enter quantity"
-        />
+      <div className="products-header">
 
-        <button type="submit" className="btn btn-primary">
-          Record Purchase
-        </button>
-      </form>
+        <h1>Products</h1>
 
-      {message && <p className="form-success">{message}</p>}
+        <div className="top-bar">
+
+          <input
+            type="text"
+            placeholder="Search Brand..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option>All</option>
+            <option>OPC 53</option>
+            <option>PPC</option>
+            <option>White Cement</option>
+          </select>
+
+        </div>
+
+      </div>
+
+      <div className="product-grid">
+
+        {filteredProducts.map((product) => (
+
+          <div className="product-card" key={product.id}>
+
+            <img
+              src={product.image}
+              alt={product.brand}
+              className="product-image"
+            />
+
+            <h3>{product.brand}</h3>
+
+            <p>
+              <strong>Category:</strong> {product.category}
+            </p>
+
+            <p>
+              <strong>Price:</strong> ₹{product.price}
+            </p>
+
+            <p>
+              <strong>Stock:</strong> {product.stock} Bags
+            </p>
+
+            <div className="product-buttons">
+
+              <button className="view-btn">
+                View
+              </button>
+
+              <button className="edit-btn">
+                Edit
+              </button>
+
+              <button className="delete-btn">
+                Delete
+              </button>
+
+            </div>
+
+          </div>
+
+        ))}
+
+      </div>
+
     </div>
+
   );
+
 }
 
-export default Purchase;
+export default Products;
