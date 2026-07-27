@@ -1,5 +1,7 @@
+
 import React, { useState } from "react";
 import "./Stock.css";
+import productsData from "../data/ProductsData";
 
 import {
   ResponsiveContainer,
@@ -14,19 +16,21 @@ import {
   Pie,
   Cell,
   LineChart,
-  Line,
+  Line
 } from "recharts";
 
 function Stock() {
 
-  const [products, setProducts] = useState([
-    { id: 1, product: "UltraTech Cement", stock: 120 },
-    { id: 2, product: "ACC Cement", stock: 20 },
-    { id: 3, product: "Ambuja Cement", stock: 80 },
-    { id: 4, product: "Ramco Cement", stock: 45 },
-    { id: 5, product: "Dalmia Cement", stock: 15 },
-    { id: 6, product: "Priya Cement", stock: 0 },
-  ]);
+  const [products, setProducts] = useState(
+    productsData.map((product) => ({
+      id: product.id,
+      product: product.brand,
+      category: product.category,
+      stock: product.stock,
+      price: product.price,
+      image: product.image,
+    }))
+  );
 
   const [name, setName] = useState("");
   const [qty, setQty] = useState("");
@@ -279,17 +283,17 @@ function Stock() {
 
         {
 
-          editingId ?
-
-            <button onClick={updateProduct}>
-              Update Stock
-            </button>
-
-            :
-
-            <button onClick={addProduct}>
-              Add Product
-            </button>
+        <button
+  onClick={() => {
+    if (editingId) {
+      updateProduct();
+    } else {
+      alert("Please click the Update button in the table to update stock.");
+    }
+  }}
+>
+  Update Stock
+</button>  
 
         }
 
