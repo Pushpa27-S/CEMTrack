@@ -43,13 +43,12 @@ function Sidebar() {
         <li><Link to="/stock">Stock</Link></li>
 
         <li>
-          <li>
-
-  <button className="logout-btn"
-   onClick={handleLogout}>
-    Logout
-  </button>
-</li>
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
         </li>
 
       </ul>
@@ -59,6 +58,5 @@ function Sidebar() {
   );
 
 }
-
 
 export default Sidebar;

@@ -157,7 +157,7 @@ const products = [
       brand: "Priya Cement",
       category: "PPC",
       price: 410,
-      stock: 95,
+      stock: 15,
       image: "/images/priya-ppc.jpg",
     },
 
@@ -166,7 +166,7 @@ const products = [
       brand: "Coromandel Cement",
       category: "PPC",
       price: 412,
-      stock: 90,
+      stock: 0,
       image: "/images/coromandel-ppc.jpg",
     },
 
