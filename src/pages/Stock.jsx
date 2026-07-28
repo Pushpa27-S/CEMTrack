@@ -36,6 +36,7 @@ function Stock() {
   const [qty, setQty] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [search, setSearch] = useState("");
+  const [selectedProducts,setSelectedProducts]=useState([]);
 
   // Dashboard Counts
   const totalProducts = products.length;
@@ -66,6 +67,27 @@ function Stock() {
 
     return "HighStock";
   };
+  const showProducts = (status) => {
+
+  let list = [];
+
+  if (status === "High Stock") {
+    list = products.filter((item) => item.stock > 30);
+  }
+
+  if (status === "Low Stock") {
+    list = products.filter(
+      (item) => item.stock > 0 && item.stock <= 30
+    );
+  }
+
+  if (status === "Out Of Stock") {
+    list = products.filter((item) => item.stock === 0);
+  }
+
+  setSelectedProducts(list);
+
+};
 
   // Pie Chart
   const pieData = [
@@ -348,8 +370,11 @@ function Stock() {
               <Pie
                 data={pieData}
                 dataKey="value"
+                nameKey="name"
                 outerRadius={100}
                 label
+                onClick={(entry) => 
+               showProducts(entry.name)}
               >
 
                 {
@@ -359,6 +384,7 @@ function Stock() {
                     <Cell
                       key={index}
                       fill={COLORS[index]}
+                      style={{cursor:"pointer"}}
                     />
 
                   ))
@@ -409,6 +435,33 @@ function Stock() {
           </LineChart>
 
         </ResponsiveContainer>
+        <div className="stock-list">
+
+  <h4>Selected Products</h4>
+
+  {selectedProducts.length === 0 ? (
+
+    <p>Click on High Stock, Low Stock or Out Of Stock.</p>
+
+  ) : (
+
+    <ul>
+
+      {selectedProducts.map((item) => (
+
+        <li key={item.id}>
+          <strong>{item.product}</strong><br />
+          Category:{item.category}<br />
+          Stock:{item.stock} Bags
+        </li>
+
+      ))}
+
+    </ul>
+
+  )}
+
+</div>
 
       </div>
       {/* Stock Table */}
