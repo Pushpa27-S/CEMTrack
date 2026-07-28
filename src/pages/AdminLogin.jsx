@@ -12,36 +12,33 @@ function AdminLogin() {
   const [password, setPassword] = useState("");
 
   const handleLogin = (e) => {
+  e.preventDefault();
 
-    e.preventDefault();
+  // Check password length
+  if (password.length !== 8) {
+    alert("Password must be exactly 8 characters long.");
+    return;
+  }
 
-    const passwordPattern =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+  // Check password rules
+  const passwordPattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
 
-    if (!passwordPattern.test(password)) {
-      alert(
-        "Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special character."
-      );
-      return;
-    }
+  if (!passwordPattern.test(password)) {
+    alert(
+      "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character."
+    );
+    return;
+  }
 
-    if (role === "Admin") {
-
-  localStorage.setItem("isLoggedIn", "true");
-  localStorage.setItem("role", "Admin");
-
-  navigate("/dashboard");
-
-} else {
-
-  localStorage.setItem("isLoggedIn", "true");
-  localStorage.setItem("role", "Customer");
-
-  navigate("/customer-home");
-
-}
-  };
-
+  // Login Success
+  alert("Login Successful");
+  if (role === "Admin") {
+    navigate("/dashboard");
+  } else {
+    navigate("/customer-home");
+  }
+};
   return (
 
     <div className="login-page">
