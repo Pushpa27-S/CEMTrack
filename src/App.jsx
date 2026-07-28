@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Navbar from "./components/Navbar";
 import AdminLayout from "./layouts/AdminLayout";
@@ -68,15 +69,22 @@ function App() {
       <Route path="/customer-home" element={<CustomerHome />} />
 
       {/* Admin Layout */}
-      <Route element={<AdminLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/customers" element={<Customers />} />
-        <Route path="/billing" element={<Billing />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/stock" element={<Stock />} />
-        <Route path="/search" element={<Search />} />
-      </Route>
+      <Route
+  element={
+    <ProtectedRoute>
+      <AdminLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/products" element={<Products />} />
+  <Route path="/customers" element={<Customers />} />
+  <Route path="/billing" element={<Billing />} />
+  <Route path="/reports" element={<Reports />} />
+  <Route path="/stock" element={<Stock />} />
+  <Route path="/search" element={<Search />} />
+</Route>
+      
     </Routes>
   );
 }

@@ -1,36 +1,64 @@
-import { Link } from "react-router-dom";
-import {useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 
 function Sidebar() {
+
   const navigate = useNavigate();
+
   const handleLogout = () => {
-    const confirmLayout = 
-    window.confirm
-    ("Are you sure you want to logout?"
-      
+
+    const confirmLogout = window.confirm(
+      "Are you sure you want to logout?"
     );
+
     if (confirmLogout) {
-      navigate("/adminlogin",
-        {replace: true});
+
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("role");
+
+      navigate("/adminlogin", { replace: true });
+
     }
-  };  
+
+  };
 
   return (
+
     <div className="sidebar">
+
       <h2>CEMTrack</h2>
 
       <ul>
+
         <li><Link to="/dashboard">Dashboard</Link></li>
+
         <li><Link to="/products">Products</Link></li>
+
         <li><Link to="/customers">Customers</Link></li>
+
         <li><Link to="/billing">Billing</Link></li>
+
         <li><Link to="/reports">Reports</Link></li>
+
         <li><Link to="/stock">Stock</Link></li>
-        <li><button className="Logout-btn"onclick={handleLogout}>Logout</button></li>
+
+        <li>
+          <li>
+
+  <button className="logout-btn"
+   onClick={handleLogout}>
+    Logout
+  </button>
+</li>
+        </li>
+
       </ul>
+
     </div>
+
   );
+
 }
+
 
 export default Sidebar;

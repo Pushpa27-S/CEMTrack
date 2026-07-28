@@ -26,10 +26,20 @@ function AdminLogin() {
     }
 
     if (role === "Admin") {
-      navigate("/dashboard");
-    } else {
-      navigate("/customer-home");
-    }
+
+  localStorage.setItem("isLoggedIn", "true");
+  localStorage.setItem("role", "Admin");
+
+  navigate("/dashboard");
+
+} else {
+
+  localStorage.setItem("isLoggedIn", "true");
+  localStorage.setItem("role", "Customer");
+
+  navigate("/customer-home");
+
+}
   };
 
   return (
