@@ -22,7 +22,7 @@ const products = [
       category: "OPC 53",
       price: 455,
       stock: 100,
-      image: "/images/Acc_opc.jpeg",
+      image: "/images/Acc_opc.jpg",
     },
     {
       id: 4,
@@ -39,7 +39,7 @@ const products = [
       category: "OPC 53",
       price: 450,
       stock: 110,
-      image: "/images/Ambuja_opc.jpg",
+      image: "/images/Ambuja_opc.webp",
     },
     {
       id: 6,
@@ -56,7 +56,7 @@ const products = [
       category: "OPC 53",
       price: 445,
       stock: 90,
-      image: "/images/JK_opc.jpeg",
+      image: "/images/JK_opc.webp",
     },
     {
       id: 8,
@@ -115,7 +115,7 @@ const products = [
       category: "PPC",
       price: 417,
       stock: 135,
-      image: "/images/Shree_ppc.jpeg",
+      image: "/images/Shree_ppc.webp",
     },
 
     {
@@ -132,7 +132,7 @@ const products = [
       category: "PPC",
       price: 416,
       stock: 100,
-      image: "/images/Birla_ppc.jpg",
+      image: "/images/Birla_ppc.webp",
     },
 
     {
@@ -141,7 +141,7 @@ const products = [
       category: "OPC 53",
       price: 444,
       stock: 90,
-      image: "/images/Maha_opc.jpeg",
+      image: "/images/Maha_opc.webp",
     },
     {
       id: 18,
@@ -149,7 +149,7 @@ const products = [
       category: "PPC",
       price: 414,
       stock: 115,
-      image: "/images/Maha_ppc.jpeg",
+      image: "/images/Maha_ppc.webp",
     },
 
     {
@@ -158,20 +158,27 @@ const products = [
       category: "PPC",
       price: 410,
       stock: 15,
-      image: "/images/Priya_ppc.jpeg",
+      image: "/images/Priya_ppc.jpg",
     },
-
     {
-      id: 20,
+      id:20,
+      brand:"Priya Cement",
+      category:"OPC 53",
+      price:440,
+      stock:20,
+      image:"/images/Priya_opc.webp",
+    },
+    {
+      id: 21,
       brand: "Coromandel Cement",
       category: "PPC",
       price: 412,
       stock: 0,
-      image: "/images/Coromandel_ppc.jpeg",
+      image: "/images/Coromandel_ppc.webp",
     },
 
     {
-      id: 21,
+      id: 22,
       brand: "JSW Cement",
       category: "PPC",
       price: 420,
@@ -180,21 +187,21 @@ const products = [
     },
 
     {
-      id: 22,
+      id: 23,
       brand: "JK White Cement",
       category: "White Cement",
       price: 820,
       stock: 60,
-      image: "/images/JK White.jpg",
+      image: "/images/JKwhite.webp",
     },
 
     {
-      id: 23,
+      id: 24,
       brand: "Birla White Cement",
       category: "White Cement",
       price: 830,
       stock: 55,
-      image: "/images/Birlawhite.jpeg",
+      image: "/images/Birlawhite.webp",
     },
   ];
         
