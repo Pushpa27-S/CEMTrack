@@ -2,6 +2,7 @@ import React from "react";
 import "./Reports.css";
 
 function Reports() {
+
   const reports = [
     {
       id: 1,
@@ -45,12 +46,52 @@ function Reports() {
     },
   ];
 
+  // Download Report
+  const downloadReport = () => {
+
+    const headers =
+      "ID,Date,Customer,Product,Quantity,Amount\n";
+
+    const rows = reports
+      .map(
+        (r) =>
+          `${r.id},${r.date},${r.customer},${r.product},${r.quantity},${r.amount}`
+      )
+      .join("\n");
+
+    const csv = headers + rows;
+
+    const blob = new Blob([csv], {
+      type: "text/csv",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+
+    link.download = "Sales_Report.csv";
+
+    link.click();
+
+    window.URL.revokeObjectURL(url);
+
+  };
+
+  // Print Report
+  const printReport = () => {
+
+    window.print();
+
+  };
+
   return (
+
     <div className="reports-container">
 
       <h1>Sales Reports</h1>
-
-      <div className="report-cards">
+            <div className="report-cards">
 
         <div className="card">
           <h3>Total Sales</h3>
@@ -74,29 +115,41 @@ function Reports() {
 
       </div>
 
+      {/* Buttons */}
+
       <div className="report-buttons">
 
-        <button className="download-btn">
+        <button
+          className="download-btn"
+          onClick={downloadReport}
+        >
           Download Report
         </button>
 
-        <button className="print-btn">
+        <button
+          className="print-btn"
+          onClick={printReport}
+        >
           Print Report
         </button>
 
       </div>
+
+      {/* Report Table */}
 
       <table>
 
         <thead>
 
           <tr>
+
             <th>ID</th>
             <th>Date</th>
             <th>Customer</th>
             <th>Product</th>
             <th>Quantity</th>
             <th>Amount</th>
+
           </tr>
 
         </thead>
@@ -123,7 +176,9 @@ function Reports() {
       </table>
 
     </div>
+
   );
+
 }
 
 export default Reports;
