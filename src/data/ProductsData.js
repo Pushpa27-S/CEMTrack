@@ -5,7 +5,7 @@ const products = [
       category: "OPC 53",
       price: 460,
       stock: 120,
-      image: "/images/ultratech-opc53.jpg",
+      image: "/images/Ultratech_opc.jpeg",
     },
     {
       id: 2,
@@ -13,7 +13,7 @@ const products = [
       category: "PPC",
       price: 430,
       stock: 150,
-      image: "/images/ultratech-ppc.jpg",
+      image: "/images/Ultratech_ppc.avif",
     },
 
     {
@@ -22,7 +22,7 @@ const products = [
       category: "OPC 53",
       price: 455,
       stock: 100,
-      image: "/images/acc-opc53.jpg",
+      image: "/images/Acc_opc.jpeg",
     },
     {
       id: 4,
@@ -30,7 +30,7 @@ const products = [
       category: "PPC",
       price: 425,
       stock: 140,
-      image: "/images/acc-ppc.jpg",
+      image: "/images/Acc_ppc.webp",
     },
 
     {
@@ -39,7 +39,7 @@ const products = [
       category: "OPC 53",
       price: 450,
       stock: 110,
-      image: "/images/ambuja-opc53.jpg",
+      image: "/images/Ambuja_opc.jpg",
     },
     {
       id: 6,
@@ -47,7 +47,7 @@ const products = [
       category: "PPC",
       price: 420,
       stock: 130,
-      image: "/images/ambuja-ppc.jpg",
+      image: "/images/Ambuja_ppc.jpeg",
     },
 
     {
@@ -56,7 +56,7 @@ const products = [
       category: "OPC 53",
       price: 445,
       stock: 90,
-      image: "/images/jk-opc53.jpg",
+      image: "/images/JK_opc.jpeg",
     },
     {
       id: 8,
@@ -64,7 +64,7 @@ const products = [
       category: "PPC",
       price: 415,
       stock: 120,
-      image: "/images/jk-ppc.jpg",
+      image: "/images/JK_ppc.jpeg",
     },
 
     {
@@ -73,7 +73,7 @@ const products = [
       category: "OPC 53",
       price: 448,
       stock: 95,
-      image: "/images/dalmia-opc53.jpg",
+      image: "/images/Dalmia_opc.jpeg",
     },
     {
       id: 10,
@@ -81,7 +81,7 @@ const products = [
       category: "PPC",
       price: 418,
       stock: 125,
-      image: "/images/dalmia-ppc.jpg",
+      image: "/images/Dalmia_ppc.jpeg",
     },
 
     {
@@ -90,7 +90,7 @@ const products = [
       category: "OPC 53",
       price: 452,
       stock: 85,
-      image: "/images/ramco-opc53.jpg",
+      image: "/images/Ramco_opc.webp",
     },
     {
       id: 12,
@@ -98,7 +98,7 @@ const products = [
       category: "PPC",
       price: 422,
       stock: 110,
-      image: "/images/ramco-ppc.jpg",
+      image: "/images/Ramco_ppc.jpg",
     },
 
     {
@@ -107,7 +107,7 @@ const products = [
       category: "OPC 53",
       price: 447,
       stock: 100,
-      image: "/images/shree-opc53.jpg",
+      image: "/images/Shree_opc.jpeg",
     },
     {
       id: 14,
@@ -115,7 +115,7 @@ const products = [
       category: "PPC",
       price: 417,
       stock: 135,
-      image: "/images/shree-ppc.jpg",
+      image: "/images/Shree_ppc.jpeg",
     },
 
     {
@@ -124,7 +124,7 @@ const products = [
       category: "OPC 53",
       price: 446,
       stock: 75,
-      image: "/images/birla-opc53.jpg",
+      image: "/images/Birla_opc.webp",
     },
     {
       id: 16,
@@ -132,7 +132,7 @@ const products = [
       category: "PPC",
       price: 416,
       stock: 100,
-      image: "/images/birla-ppc.jpg",
+      image: "/images/Birla_ppc.jpg",
     },
 
     {
@@ -141,7 +141,7 @@ const products = [
       category: "OPC 53",
       price: 444,
       stock: 90,
-      image: "/images/maha-opc53.jpg",
+      image: "/images/Maha_opc.jpeg",
     },
     {
       id: 18,
@@ -149,7 +149,7 @@ const products = [
       category: "PPC",
       price: 414,
       stock: 115,
-      image: "/images/maha-ppc.jpg",
+      image: "/images/Maha_ppc.jpeg",
     },
 
     {
@@ -158,7 +158,7 @@ const products = [
       category: "PPC",
       price: 410,
       stock: 15,
-      image: "/images/priya-ppc.jpg",
+      image: "/images/Priya_ppc.jpeg",
     },
 
     {
@@ -167,7 +167,7 @@ const products = [
       category: "PPC",
       price: 412,
       stock: 0,
-      image: "/images/coromandel-ppc.jpg",
+      image: "/images/Coromandel_ppc.jpeg",
     },
 
     {
@@ -176,7 +176,7 @@ const products = [
       category: "PPC",
       price: 420,
       stock: 100,
-      image: "/images/jsw-ppc.jpg",
+      image: "/images/Jsw_ppc.jpg",
     },
 
     {
@@ -185,7 +185,7 @@ const products = [
       category: "White Cement",
       price: 820,
       stock: 60,
-      image: "/images/jk-white.jpg",
+      image: "/images/JK White.jpg",
     },
 
     {
@@ -194,7 +194,7 @@ const products = [
       category: "White Cement",
       price: 830,
       stock: 55,
-      image: "/images/birla-white.jpg",
+      image: "/images/Birlawhite.jpeg",
     },
   ];
         

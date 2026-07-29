@@ -9,10 +9,6 @@
     padding-top:20px;
 }
 
-.sidebar ul li:last-child{
-    margin-top:auto;
-}
-
 .sidebar h2{
     text-align:center;
     margin-bottom:30px;
@@ -22,8 +18,8 @@
 .sidebar ul{
     list-style:none;
     padding:0;
+    margin:0;
 }
-
 
 .sidebar ul li{
     padding:15px 20px;
@@ -44,19 +40,19 @@
 .sidebar ul li a:hover{
     color:#27ae60;
 }
-.logout-btn {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 18px;
-    text-align: left;
-    cursor: pointer;
+
+.logout-btn{
     width:100%;
+    background:transparent;
+    border:none;
+    color:white;
+    font-size:18px;
     text-align:left;
-    padding: 0;
-    font-family: inherit;
+    cursor:pointer;
+    padding:0;
+    font-family:inherit;
 }
 
-.logout-btn:hover {
-    color: #27ae60;
+.logout-btn:hover{
+    color:#27ae60;
 }
