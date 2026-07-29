@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import "./Stock.css";
 import productsData from "../data/ProductsData";

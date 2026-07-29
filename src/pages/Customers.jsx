@@ -51,16 +51,9 @@ function Customers() {
     },
   ]);
 
-  // Form States
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
-  const [status, setStatus] = useState("Active");
-  const [editingId, setEditingId] = useState(null);
   const [search, setSearch] = useState("");
 
-  // Dashboard Values
+  // Dashboard Counts
   const totalCustomers = customers.length;
 
   const activeCustomers = customers.filter(
@@ -76,83 +69,10 @@ function Customers() {
     0
   );
 
-  // Search Filter
+  // Search
   const filteredCustomers = customers.filter((customer) =>
     customer.name.toLowerCase().includes(search.toLowerCase())
   );
-
-  // Add Customer
-  const addCustomer = () => {
-
-    if (
-      name === "" ||
-      phone === "" ||
-      email === "" ||
-      address === ""
-    ) {
-      alert("Please fill all details");
-      return;
-    }
-
-    const newCustomer = {
-      id:
-        customers.length > 0
-          ? Math.max(...customers.map((c) => c.id)) + 1
-          : 1,
-
-      name,
-      phone,
-      email,
-      address,
-      orders: 0,
-      status,
-    };
-
-    setCustomers([...customers, newCustomer]);
-
-    setName("");
-    setPhone("");
-    setEmail("");
-    setAddress("");
-    setStatus("Active");
-  };
-
-  // Edit Customer
-  const editCustomer = (customer) => {
-    setEditingId(customer.id);
-    setName(customer.name);
-    setPhone(customer.phone);
-    setEmail(customer.email);
-    setAddress(customer.address);
-    setStatus(customer.status);
-  };
-
-  // Update Customer
-  const updateCustomer = () => {
-
-    setCustomers(
-      customers.map((customer) =>
-        customer.id === editingId
-          ? {
-              ...customer,
-              name,
-              phone,
-              email,
-              address,
-              status,
-            }
-          : customer
-      )
-    );
-
-    setEditingId(null);
-
-    setName("");
-    setPhone("");
-    setEmail("");
-    setAddress("");
-    setStatus("Active");
-  };
 
   // Delete Customer
   const deleteCustomer = (id) => {
@@ -160,7 +80,8 @@ function Customers() {
       customers.filter((customer) => customer.id !== id)
     );
   };
-    return (
+
+  return (
     <div className="customers-container">
 
       <h1>Customer Management</h1>
@@ -188,64 +109,6 @@ function Customers() {
           <h3>Total Orders</h3>
           <p>{totalOrders}</p>
         </div>
-
-      </div>
-
-      {/* Customer Form */}
-
-      <div className="customer-form">
-
-        <input
-          type="text"
-          placeholder="Customer Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-
-        <input
-          type="text"
-          placeholder="Phone Number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <input
-          type="text"
-          placeholder="Address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
-
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        >
-          <option>Active</option>
-          <option>Inactive</option>
-        </select>
-
-        {editingId ? (
-          <button
-            className="add-btn"
-            onClick={updateCustomer}
-          >
-            Update Customer
-          </button>
-        ) : (
-          <button
-            className="add-btn"
-            onClick={addCustomer}
-          >
-            + Add Customer
-          </button>
-        )}
 
       </div>
 
@@ -277,65 +140,78 @@ function Customers() {
             <th>Address</th>
             <th>Orders</th>
             <th>Status</th>
-            <th>Actions</th>
+            <th>Action</th>
           </tr>
 
         </thead>
 
-        <tbody>
+        <tbody>          {filteredCustomers.length > 0 ? (
 
-          {filteredCustomers.map((customer) => (
+            filteredCustomers.map((customer) => (
 
-            <tr key={customer.id}>
+              <tr key={customer.id}>
 
-              <td>{customer.id}</td>
+                <td>{customer.id}</td>
 
-              <td>{customer.name}</td>
+                <td>{customer.name}</td>
 
-              <td>{customer.phone}</td>
+                <td>{customer.phone}</td>
 
-              <td>{customer.email}</td>
+                <td>{customer.email}</td>
 
-              <td>{customer.address}</td>
+                <td>{customer.address}</td>
 
-              <td>{customer.orders}</td>
+                <td>{customer.orders}</td>
 
-              <td>
+                <td>
 
-                <span
-                  className={
-                    customer.status === "Active"
-                      ? "active"
-                      : "inactive"
-                  }
-                >
-                  {customer.status}
-                </span>
+                  {customer.status === "Active" ? (
+                    <span className="active">
+                      Active
+                    </span>
+                  ) : (
+                    <span className="inactive">
+                      Inactive
+                    </span>
+                  )}
 
-              </td>
+                </td>
 
-              <td>
+                <td>
 
-                <button
-                  className="edit-btn"
-                  onClick={() => editCustomer(customer)}
-                >
-                  Edit
-                </button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => deleteCustomer(customer.id)}
+                  >
+                    Delete
+                  </button>
 
-                <button
-                  className="delete-btn"
-                  onClick={() => deleteCustomer(customer.id)}
-                >
-                  Delete
-                </button>
+                </td>
 
+              </tr>
+
+            ))
+
+          ) : (
+
+            <tr>
+
+              <td
+                colSpan="8"
+                style={{
+                  textAlign: "center",
+                  padding: "20px",
+                  fontWeight: "bold",
+                }}
+              >
+                No Customers Found
               </td>
 
             </tr>
 
-          ))}
-                  </tbody>
+          )}
+
+        </tbody>
 
       </table>
 

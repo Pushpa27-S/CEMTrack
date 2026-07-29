@@ -29,22 +29,36 @@ function Products() {
 
         <div className="top-bar">
 
+          {/* Search Box */}
+
           <input
             type="text"
             placeholder="Search Brand..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            className="search-box"
           />
 
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option>All</option>
-            <option>OPC 53</option>
-            <option>PPC</option>
-            <option>White Cement</option>
-          </select>
+          {/* Category Filter */}
+
+          <div className="category-filter">
+
+            <label htmlFor="category">
+              <strong>Category :</strong>
+            </label>
+
+            <select
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option>All</option>
+              <option>OPC 53</option>
+              <option>PPC</option>
+              <option>White Cement</option>
+            </select>
+
+          </div>
 
         </div>
 
