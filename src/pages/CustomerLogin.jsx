@@ -3,75 +3,71 @@ import { Link, useNavigate } from "react-router-dom";
 import "./AdminLogin.css";
 
 function CustomerLogin() {
+const navigate = useNavigate();
 
-  const navigate = useNavigate();
+const handleLogin = (e) => {
+e.preventDefault();
 
-  const handleLogin = (e) => {
+// Store customer login status
+localStorage.setItem("customerLoggedIn", "true");
 
-    e.preventDefault();
+// Go to customer home
+navigate("/customer-home");
 
-    navigate("/customer-home");
+};
 
-  };
+return (
+<div className="login-page">
+<div className="login-card">
 
-  return (
+    <h1>CEMTrack</h1>
 
-    <div className="login-page">
+    <h2>Customer Login</h2>
 
-      <div className="login-card">
+    <p>
+      Welcome! Login to browse products and place your orders.
+    </p>
 
-        <h1>CEMTrack</h1>
+    <form onSubmit={handleLogin}>
 
-        <h2>Customer Login</h2>
+      <input
+        type="email"
+        placeholder="Enter Email"
+        required
+      />
 
-        <p>
-          Welcome! Login to browse products and place your orders.
-        </p>
+      <input
+        type="password"
+        placeholder="Enter Password"
+        required
+      />
 
-        <form onSubmit={handleLogin}>
+      <button type="submit">
+        Login
+      </button>
 
-          <input
-            type="email"
-            placeholder="Enter Email"
-            required
-          />
+    </form>
 
-          <input
-            type="password"
-            placeholder="Enter Password"
-            required
-          />
+    <div className="login-links">
 
-          <button type="submit">
-            Login
-          </button>
+      <Link to="/forgot-password">
+        Forgot Password?
+      </Link>
 
-        </form>
+      <p>
+        Don't have an account?{" "}
 
-        <div className="login-links">
-
-          <Link to="/forgot-password">
-            Forgot Password?
-          </Link>
-
-          <p>
-
-            Don't have an account?
-
-            <Link to="/register">
-              Register
-            </Link>
-
-          </p>
-
-        </div>
-
-      </div>
+        <Link to="/register">
+          Register
+        </Link>
+      </p>
 
     </div>
 
-  );
+  </div>
+</div>
 
+);
 }
 
 export default CustomerLogin;
