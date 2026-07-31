@@ -3,59 +3,106 @@ import "./Sidebar.css";
 
 function Sidebar() {
 
-  const navigate = useNavigate();
+const navigate = useNavigate();
 
-  const handleLogout = () => {
+const handleLogout = () => {
 
-    const confirmLogout = window.confirm(
-      "Are you sure you want to logout?"
-    );
+const confirmLogout = window.confirm(
+  "Are you sure you want to logout?"
+);
 
-    if (confirmLogout) {
+if (confirmLogout) {
 
-      localStorage.removeItem("isLoggedIn");
-      localStorage.removeItem("role");
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("role");
 
-      navigate("/adminlogin", { replace: true });
+  navigate("/adminlogin", { replace: true });
 
-    }
+}
 
-  };
+};
 
-  return (
+const handleAddProduct = () => {
 
-    <div className="sidebar">
+navigate("/products", {
+  state: { openAddProduct: true }
+});
 
-      <h2>CEMTrack</h2>
+};
 
-      <ul>
+return (
 
-        <li><Link to="/dashboard">Dashboard</Link></li>
+<div className="sidebar">
 
-        <li><Link to="/products">Products</Link></li>
+  <h2>CEMTrack</h2>
 
-        <li><Link to="/customers">Customers</Link></li>
+  <ul>
 
-        <li><Link to="/billing">Billing</Link></li>
+    <li>
+      <Link to="/dashboard">
+        Dashboard
+      </Link>
+    </li>
 
-        <li><Link to="/reports">Reports</Link></li>
+    <li>
+      <Link to="/products">
+        Products
+      </Link>
+    </li>
 
-        <li><Link to="/stock">Stock</Link></li>
+    <li>
+      <Link to="/customers">
+        Customers
+      </Link>
+    </li>
 
-        <li>
-          <button
-            className="logout-btn"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </li>
+    <li>
+      <Link to="/billing">
+        Billing
+      </Link>
+    </li>
 
-      </ul>
+    <li>
+      <Link to="/reports">
+        Reports
+      </Link>
+    </li>
 
-    </div>
+    <li>
+      <Link to="/stock">
+        Stock
+      </Link>
+    </li>
 
-  );
+    {/* Logout */}
+
+    <li>
+      <button
+        className="logout-btn"
+        onClick={handleLogout}
+      >
+        Logout
+      </button>
+    </li>
+
+    {/* Add Product */}
+
+    <li className="add-product-item">
+
+      <button
+        className="add-product-sidebar-btn"
+        onClick={handleAddProduct}
+      >
+        + Add Product
+      </button>
+
+    </li>
+
+  </ul>
+
+</div>
+
+);
 
 }
 

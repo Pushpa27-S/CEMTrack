@@ -56,3 +56,21 @@
 .logout-btn:hover{
     color:#27ae60;
 }
+.add-product-sidebar-btn {
+width: 100%;
+border: none;
+background: #27ae60;
+color: white;
+padding: 11px 14px;
+border-radius: 7px;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+text-align: left;
+transition: 0.2s ease;
+}
+
+.add-product-sidebar-btn:hover {
+background: #1e8449;
+transform: translateX(2px);
+}
