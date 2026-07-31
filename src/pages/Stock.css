@@ -460,3 +460,14 @@ transform:translateY(0);
     font-size:15px;
     color:#333;
 }
+/* Fix chart label visibility */
+.chart {
+  width: 100%;
+  overflow: visible;
+  padding-bottom: 40px;
+}
+
+/* Keep chart text readable */
+.chart svg {
+  overflow: visible;
+}

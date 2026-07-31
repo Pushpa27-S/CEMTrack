@@ -3,559 +3,705 @@ import "./Stock.css";
 import productsData from "../data/ProductsData";
 
 import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line
+ResponsiveContainer,
+BarChart,
+Bar,
+XAxis,
+YAxis,
+CartesianGrid,
+Tooltip,
+Legend,
+LineChart,
+Line
 } from "recharts";
 
 function Stock() {
 
-  const [products, setProducts] = useState(
-    productsData.map((product) => ({
-      id: product.id,
-      product: product.brand,
-      category: product.category,
-      stock: product.stock,
-      price: product.price,
-      image: product.image,
-    }))
-  );
+const [products, setProducts] = useState(
+productsData.map((product) => ({
+id: product.id,
+product: product.brand,
+category: product.category,
+stock: product.stock,
+price: product.price,
+image: product.image,
+}))
+);
 
-  const [name, setName] = useState("");
-  const [qty, setQty] = useState("");
-  const [editingId, setEditingId] = useState(null);
-  const [search, setSearch] = useState("");
-  const [selectedProducts,setSelectedProducts]=useState([]);
+const [name, setName] = useState("");
+const [qty, setQty] = useState("");
+const [editingId, setEditingId] = useState(null);
+const [search, setSearch] = useState("");
+const [selectedProducts, setSelectedProducts] = useState([]);
 
-  // Dashboard Counts
-  const totalProducts = products.length;
+/* ================================
+DASHBOARD COUNTS
+================================= */
 
-  const totalStock = products.reduce(
-    (sum, item) => sum + item.stock,
-    0
-  );
+const totalProducts = products.length;
 
-  const highStock = products.filter(
-    (item) => item.stock > 30
-  ).length;
+const totalStock = products.reduce(
+(sum, item) => sum + item.stock,
+0
+);
 
-  const lowStock = products.filter(
-    (item) => item.stock > 0 && item.stock <= 30
-  ).length;
+const highStock = products.filter(
+(item) => item.stock > 30
+).length;
 
-  const outStock = products.filter(
-    (item) => item.stock === 0
-  ).length;
+const lowStock = products.filter(
+(item) => item.stock > 0 && item.stock <= 30
+).length;
 
-  // Status
-  const getStatus = (stock) => {
+const outStock = products.filter(
+(item) => item.stock === 0
+).length;
 
-    if (stock === 0) return "OutofStock";
+/* ================================
+STATUS
+================================= */
 
-    if (stock <= 30) return "LowStock";
+const getStatus = (stock) => {
 
-    return "HighStock";
-  };
-  const showProducts = (status) => {
+if (stock === 0) return "OutofStock";
 
-  let list = [];
+if (stock <= 30) return "LowStock";
 
-  if (status === "High Stock") {
-    list = products.filter((item) => item.stock > 30);
-  }
-
-  if (status === "Low Stock") {
-    list = products.filter(
-      (item) => item.stock > 0 && item.stock <= 30
-    );
-  }
-
-  if (status === "Out Of Stock") {
-    list = products.filter((item) => item.stock === 0);
-  }
-
-  setSelectedProducts(list);
+return "HighStock";
 
 };
 
-  // Pie Chart
-  const pieData = [
-    {
-      name: "High Stock",
-      value: highStock,
-    },
-    {
-      name: "Low Stock",
-      value: lowStock,
-    },
-    {
-      name: "Out Of Stock",
-      value: outStock,
-    },
-  ];
+/* ================================
+SEARCH
+================================= */
 
-  const COLORS = [
-  "#22C55E", // Bright Green
-  "#FACC15", // Bright Yellow
-  "#EF4444", // Bright Red
-];
+const filteredProducts = products.filter((item) =>
+item.product
+.toLowerCase()
+.includes(search.toLowerCase())
+);
 
-  // Search
-  const filteredProducts = products.filter((item) =>
-    item.product
-      .toLowerCase()
-      .includes(search.toLowerCase())
+/* ================================
+CHART DATA
+
+ Brand + Category are combined
+ so every product appears separately.
+
+================================= */
+
+const chartData = products.map((item) => ({
+...item,
+
+displayName:
+  `${item.product} - ${item.category}`,
+
+}));
+
+/* ================================
+ADD PRODUCT
+================================= */
+
+const addProduct = () => {
+
+if (!name || !qty) {
+
+  alert("Enter Product Details");
+
+  return;
+
+}
+
+const newProduct = {
+
+  id:
+    products.length > 0
+      ? Math.max(
+          ...products.map((p) => p.id)
+        ) + 1
+      : 1,
+
+  product: name,
+
+  category: "OPC 53",
+
+  stock: Number(qty),
+
+};
+
+setProducts([
+  ...products,
+  newProduct
+]);
+
+setName("");
+setQty("");
+
+};
+
+/* ================================
+UPDATE BUTTON
+================================= */
+
+const editProduct = (item) => {
+
+setEditingId(item.id);
+
+setName(item.product);
+
+setQty("");
+
+};
+
+/* ================================
+UPDATE STOCK
+================================= */
+
+const updateProduct = () => {
+
+if (!qty) {
+
+  alert("Enter New Stock");
+
+  return;
+
+}
+
+setProducts(
+
+  products.map((item) => {
+
+    if (item.id === editingId) {
+
+      const finalStock =
+        item.stock + Number(qty);
+
+      return {
+
+        ...item,
+
+        stock: finalStock,
+
+      };
+
+    }
+
+    return item;
+
+  })
+
+);
+
+alert("Stock Updated Successfully");
+
+setEditingId(null);
+
+setName("");
+setQty("");
+
+};
+
+/* ================================
+DELETE PRODUCT
+================================= */
+
+const deleteProduct = (id) => {
+
+setProducts(
+  products.filter(
+    (item) => item.id !== id
+  )
+);
+
+};
+
+/* ================================
+CHART TOOLTIP
+================================= */
+
+const CustomTooltip = ({ active, payload }) => {
+
+if (
+  active &&
+  payload &&
+  payload.length
+) {
+
+  const item = payload[0].payload;
+
+  return (
+
+    <div
+      style={{
+        background: "#ffffff",
+        border: "1px solid #d9d9d9",
+        borderRadius: "8px",
+        padding: "12px 16px",
+        boxShadow:
+          "0 4px 12px rgba(0,0,0,0.15)"
+      }}
+    >
+
+      <p
+        style={{
+          margin: "0 0 8px",
+          fontWeight: "700",
+          fontSize: "15px"
+        }}
+      >
+        {item.product}
+      </p>
+
+      <p style={{ margin: "5px 0" }}>
+        <strong>Category:</strong>{" "}
+        {item.category}
+      </p>
+
+      <p style={{ margin: "5px 0" }}>
+        <strong>Stock:</strong>{" "}
+        {item.stock} Bags
+      </p>
+
+    </div>
+
   );
 
-  // Add Product
-  const addProduct = () => {
+}
 
-    if (!name || !qty) {
+return null;
 
-      alert("Enter Product Details");
+};
 
-      return;
+return (
 
-    }
+<div className="stock-page">
 
-    const newProduct = {
 
-      id:
-        products.length > 0
-          ? Math.max(...products.map((p) => p.id)) + 1
-          : 1,
+  {/* ================================
+      TITLE
+  ================================= */}
 
-      product: name,
+  <h1 className="title">
+    🏗️ CemTrack Stock Management
+  </h1>
 
-      stock: Number(qty),
 
-    };
+  {/* ================================
+      DASHBOARD CARDS
+  ================================= */}
 
-    setProducts([...products, newProduct]);
+  <div className="cards">
 
-    setName("");
+    <div className="card">
 
-    setQty("");
+      <h3>Total Products</h3>
 
-  };
+      <h2>{totalProducts}</h2>
 
-  // Update Button
-  const editProduct = (item) => {
+    </div>
 
-    setEditingId(item.id);
 
-    setName(item.product);
+    <div className="card">
 
-    setQty("");
+      <h3>Total Stock</h3>
 
-  };
+      <h2>{totalStock}</h2>
 
-  // Update Stock
-  const updateProduct = () => {
+    </div>
 
-    if (!qty) {
 
-      alert("Enter New Stock");
+    <div className="card">
 
-      return;
+      <h3>High Stock</h3>
 
-    }
+      <h2>{highStock}</h2>
 
-    setProducts(
+    </div>
 
-      products.map((item) => {
 
-        if (item.id === editingId) {
+    <div className="card">
 
-          const finalStock =
-            item.stock + Number(qty);
+      <h3>Low Stock</h3>
 
-          return {
+      <h2>{lowStock}</h2>
 
-            ...item,
+    </div>
 
-            stock: finalStock,
 
-          };
+    <div className="card">
+
+      <h3>Out of Stock</h3>
+
+      <h2>{outStock}</h2>
+
+    </div>
+
+  </div>
+
+
+  {/* ================================
+      SEARCH
+  ================================= */}
+
+  <div className="search-box">
+
+    <input
+      type="text"
+      placeholder="🔍 Search Product..."
+      value={search}
+      onChange={(e) =>
+        setSearch(e.target.value)
+      }
+    />
+
+  </div>
+
+
+  {/* ================================
+      ADD / UPDATE FORM
+  ================================= */}
+
+  <div className="form">
+
+    <input
+      type="text"
+      placeholder="Product Name"
+      value={name}
+      disabled={editingId !== null}
+      onChange={(e) =>
+        setName(e.target.value)
+      }
+    />
+
+
+    {editingId !== null && (
+
+      <input
+        type="number"
+        value={
+          products.find(
+            (p) => p.id === editingId
+          )?.stock || 0
+        }
+        readOnly
+        placeholder="Current Stock"
+      />
+
+    )}
+
+
+    <input
+      type="number"
+      placeholder={
+        editingId
+          ? "Add New Stock"
+          : "Enter Stock Quantity"
+      }
+      value={qty}
+      onChange={(e) =>
+        setQty(e.target.value)
+      }
+    />
+
+
+    <button
+      onClick={() => {
+
+        if (editingId) {
+
+          updateProduct();
+
+        } else {
+
+          alert(
+            "Please click the Update button in the table to update stock."
+          );
 
         }
 
-        return item;
+      }}
+    >
+      Update Stock
+    </button>
 
-      })
+  </div>
 
-    );
 
-    alert("Stock Updated Successfully");
+  {/* ================================
+      BAR CHART
+  ================================= */}
 
-    setEditingId(null);
+  <div className="chart">
 
-    setName("");
+    <h3>Stock Quantity</h3>
 
-    setQty("");
+    <ResponsiveContainer
+      width="100%"
+      height={500}
+    >
 
-  };
+      <BarChart
+        data={chartData}
+        margin={{
+          top: 20,
+          right: 30,
+          left: 20,
+          bottom: 130
+        }}
+      >
 
-  // Delete Product
-  const deleteProduct = (id) => {
-
-    setProducts(
-
-      products.filter((item) => item.id !== id)
-
-    );
-
-  };
-    return (
-
-    <div className="stock-page">
-
-      <h1 className="title">🏗️ CemTrack Stock Management</h1>
-
-      {/* Dashboard Cards */}
-
-      <div className="cards">
-
-        <div className="card">
-          <h3>Total Products</h3>
-          <h2>{totalProducts}</h2>
-        </div>
-
-        <div className="card">
-          <h3>Total Stock</h3>
-          <h2>{totalStock}</h2>
-        </div>
-
-        <div className="card">
-          <h3>High Stock</h3>
-          <h2>{highStock}</h2>
-        </div>
-
-        <div className="card">
-          <h3>Low Stock</h3>
-          <h2>{lowStock}</h2>
-        </div>
-
-        <div className="card">
-          <h3>Out of Stock</h3>
-          <h2>{outStock}</h2>
-        </div>
-
-      </div>
-
-      {/* Search */}
-
-      <div className="search-box">
-
-        <input
-          type="text"
-          placeholder="🔍 Search Product..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+        <CartesianGrid
+          strokeDasharray="3 3"
         />
 
-      </div>
 
-      {/* Add / Update Form */}
-
-      <div className="form">
-
-        <input
-          type="text"
-          placeholder="Product Name"
-          value={name}
-          disabled={editingId !== null}
-          onChange={(e) => setName(e.target.value)}
+        <XAxis
+          dataKey="displayName"
+          angle={-45}
+          textAnchor="end"
+          interval={0}
+          height={140}
+          tick={{
+            fontSize: 14,
+            fontWeight: 600
+          }}
         />
 
-        {editingId !== null && (
 
-          <input
-            type="number"
-            value={
-              products.find((p) => p.id === editingId)?.stock || 0
-            }
-            readOnly
-            placeholder="Current Stock"
-          />
+        <YAxis />
 
-        )}
 
-        <input
-          type="number"
-          placeholder={
-            editingId
-              ? "Add New Stock"
-              : "Enter Stock Quantity"
-          }
-          value={qty}
-          onChange={(e) => setQty(e.target.value)}
+        <Tooltip
+          content={<CustomTooltip />}
         />
 
-        {
 
-        <button
-  onClick={() => {
-    if (editingId) {
-      updateProduct();
-    } else {
-      alert("Please click the Update button in the table to update stock.");
-    }
-  }}
->
-  Update Stock
-</button>  
+        <Legend />
 
-        }
 
-      </div>
+        <Bar
+          dataKey="stock"
+          name="Stock"
+          fill="#86efe4"
+          radius={[
+            8,
+            8,
+            0,
+            0
+          ]}
+        />
 
-      {/* Charts */}
+      </BarChart>
 
-      <div className="charts">
+    </ResponsiveContainer>
 
-        {/* Bar Chart */}
+  </div>
 
-        <div className="chart">
 
-          <h3>Stock Quantity</h3>
+  {/* ================================
+      LINE CHART
+  ================================= */}
 
-          <ResponsiveContainer width="100%" height={300}>
+  <div className="chart">
 
-            <BarChart data={products}>
+    <h3>Stock Trend</h3>
 
-              <CartesianGrid strokeDasharray="3 3" />
+    <ResponsiveContainer
+      width="100%"
+      height={500}
+    >
 
-              <XAxis dataKey="product" />
+      <LineChart
+        data={chartData}
+        margin={{
+          top: 20,
+          right: 30,
+          left: 20,
+          bottom: 130
+        }}
+      >
 
-              <YAxis />
+        <CartesianGrid
+          strokeDasharray="3 3"
+        />
 
-              <Tooltip />
 
-              <Legend />
+        <XAxis
+          dataKey="displayName"
+          angle={-45}
+          textAnchor="end"
+          interval={0}
+          height={140}
+          tick={{
+            fontSize: 14,
+            fontWeight: 600
+          }}
+        />
 
-              <Bar
-                dataKey="stock"
-                fill="#86efe4"
-                radius={[8,8,0,0]}
-              />
 
-            </BarChart>
+        <YAxis />
 
-          </ResponsiveContainer>
 
-        </div>
+        <Tooltip
+          content={<CustomTooltip />}
+        />
 
-        {/* Pie Chart */}
 
-        <div className="chart">
+        <Legend />
 
-          <h3>Stock Status</h3>
 
-          <ResponsiveContainer width="100%" height={300}>
+        <Line
+          type="monotone"
+          dataKey="stock"
+          name="Stock"
+          stroke="#22a7c5"
+          strokeWidth={3}
+          dot={{
+            r: 5
+          }}
+          activeDot={{
+            r: 8
+          }}
+        />
 
-            <PieChart>
+      </LineChart>
 
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                outerRadius={100}
-                label
-                onClick={(entry) => 
-               showProducts(entry.name)}
-              >
+    </ResponsiveContainer>
 
-                {
+  </div>
 
-                  pieData.map((entry,index)=>(
 
-                    <Cell
-                      key={index}
-                      fill={COLORS[index]}
-                      style={{cursor:"pointer"}}
-                    />
+  {/* ================================
+      STOCK TABLE
+  ================================= */}
 
-                  ))
+  <table className="stock-table">
 
-                }
+    <thead>
 
-              </Pie>
+      <tr>
 
-              <Tooltip />
+        <th>ID</th>
 
-              <Legend />
+        <th>Product</th>
 
-            </PieChart>
+        <th>Category</th>
 
-          </ResponsiveContainer>
+        <th>Current Stock</th>
 
-        </div>
+        <th>Status</th>
 
-      </div>
+        <th>Actions</th>
 
-      {/* Line Chart */}
+      </tr>
 
-      <div className="chart">
+    </thead>
 
-        <h3>Stock Trend</h3>
 
-        <ResponsiveContainer width="100%" height={300}>
+    <tbody>
 
-          <LineChart data={products}>
+      {filteredProducts.length > 0 ? (
 
-            <CartesianGrid strokeDasharray="3 3" />
+        filteredProducts.map(
+          (item) => (
 
-            <XAxis dataKey="product" />
+            <tr key={item.id}>
 
-            <YAxis />
+              <td>
+                {item.id}
+              </td>
 
-            <Tooltip />
 
-            <Legend />
+              <td>
+                {item.product}
+              </td>
 
-            <Line
-              type="monotone"
-              dataKey="stock"
-              stroke="#22a7c5"
-              strokeWidth={3}
-            />
 
-          </LineChart>
+              <td>
+                {item.category}
+              </td>
 
-        </ResponsiveContainer>
-        <div className="stock-list">
 
-  <h4>Selected Products</h4>
+              <td>
+                {item.stock}
+              </td>
 
-  {selectedProducts.length === 0 ? (
 
-    <p>Click on High Stock, Low Stock or Out Of Stock.</p>
+              <td>
 
-  ) : (
+                <span
+                  className={getStatus(
+                    item.stock
+                  )}
+                >
 
-    <ul>
+                  {getStatus(
+                    item.stock
+                  ) === "HighStock"
 
-      {selectedProducts.map((item) => (
+                    ? "High Stock"
 
-        <li key={item.id}>
-          <strong>{item.product}</strong><br />
-          Category:{item.category}<br />
-          Stock:{item.stock} Bags
-        </li>
+                    : getStatus(
+                        item.stock
+                      ) === "LowStock"
 
-      ))}
+                    ? "Low Stock"
 
-    </ul>
+                    : "Out of Stock"}
 
-  )}
+                </span>
 
-</div>
+              </td>
 
-      </div>
-      {/* Stock Table */}
 
-      <table className="stock-table">
+              <td>
 
-        <thead>
+                <button
+                  className="edit-btn"
+                  onClick={() =>
+                    editProduct(item)
+                  }
+                >
+                  Update
+                </button>
 
-          <tr>
 
-            <th>ID</th>
-
-            <th>Product</th>
-
-            <th>Current Stock</th>
-
-            <th>Status</th>
-
-            <th>Actions</th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          {filteredProducts.length > 0 ? (
-
-            filteredProducts.map((item) => (
-
-              <tr key={item.id}>
-
-                <td>{item.id}</td>
-
-                <td>{item.product}</td>
-
-                <td>{item.stock}</td>
-
-                <td>
-
-                  <span className={getStatus(item.stock)}>
-
-                    {getStatus(item.stock) === "HighStock"
-                      ? "High Stock"
-                      : getStatus(item.stock) === "LowStock"
-                      ? "Low Stock"
-                      : "Out of Stock"}
-
-                  </span>
-
-                </td>
-
-                <td>
-
-                  <button
-                    className="edit-btn"
-                    onClick={() => editProduct(item)}
-                  >
-                    Update
-                  </button>
-
-                  <button
-                    className="delete-btn"
-                    onClick={() => deleteProduct(item.id)}
-                  >
-                    Delete
-                  </button>
-
-                </td>
-
-              </tr>
-
-            ))
-
-          ) : (
-
-            <tr>
-
-              <td colSpan="5">
-
-                No Products Found
+                <button
+                  className="delete-btn"
+                  onClick={() =>
+                    deleteProduct(
+                      item.id
+                    )
+                  }
+                >
+                  Delete
+                </button>
 
               </td>
 
             </tr>
 
-          )}
+          )
+        )
 
-        </tbody>
+      ) : (
 
-      </table>
+        <tr>
 
-    </div>
+          <td colSpan="6">
+            No Products Found
+          </td>
 
-  );
+        </tr>
+
+      )}
+
+    </tbody>
+
+  </table>
+
+</div>
+
+);
 
 }
 
