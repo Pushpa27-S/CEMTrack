@@ -1,28 +1,47 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function CustomerHome() {
+return (
+<div style={{ padding: "40px" }}>
 
-  return (
+  <h1>Welcome Customer 👋</h1>
 
-    <div style={{padding:"40px"}}>
+  <p>
+    You have successfully logged in.
+  </p>
 
-      <h1>Welcome Customer 👋</h1>
+  <h3>Customer Features</h3>
 
-      <p>You have successfully logged in.</p>
+  <ul>
+    <li>
+      <Link to="/customer-products">
+        View Products
+      </Link>
+    </li>
 
-      <h3>Features</h3>
+    <li>
+      <Link to="/cart">
+        Add to Cart
+      </Link>
+    </li>
 
-      <ul>
-        <li>View Products</li>
-        <li>Add to Cart</li>
-        <li>Place Orders</li>
-        <li>View Order History</li>
-      </ul>
+    <li>
+      <Link to="/my-orders">
+        Place Orders / My Orders
+      </Link>
+    </li>
 
-    </div>
+    <li>
+      <Link to="/customer-profile">
+        My Profile
+      </Link>
+    </li>
+  </ul>
 
-  );
+</div>
 
+);
 }
 
 export default CustomerHome;

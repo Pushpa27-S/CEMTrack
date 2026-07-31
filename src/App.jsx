@@ -21,6 +21,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 
 import CustomerHome from "./pages/CustomerHome";
 import CustomerLogin from "./pages/CustomerLogin";
+import CustomerProducts from "./pages/CustomerProducts";
 
 import "./App.css";
 
@@ -66,6 +67,8 @@ function App() {
       {/* Customer */}
       <Route path="/customerlogin" element={<CustomerLogin />} />
       <Route path="/customer-home" element={<CustomerHome />} />
+      <Route path="/customer-products" element={<CustomerProducts />} />
+
 
       {/* Admin Layout */}
       <Route element={<AdminLayout />}>
