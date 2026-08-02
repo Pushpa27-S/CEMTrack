@@ -6,7 +6,7 @@ function Customers() {
   const [customers, setCustomers] = useState([
     {
       id: 1,
-      name: "Rahul Sharma",
+      name: "Sharma",
       phone: "9876543210",
       email: "rahul@gmail.com",
       address: "Bangalore",
