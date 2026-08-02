@@ -1,0 +1,103 @@
+/* ================================
+   CUSTOMER LOGIN
+================================ */
+
+.customer-login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+}
+
+.customer-login-card {
+  width: 100%;
+  max-width: 430px;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #fed7aa;
+  box-shadow: 0 12px 35px rgba(154, 52, 18, 0.15);
+  box-sizing: border-box;
+}
+
+.customer-login-card h1 {
+  margin: 0;
+  text-align: center;
+  color: #ea580c;
+  font-size: 32px;
+}
+
+.customer-login-card h2 {
+  margin: 8px 0 10px;
+  text-align: center;
+  color: #9a3412;
+  font-size: 23px;
+}
+
+.customer-login-card > p {
+  text-align: center;
+  color: #6b7280;
+  line-height: 1.5;
+  margin-bottom: 25px;
+}
+
+.customer-login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.customer-login-card input {
+  width: 100%;
+  padding: 13px 15px;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+  font-size: 15px;
+  outline: none;
+}
+
+.customer-login-card input:focus {
+  border-color: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12);
+}
+
+.customer-login-card button {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 9px;
+  background: #ea580c;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.customer-login-card button:hover {
+  background: #c2410c;
+}
+
+.customer-login-links {
+  margin-top: 22px;
+  text-align: center;
+}
+
+.customer-login-links a {
+  color: #ea580c;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.customer-login-links a:hover {
+  text-decoration: underline;
+}
+
+.customer-login-links p {
+  color: #6b7280;
+  margin-top: 15px;
+}

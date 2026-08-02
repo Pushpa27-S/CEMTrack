@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./AdminLogin.css";
+import "./CustomerLogin.css";
 
 function CustomerLogin() {
 const navigate = useNavigate();
@@ -48,7 +48,7 @@ return (
 
     </form>
 
-    <div className="login-links">
+    <div className="customer-login-links">
 
       <Link to="/forgot-password">
         Forgot Password?
