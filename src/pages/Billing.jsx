@@ -3,10 +3,16 @@ import "./Billing.css";
 
 function Billing() {
 
-  // Invoice Number
+  // =========================
+  // INVOICE NUMBER
+  // =========================
+
   const [invoiceNo, setInvoiceNo] = useState(1);
 
-  // Form Fields
+  // =========================
+  // FORM FIELDS
+  // =========================
+
   const [billDate, setBillDate] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
@@ -16,54 +22,87 @@ function Billing() {
   const [total, setTotal] = useState(0);
   const [payment, setPayment] = useState("Cash");
 
-  // Saved Bills
+  // =========================
+  // BILLING HISTORY
+  // =========================
+
   const [bills, setBills] = useState([]);
 
-  // Calculate Total Automatically
+  // =========================
+  // AUTO CALCULATE TOTAL
+  // =========================
+
   useEffect(() => {
+
     const qty = Number(quantity);
     const pr = Number(price);
 
-    if (!isNaN(qty) && !isNaN(pr)) {
+    if (
+      quantity !== "" &&
+      price !== "" &&
+      !isNaN(qty) &&
+      !isNaN(pr)
+    ) {
       setTotal(qty * pr);
     } else {
       setTotal(0);
     }
+
   }, [quantity, price]);
 
-  // Save Bill
+
+  // =========================
+  // SAVE BILL
+  // =========================
+
   const saveBill = () => {
 
     if (
-      customerName === "" ||
-      phone === "" ||
+      customerName.trim() === "" ||
+      phone.trim() === "" ||
+      billDate === "" ||
       quantity === "" ||
       price === ""
     ) {
-      alert("Please fill all fields");
+
+      alert("Please fill all the fields.");
       return;
+
     }
 
     const newBill = {
+
       invoice: `INV${String(invoiceNo).padStart(3, "0")}`,
+
       date: billDate,
+
       customer: customerName,
-      phone,
-      cement,
-      quantity,
-      price,
-      total,
-      payment,
+
+      phone: phone,
+
+      cement: cement,
+
+      quantity: quantity,
+
+      price: price,
+
+      total: total,
+
+      payment: payment,
+
     };
 
-    setBills([...bills, newBill]);
+    setBills((previousBills) => [
+      ...previousBills,
+      newBill
+    ]);
 
     alert("Bill Saved Successfully!");
 
-    // Next Invoice Number
+    // Next invoice number
     setInvoiceNo(invoiceNo + 1);
 
-    // Clear Form
+    // Clear form after saving
     setBillDate("");
     setCustomerName("");
     setPhone("");
@@ -72,9 +111,14 @@ function Billing() {
     setPrice("");
     setTotal(0);
     setPayment("Cash");
+
   };
 
-  // Clear Button
+
+  // =========================
+  // CLEAR FORM
+  // =========================
+
   const clearForm = () => {
 
     setBillDate("");
@@ -88,127 +132,280 @@ function Billing() {
 
   };
 
-  // Print Bill
+
+  // =========================
+  // PRINT BILL
+  // =========================
+
   const printBill = () => {
+
     window.print();
+
   };
+
 
   return (
 
     <div className="billing-container">
 
-      <h1>Billing Management</h1>
-            {/* ---------- Billing Form ---------- */}
+      {/* =================================
+          BILLING MANAGEMENT
+      ================================= */}
+
+      <h1>
+        Billing Management
+      </h1>
+
+
+      {/* =================================
+          UPPER BILLING FORM
+      ================================= */}
 
       <div className="billing-form">
 
+
+        {/* Invoice Number */}
+
         <div className="form-group">
-          <label>Invoice Number</label>
+
+          <label>
+            Invoice Number
+          </label>
+
           <input
             type="text"
             value={`INV${String(invoiceNo).padStart(3, "0")}`}
             readOnly
           />
+
         </div>
 
+
+        {/* Bill Date */}
+
         <div className="form-group">
-          <label>Bill Date</label>
+
+          <label>
+            Bill Date
+          </label>
+
           <input
             type="date"
             value={billDate}
-            onChange={(e) => setBillDate(e.target.value)}
+            onChange={(e) =>
+              setBillDate(e.target.value)
+            }
           />
+
         </div>
 
+
+        {/* Customer Name */}
+
         <div className="form-group">
-          <label>Customer Name</label>
+
+          <label>
+            Customer Name
+          </label>
+
           <input
             type="text"
             placeholder="Enter Customer Name"
             value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
+            onChange={(e) =>
+              setCustomerName(e.target.value)
+            }
           />
+
         </div>
 
+
+        {/* Phone Number */}
+
         <div className="form-group">
-          <label>Phone Number</label>
+
+          <label>
+            Phone Number
+          </label>
+
           <input
             type="text"
             placeholder="Enter Phone Number"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) =>
+              setPhone(e.target.value)
+            }
           />
+
         </div>
 
+
+        {/* Cement Brand */}
+
         <div className="form-group">
-          <label>Select Cement Brand</label>
+
+          <label>
+            Select Cement Brand
+          </label>
 
           <select
             value={cement}
-            onChange={(e) => setCement(e.target.value)}
+            onChange={(e) =>
+              setCement(e.target.value)
+            }
           >
-            <option>UltraTech Cement</option>
-            <option>ACC Cement</option>
-            <option>Ambuja Cement</option>
-            <option>Dalmia Cement</option>
-            <option>Ramco Cement</option>
-            <option>Priya Cement</option>
-            <option>Maha Cement</option>
-            <option>JK Cement</option>
-            <option>Birla Cement</option>
-            <option>Coromandel Cement</option>
-            <option>JSW Cement</option>
-            <option>Shree Cement</option>
+
+            <option>
+              UltraTech Cement
+            </option>
+
+            <option>
+              ACC Cement
+            </option>
+
+            <option>
+              Ambuja Cement
+            </option>
+
+            <option>
+              Dalmia Cement
+            </option>
+
+            <option>
+              Ramco Cement
+            </option>
+
+            <option>
+              Priya Cement
+            </option>
+
+            <option>
+              Maha Cement
+            </option>
+
+            <option>
+              JK Cement
+            </option>
+
+            <option>
+              Birla Cement
+            </option>
+
+            <option>
+              Coromandel Cement
+            </option>
+
+            <option>
+              JSW Cement
+            </option>
+
+            <option>
+              Shree Cement
+            </option>
+
           </select>
 
         </div>
 
+
+        {/* Quantity */}
+
         <div className="form-group">
-          <label>Quantity (Bags)</label>
+
+          <label>
+            Quantity (Bags)
+          </label>
+
           <input
             type="number"
             placeholder="Enter Quantity"
             value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+            onChange={(e) =>
+              setQuantity(e.target.value)
+            }
           />
+
         </div>
 
+
+        {/* Price */}
+
         <div className="form-group">
-          <label>Price per Bag</label>
+
+          <label>
+            Price per Bag
+          </label>
+
           <input
             type="number"
             placeholder="Enter Price"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={(e) =>
+              setPrice(e.target.value)
+            }
           />
+
         </div>
 
+
+        {/* Total Amount */}
+
         <div className="form-group">
-          <label>Total Amount</label>
+
+          <label>
+            Total Amount
+          </label>
+
           <input
             type="text"
             value={`₹${total}`}
             readOnly
           />
+
         </div>
 
+
+        {/* Payment Method */}
+
         <div className="form-group">
-          <label>Payment Method</label>
+
+          <label>
+            Payment Method
+          </label>
 
           <select
             value={payment}
-            onChange={(e) => setPayment(e.target.value)}
+            onChange={(e) =>
+              setPayment(e.target.value)
+            }
           >
-            <option>Cash</option>
-            <option>UPI</option>
-            <option>Card</option>
-            <option>Net Banking</option>
+
+            <option>
+              Cash
+            </option>
+
+            <option>
+              UPI
+            </option>
+
+            <option>
+              Card
+            </option>
+
+            <option>
+              Net Banking
+            </option>
+
           </select>
 
         </div>
 
       </div>
-            {/* ---------- Buttons ---------- */}
+
+
+      {/* =================================
+          BUTTONS
+      ================================= */}
 
       <div className="billing-buttons">
 
@@ -219,12 +416,14 @@ function Billing() {
           Save Bill
         </button>
 
+
         <button
           className="print-btn"
           onClick={printBill}
         >
           Print Bill
         </button>
+
 
         <button
           className="clear-btn"
@@ -235,16 +434,15 @@ function Billing() {
 
       </div>
 
-      {/* ---------- Bill History ---------- */}
 
-      <h2
-        style={{
-          marginTop: "40px",
-          marginBottom: "15px",
-        }}
-      >
+      {/* =================================
+          BILLING HISTORY
+      ================================= */}
+
+      <h2 className="billing-history-title">
         Billing History
       </h2>
+
 
       <table className="billing-table">
 
@@ -252,27 +450,46 @@ function Billing() {
 
           <tr>
 
-            <th>Invoice</th>
+            <th>
+              Invoice
+            </th>
 
-            <th>Date</th>
+            <th>
+              Date
+            </th>
 
-            <th>Customer</th>
+            <th>
+              Customer
+            </th>
 
-            <th>Phone</th>
+            <th>
+              Phone
+            </th>
 
-            <th>Cement</th>
+            <th>
+              Cement
+            </th>
 
-            <th>Quantity</th>
+            <th>
+              Quantity
+            </th>
 
-            <th>Price</th>
+            <th>
+              Price
+            </th>
 
-            <th>Total</th>
+            <th>
+              Total
+            </th>
 
-            <th>Payment</th>
+            <th>
+              Payment
+            </th>
 
           </tr>
 
         </thead>
+
 
         <tbody>
 
@@ -282,11 +499,7 @@ function Billing() {
 
               <td
                 colSpan="9"
-                style={{
-                  textAlign: "center",
-                  padding: "20px",
-                  fontWeight: "bold",
-                }}
+                className="no-bills"
               >
                 No Bills Available
               </td>
@@ -299,30 +512,41 @@ function Billing() {
 
               <tr key={index}>
 
-                <td>{bill.invoice}</td>
+                <td>
+                  {bill.invoice}
+                </td>
 
-                <td>{bill.date}</td>
+                <td>
+                  {bill.date}
+                </td>
 
-                <td>{bill.customer}</td>
+                <td>
+                  {bill.customer}
+                </td>
 
-                <td>{bill.phone}</td>
+                <td>
+                  {bill.phone}
+                </td>
 
-                <td>{bill.cement}</td>
+                <td>
+                  {bill.cement}
+                </td>
 
-                <td>{bill.quantity}</td>
+                <td>
+                  {bill.quantity}
+                </td>
 
-                <td>₹{bill.price}</td>
+                <td>
+                  ₹{bill.price}
+                </td>
 
-                <td
-                  style={{
-                    color: "green",
-                    fontWeight: "bold",
-                  }}
-                >
+                <td className="total-cell">
                   ₹{bill.total}
                 </td>
 
-                <td>{bill.payment}</td>
+                <td>
+                  {bill.payment}
+                </td>
 
               </tr>
 
@@ -333,7 +557,8 @@ function Billing() {
         </tbody>
 
       </table>
-          </div>
+
+    </div>
 
   );
 

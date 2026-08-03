@@ -46,7 +46,10 @@ function Reports() {
     },
   ];
 
-  // Download Report
+  // =========================
+  // DOWNLOAD REPORT
+  // =========================
+
   const downloadReport = () => {
 
     const headers =
@@ -54,8 +57,8 @@ function Reports() {
 
     const rows = reports
       .map(
-        (r) =>
-          `${r.id},${r.date},${r.customer},${r.product},${r.quantity},${r.amount}`
+        (report) =>
+          `${report.id},${report.date},${report.customer},${report.product},${report.quantity},${report.amount}`
       )
       .join("\n");
 
@@ -71,51 +74,93 @@ function Reports() {
 
     link.href = url;
 
-    link.download = "Sales_Report.csv";
+    link.download = "CemTrack_Sales_Report.csv";
+
+    document.body.appendChild(link);
 
     link.click();
 
+    document.body.removeChild(link);
+
     window.URL.revokeObjectURL(url);
-
   };
 
-  // Print Report
+
+  // =========================
+  // PRINT REPORT
+  // =========================
+
   const printReport = () => {
-
     window.print();
-
   };
+
 
   return (
 
     <div className="reports-container">
 
-      <h1>Sales Reports</h1>
-            <div className="report-cards">
+      {/* =========================
+          PAGE HEADER
+      ========================= */}
+
+      <div className="reports-header">
+
+        <h1>Sales Reports</h1>
+
+        <p>
+          View and manage your sales reports
+        </p>
+
+      </div>
+
+
+      {/* =========================
+          REPORT CARDS
+      ========================= */}
+
+      <div className="report-cards">
 
         <div className="card">
+
           <h3>Total Sales</h3>
+
           <p>225 Bags</p>
+
         </div>
 
+
         <div className="card">
+
           <h3>Total Revenue</h3>
+
           <p>₹92,725</p>
+
         </div>
 
+
         <div className="card">
+
           <h3>Customers</h3>
+
           <p>5</p>
+
         </div>
 
+
         <div className="card">
+
           <h3>Best Seller</h3>
+
           <p>UltraTech</p>
+
         </div>
 
       </div>
 
-      {/* Buttons */}
+
+      {/* =========================
+          BUTTONS
+      ========================= */}
 
       <div className="report-buttons">
 
@@ -126,6 +171,7 @@ function Reports() {
           Download Report
         </button>
 
+
         <button
           className="print-btn"
           onClick={printReport}
@@ -135,50 +181,142 @@ function Reports() {
 
       </div>
 
-      {/* Report Table */}
 
-      <table>
+      {/* =================================================
+          ONLY THIS SECTION WILL BE PRINTED
+      ================================================= */}
 
-        <thead>
+      <div className="print-bill">
 
-          <tr>
+        {/* Bill Heading */}
 
-            <th>ID</th>
-            <th>Date</th>
-            <th>Customer</th>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Amount</th>
+        <div className="print-header">
 
-          </tr>
+          <h1>CemTrack</h1>
 
-        </thead>
+          <h2>Sales Bill</h2>
 
-        <tbody>
+          <p>
+            Cement Sales Report
+          </p>
 
-          {reports.map((report) => (
+        </div>
 
-            <tr key={report.id}>
 
-              <td>{report.id}</td>
-              <td>{report.date}</td>
-              <td>{report.customer}</td>
-              <td>{report.product}</td>
-              <td>{report.quantity}</td>
-              <td>{report.amount}</td>
+        {/* Bill Summary */}
+
+        <div className="bill-summary">
+
+          <div>
+            <strong>Total Sales:</strong>
+            <span>225 Bags</span>
+          </div>
+
+          <div>
+            <strong>Total Revenue:</strong>
+            <span>₹92,725</span>
+          </div>
+
+          <div>
+            <strong>Customers:</strong>
+            <span>5</span>
+          </div>
+
+          <div>
+            <strong>Best Seller:</strong>
+            <span>UltraTech</span>
+          </div>
+
+        </div>
+
+
+        {/* =========================
+            BILL TABLE
+        ========================= */}
+
+        <table className="reports-table">
+
+          <thead>
+
+            <tr>
+
+              <th>ID</th>
+
+              <th>Date</th>
+
+              <th>Customer</th>
+
+              <th>Product</th>
+
+              <th>Quantity</th>
+
+              <th>Amount</th>
 
             </tr>
 
-          ))}
+          </thead>
 
-        </tbody>
 
-      </table>
+          <tbody>
+
+            {reports.map((report) => (
+
+              <tr key={report.id}>
+
+                <td>
+                  {report.id}
+                </td>
+
+                <td>
+                  {report.date}
+                </td>
+
+                <td>
+                  {report.customer}
+                </td>
+
+                <td>
+                  {report.product}
+                </td>
+
+                <td>
+                  {report.quantity}
+                </td>
+
+                <td>
+                  {report.amount}
+                </td>
+
+              </tr>
+
+            ))}
+
+          </tbody>
+
+        </table>
+
+
+        {/* =========================
+            BILL FOOTER
+        ========================= */}
+
+        <div className="bill-footer">
+
+          <p>
+            Thank you for your business!
+          </p>
+
+          <p>
+            <strong>CemTrack Cement Shop</strong>
+          </p>
+
+        </div>
+
+      </div>
 
     </div>
 
   );
-
 }
 
 export default Reports;

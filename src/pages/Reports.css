@@ -1,121 +1,389 @@
-.reports-container{
-    padding:30px;
-    background:#f4f6f9;
-    min-height:100vh;
+/* =========================================
+   REPORTS PAGE
+========================================= */
+
+.reports-container {
+    padding: 30px;
+    background: #f4f6f9;
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
-.reports-container h1{
-    color:#2c3e50;
-    margin-bottom:25px;
+
+/* =========================================
+   HEADER
+========================================= */
+
+.reports-header {
+    margin-bottom: 25px;
 }
 
-/* Cards */
-
-.report-cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
-    margin-bottom:30px;
+.reports-header h1 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 30px;
 }
 
-.card{
-    background:#fff;
-    padding:20px;
-    border-radius:10px;
-    text-align:center;
-    box-shadow:0 2px 10px rgba(0,0,0,0.15);
+.reports-header p {
+    color: #666;
+    margin-top: 8px;
 }
 
-.card h3{
-    color:#555;
-    margin-bottom:10px;
+
+/* =========================================
+   REPORT CARDS
+========================================= */
+
+.report-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
 }
 
-.card p{
-    color:#27ae60;
-    font-size:24px;
-    font-weight:bold;
+.card {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    text-align: center;
 }
 
-/* Buttons */
-
-.report-buttons{
-    display:flex;
-    gap:15px;
-    margin-bottom:20px;
+.card h3 {
+    margin: 0 0 10px;
+    color: #2c3e50;
 }
 
-.download-btn{
-    background:#27ae60;
-    color:white;
-    border:none;
-    padding:12px 20px;
-    border-radius:6px;
-    cursor:pointer;
+.card p {
+    margin: 0;
+    font-size: 22px;
+    font-weight: bold;
+    color: #3498db;
 }
 
-.download-btn:hover{
-    background:#1e8449;
-}
 
-.print-btn{
-    background:#3498db;
-    color:white;
-    border:none;
-    padding:12px 20px;
-    border-radius:6px;
-    cursor:pointer;
-}
+/* =========================================
+   BUTTONS
+========================================= */
 
-.print-btn:hover{
-    background:#2980b9;
-}
-
-/* Table */
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    background:white;
-    box-shadow:0 2px 10px rgba(0,0,0,0.15);
-}
-
-table th{
-    background:#2c3e50;
-    color:white;
-    padding:15px;
-}
-
-table td{
-    padding:15px;
-    text-align:center;
-    border-bottom:1px solid #ddd;
-}
-
-table tr:hover{
-    background:#f8f8f8;
-}
-
-/* Responsive */
-
-@media(max-width:768px){
-
-.report-buttons{
-    flex-direction:column;
+.report-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin: 30px 0;
 }
 
 .download-btn,
-.print-btn{
-    width:100%;
+.print-btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-table{
-    font-size:13px;
+.download-btn {
+    background: #27ae60;
 }
 
-table th,
-table td{
-    padding:10px;
+.download-btn:hover {
+    background: #1e8449;
+    transform: translateY(-2px);
 }
+
+.print-btn {
+    background: #3498db;
+}
+
+.print-btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+
+/* =========================================
+   PRINT BILL - NORMAL SCREEN
+========================================= */
+
+.print-bill {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+
+/* =========================================
+   PRINT HEADER
+========================================= */
+
+.print-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.print-header h1 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+.print-header h2 {
+    margin: 8px 0;
+    color: #333;
+}
+
+.print-header p {
+    margin: 0;
+    color: #666;
+}
+
+
+/* =========================================
+   BILL SUMMARY
+========================================= */
+
+.bill-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.bill-summary div {
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.bill-summary strong {
+    color: #555;
+}
+
+.bill-summary span {
+    font-weight: bold;
+    color: #222;
+}
+
+
+/* =========================================
+   REPORT TABLE
+========================================= */
+
+.reports-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.reports-table th {
+    background: #3498db;
+    color: white;
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.reports-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+    color: #333;
+}
+
+.reports-table tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+
+/* =========================================
+   BILL FOOTER
+========================================= */
+
+.bill-footer {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+}
+
+.bill-footer p {
+    margin: 5px;
+    color: #555;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 900px) {
+
+    .report-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .bill-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .reports-container {
+        padding: 15px;
+    }
+
+    .report-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .bill-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .report-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+}
+
+
+/* =========================================
+   PRINT ONLY BILL
+========================================= */
+
+@media print {
+
+    @page {
+        size: A4 landscape;
+        margin: 10mm;
+    }
+
+    /* Hide everything first */
+
+    body * {
+        visibility: hidden;
+    }
+
+
+    /* Show ONLY the bill */
+
+    .print-bill,
+    .print-bill * {
+        visibility: visible;
+    }
+
+
+    /* Put bill at top of printed page */
+
+    .print-bill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        background: white;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+
+    /* Hide buttons */
+
+    .report-buttons {
+        display: none !important;
+    }
+
+
+    /* Hide dashboard cards */
+
+    .report-cards {
+        display: none !important;
+    }
+
+
+    /* Hide page header */
+
+    .reports-header {
+        display: none !important;
+    }
+
+
+    /* Print Header */
+
+    .print-header h1 {
+        color: #000 !important;
+        font-size: 28px;
+    }
+
+    .print-header h2 {
+        color: #000 !important;
+        font-size: 22px;
+    }
+
+    .print-header p {
+        color: #000 !important;
+    }
+
+
+    /* Summary */
+
+    .bill-summary {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .bill-summary div {
+        border: 1px solid #000;
+        padding: 8px;
+    }
+
+    .bill-summary strong,
+    .bill-summary span {
+        color: #000 !important;
+    }
+
+
+    /* Table */
+
+    .reports-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .reports-table th,
+    .reports-table td {
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .reports-table th {
+        background: #ddd !important;
+    }
+
+
+    /* Footer */
+
+    .bill-footer {
+        border-top: 1px solid #000;
+    }
+
+    .bill-footer p {
+        color: #000 !important;
+    }
 
 }
