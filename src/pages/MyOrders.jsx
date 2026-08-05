@@ -1,280 +1,260 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import "./CustomerLogin.css";
+import "./MYOrders.css";
 
-function MyOrders() {
+function Orders() {
+  const [orders, setOrders] = useState([]);
 
-const [orders, setOrders] = useState([]);
+  // ===============================
+  // FETCH ORDERS FROM CART
+  // ===============================
 
-useEffect(() => {
+  useEffect(() => {
+    loadOrders();
 
-const savedOrders =
-  JSON.parse(
-    localStorage.getItem("orders")
-  ) || [];
+    // Update orders whenever the page becomes active
+    window.addEventListener("storage", loadOrders);
 
-setOrders(savedOrders);
+    return () => {
+      window.removeEventListener("storage", loadOrders);
+    };
+  }, []);
 
-}, []);
+  const loadOrders = () => {
+    const savedOrders =
+      JSON.parse(localStorage.getItem("orders")) || [];
 
-return (
+    setOrders(savedOrders);
+  };
 
-<div className="customer-home">
+  // ===============================
+  // CLEAR ALL ORDERS
+  // ===============================
 
-  {/* HEADER */}
+  const clearOrders = () => {
+    const answer = window.confirm(
+      "Are you sure you want to clear all orders?"
+    );
 
-  <header className="customer-header">
+    if (answer) {
+      localStorage.removeItem("orders");
+      setOrders([]);
+    }
+  };
 
-    <div className="customer-logo">
+  return (
+    <div className="orders-page">
 
-      <h2>CEMTrack</h2>
+      {/* ================= HEADER ================= */}
 
-      <span>My Orders</span>
+      <div className="orders-header">
+        <div>
+          <h1>Orders</h1>
+          <p>Customer Orders</p>
+        </div>
 
-    </div>
-
-    <div className="customer-header-actions">
-
-      <Link
-        to="/customer-products"
-        className="cart-top-btn"
-      >
-        🛍️ Products
-      </Link>
-
-      <Link
-        to="/cart"
-        className="cart-top-btn"
-      >
-        🛒 Cart
-      </Link>
-
-      <Link
-        to="/customer-home"
-        className="cart-top-btn"
-      >
-        🏠 Home
-      </Link>
-
-    </div>
-
-  </header>
-
-
-  {/* ORDERS */}
-
-  <section className="customer-actions">
-
-    <h1>📦 My Orders</h1>
-
-    {orders.length === 0 ? (
-
-      <div className="info-box">
-
-        <h2>
-          No Orders Yet
-        </h2>
-
-        <p>
-          You have not placed any
-          orders yet.
-        </p>
-
-        <Link
-          to="/customer-products"
-          className="cart-top-btn"
-          style={{
-            display: "inline-block",
-            marginTop: "15px"
-          }}
-        >
-          Browse Products
-        </Link>
-
+        {orders.length > 0 && (
+          <button
+            className="clear-orders-btn"
+            onClick={clearOrders}
+          >
+            🗑️ Clear Orders
+          </button>
+        )}
       </div>
 
-    ) : (
+      {/* ================= NO ORDERS ================= */}
 
-      <div>
+      {orders.length === 0 ? (
 
-        {orders
-          .slice()
-          .reverse()
-          .map((order) => (
+        <div className="no-orders">
 
-          <div
-            className="info-box"
-            key={order.orderId}
-            style={{
-              marginBottom: "25px"
-            }}
-          >
+          <div className="no-orders-icon">
+            📦
+          </div>
 
-            {/* ORDER HEADER */}
+          <h2>No Orders Found</h2>
+
+          <p>
+            Orders placed by customers will
+            automatically appear here.
+          </p>
+
+        </div>
+
+      ) : (
+
+        /* ================= ORDER LIST ================= */
+
+        <div className="orders-container">
+
+          {orders.map((order, index) => (
 
             <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: "10px"
-              }}
+              className="order-card"
+              key={order.orderId || index}
             >
 
-              <h2>
-                Order{" "}
-                {order.orderId}
-              </h2>
+              {/* ================= ORDER HEADER ================= */}
 
-              <span
-                style={{
-                  background:
-                    "#dcfce7",
-                  color:
-                    "#166534",
-                  padding:
-                    "6px 12px",
-                  borderRadius:
-                    "20px",
-                  fontWeight:
-                    "700"
-                }}
-              >
-                {order.status}
-              </span>
-
-            </div>
-
-
-            <p>
-              <strong>
-                Order Date:
-              </strong>{" "}
-              {order.date}
-            </p>
-
-
-            <h3>
-              Products
-            </h3>
-
-
-            {/* PRODUCTS */}
-
-            {order.products.map(
-              (product) => (
-
-              <div
-                key={product.id}
-                style={{
-                  display: "flex",
-                  alignItems:
-                    "center",
-                  gap: "15px",
-                  padding:
-                    "15px 0",
-                  borderBottom:
-                    "1px solid #e5e7eb"
-                }}
-              >
-
-                <img
-                  src={product.image}
-                  alt={product.brand}
-                  style={{
-                    width: "80px",
-                    height: "80px",
-                    objectFit:
-                      "contain"
-                  }}
-                />
+              <div className="order-top">
 
                 <div>
 
-                  <h3>
-                    {product.brand}
-                  </h3>
+                  <h2>
+                    Order #{order.orderId}
+                  </h2>
 
                   <p>
-                    <strong>
-                      Category:
-                    </strong>{" "}
-                    {product.category}
+                    📅 Date: {order.date}
                   </p>
 
-                  <p>
-                    <strong>
-                      Quantity:
-                    </strong>{" "}
-                    {product.quantity}
-                  </p>
+                </div>
+
+                <span
+                  className={`order-status ${
+                    order.status === "Placed"
+                      ? "placed"
+                      : "other-status"
+                  }`}
+                >
+                  {order.status}
+                </span>
+
+              </div>
+
+
+              {/* ================= PRODUCTS ================= */}
+
+              <div className="order-products">
+
+                <h3>Order Details</h3>
+
+                {order.products &&
+                order.products.length > 0 ? (
+
+                  order.products.map((product, productIndex) => (
+
+                    <div
+                      className="order-product"
+                      key={
+                        product.id ||
+                        productIndex
+                      }
+                    >
+
+                      {/* PRODUCT IMAGE */}
+
+                      <div className="order-product-image">
+
+                        {product.image ? (
+
+                          <img
+                            src={product.image}
+                            alt={product.brand}
+                          />
+
+                        ) : (
+
+                          <span>🧱</span>
+
+                        )}
+
+                      </div>
+
+
+                      {/* PRODUCT DETAILS */}
+
+                      <div className="order-product-details">
+
+                        <h3>
+                          {product.brand}
+                        </h3>
+
+                        <p>
+                          <strong>
+                            Category:
+                          </strong>{" "}
+                          {product.category}
+                        </p>
+
+                        <p>
+                          <strong>
+                            Price:
+                          </strong>{" "}
+                          ₹{product.price} / Bag
+                        </p>
+
+                        <p>
+                          <strong>
+                            Quantity:
+                          </strong>{" "}
+                          {product.quantity} Bags
+                        </p>
+
+                        <p>
+                          <strong>
+                            Product Total:
+                          </strong>{" "}
+                          ₹
+                          {Number(product.price) *
+                            Number(product.quantity)}
+                        </p>
+
+                      </div>
+
+                    </div>
+
+                  ))
+
+                ) : (
 
                   <p>
-                    <strong>
-                      Price:
-                    </strong>{" "}
-                    ₹{product.price}
-                    {" "} / Bag
+                    No product information available.
                   </p>
 
-                  <p>
-                    <strong>
-                      Amount:
-                    </strong>{" "}
-                    ₹
-                    {product.price *
-                      product.quantity}
-                  </p>
+                )}
+
+              </div>
+
+
+              {/* ================= TOTAL ================= */}
+
+              <div className="order-bottom">
+
+                <div className="order-total">
+
+                  <span>
+                    Total Amount
+                  </span>
+
+                  <strong>
+                    ₹{order.totalAmount}
+                  </strong>
+
+                </div>
+
+                <div className="order-status-text">
+
+                  Status:
+                  {" "}
+                  <strong>
+                    {order.status}
+                  </strong>
 
                 </div>
 
               </div>
 
-            ))}
+            </div>
 
+          ))}
 
-            {/* TOTAL */}
+        </div>
 
-            <h2
-              style={{
-                marginTop: "20px"
-              }}
-            >
-              Total Amount: ₹
-              {order.totalAmount}
-            </h2>
+      )}
 
-          </div>
-
-        ))}
-
-      </div>
-
-    )}
-
-  </section>
-
-
-  {/* BACK */}
-
-  <div
-    style={{
-      margin:
-        "0 40px 40px"
-    }}
-  >
-
-    <Link to="/customer-home">
-      ← Back to Customer Home
-    </Link>
-
-  </div>
-
-</div>
-
-);
+    </div>
+  );
 }
 
-export default MyOrders;
+export default Orders;
