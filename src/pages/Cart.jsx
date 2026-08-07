@@ -6,13 +6,30 @@ function Cart() {
   const navigate = useNavigate();
 
   const [cart, setCart] = useState([]);
-  const [showPaymentPopup, setShowPaymentPopup] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("UPI");
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
 
-  // ================================
-  // LOAD CART
-  // ================================
+  const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+  const [paymentMethod, setPaymentMethod] =
+    useState("Cash on Delivery");
+
+  const [successAmount, setSuccessAmount] = useState(0);
+
+  // Card details
+  const [cardName, setCardName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvv, setCvv] = useState("");
+
+  // Net banking details
+  const [bank, setBank] = useState("");
+  const [bankUserId, setBankUserId] = useState("");
+  const [bankPassword, setBankPassword] = useState("");
+
+  /* =========================================
+     LOAD CART
+  ========================================= */
 
   useEffect(() => {
     const savedCart =
@@ -21,9 +38,39 @@ function Cart() {
     setCart(savedCart);
   }, []);
 
-  // ================================
-  // REMOVE PRODUCT
-  // ================================
+  /* =========================================
+     SELECT / UNSELECT PRODUCT
+  ========================================= */
+
+  const toggleProductSelection = (id) => {
+    setSelectedIds((previousIds) => {
+      if (previousIds.includes(id)) {
+        return previousIds.filter(
+          (productId) => productId !== id
+        );
+      }
+
+      return [...previousIds, id];
+    });
+  };
+
+  /* =========================================
+     SELECT ALL
+  ========================================= */
+
+  const selectAllProducts = () => {
+    if (selectedIds.length === cart.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(
+        cart.map((product) => product.id)
+      );
+    }
+  };
+
+  /* =========================================
+     REMOVE PRODUCT
+  ========================================= */
 
   const removeFromCart = (id) => {
     const updatedCart = cart.filter(
@@ -32,15 +79,21 @@ function Cart() {
 
     setCart(updatedCart);
 
+    setSelectedIds((previousIds) =>
+      previousIds.filter(
+        (productId) => productId !== id
+      )
+    );
+
     localStorage.setItem(
       "cart",
       JSON.stringify(updatedCart)
     );
   };
 
-  // ================================
-  // INCREASE QUANTITY
-  // ================================
+  /* =========================================
+     INCREASE QUANTITY
+  ========================================= */
 
   const increaseQuantity = (id) => {
     const updatedCart = cart.map((item) => {
@@ -70,9 +123,9 @@ function Cart() {
     );
   };
 
-  // ================================
-  // DECREASE QUANTITY
-  // ================================
+  /* =========================================
+     DECREASE QUANTITY
+  ========================================= */
 
   const decreaseQuantity = (id) => {
     const updatedCart = cart.map((item) => {
@@ -97,11 +150,19 @@ function Cart() {
     );
   };
 
-  // ================================
-  // TOTAL AMOUNT
-  // ================================
+  /* =========================================
+     SELECTED PRODUCTS
+  ========================================= */
 
-  const totalAmount = cart.reduce(
+  const selectedProducts = cart.filter((product) =>
+    selectedIds.includes(product.id)
+  );
+
+  /* =========================================
+     SELECTED TOTAL
+  ========================================= */
+
+  const selectedTotal = selectedProducts.reduce(
     (total, item) =>
       total +
       Number(item.price) *
@@ -109,9 +170,21 @@ function Cart() {
     0
   );
 
-  // ================================
-  // PLACE ORDER
-  // ================================
+  /* =========================================
+     TOTAL CART AMOUNT
+  ========================================= */
+
+  const totalCartAmount = cart.reduce(
+    (total, item) =>
+      total +
+      Number(item.price) *
+        Number(item.quantity),
+    0
+  );
+
+  /* =========================================
+     PLACE SELECTED ORDER
+  ========================================= */
 
   const handlePlaceOrder = () => {
     if (cart.length === 0) {
@@ -119,73 +192,169 @@ function Cart() {
       return;
     }
 
-    setPaymentMethod("UPI");
-    setPaymentSuccess(false);
+    if (selectedProducts.length === 0) {
+      alert(
+        "Please select at least one product to order."
+      );
+      return;
+    }
+
     setShowPaymentPopup(true);
   };
 
-  // ================================
-  // CLOSE PAYMENT
-  // ================================
+  /* =========================================
+     RESET PAYMENT DETAILS
+  ========================================= */
 
-  const closePaymentPopup = () => {
-    if (paymentSuccess) {
-      return;
-    }
+  const resetPaymentDetails = () => {
+    setCardName("");
+    setCardNumber("");
+    setExpiry("");
+    setCvv("");
 
-    setShowPaymentPopup(false);
+    setBank("");
+    setBankUserId("");
+    setBankPassword("");
   };
 
-  // ================================
-  // PAY NOW
-  // ================================
+  /* =========================================
+     CHANGE PAYMENT METHOD
+  ========================================= */
 
-  const handlePayment = () => {
-    if (!paymentMethod) {
-      alert("Please select a payment method.");
+  const handlePaymentMethodChange = (method) => {
+    setPaymentMethod(method);
+    resetPaymentDetails();
+  };
+
+  /* =========================================
+     VALIDATE PAYMENT
+  ========================================= */
+
+  const validatePayment = () => {
+    if (paymentMethod === "Cash on Delivery") {
+      return true;
+    }
+
+    if (paymentMethod === "UPI") {
+      return true;
+    }
+
+    /* CARD */
+
+    if (paymentMethod === "Card") {
+      if (
+        cardName.trim() === "" ||
+        cardNumber.trim() === "" ||
+        expiry.trim() === "" ||
+        cvv.trim() === ""
+      ) {
+        alert(
+          "Please enter all card details."
+        );
+
+        return false;
+      }
+
+      if (cardNumber.length !== 16) {
+        alert(
+          "Card number must contain 16 digits."
+        );
+
+        return false;
+      }
+
+      if (cvv.length !== 3) {
+        alert(
+          "CVV must contain 3 digits."
+        );
+
+        return false;
+      }
+
+      return true;
+    }
+
+    /* NET BANKING */
+
+    if (paymentMethod === "Net Banking") {
+      if (
+        bank === "" ||
+        bankUserId.trim() === "" ||
+        bankPassword.trim() === ""
+      ) {
+        alert(
+          "Please enter all net banking details."
+        );
+
+        return false;
+      }
+
+      return true;
+    }
+
+    return false;
+  };
+
+  /* =========================================
+     CONFIRM PAYMENT
+  ========================================= */
+
+  const confirmPayment = () => {
+    if (selectedProducts.length === 0) {
+      alert(
+        "Please select a product to order."
+      );
       return;
     }
 
-    if (cart.length === 0) {
-      alert("Your cart is empty.");
+    if (!validatePayment()) {
       return;
     }
 
-    // Generate Order ID
+    /* Generate Order ID */
+
     const generatedOrderId =
       "ORD-" +
       Date.now()
         .toString()
         .slice(-6);
 
-    // Create order
+    /* =========================================
+       CREATE ORDER
+    ========================================= */
+
     const newOrder = {
       orderId: generatedOrderId,
 
-      date:
-        new Date().toLocaleDateString(),
+      date: new Date().toLocaleDateString(),
 
-      status: "Confirmed",
+      status: "Placed",
 
-      products: cart,
+      // ONLY SELECTED PRODUCTS
+      products: selectedProducts,
 
-      totalAmount: totalAmount,
+      // ONLY SELECTED PRODUCTS TOTAL
+      totalAmount: selectedTotal,
 
       paymentMethod: paymentMethod,
 
-      paymentStatus:
-        paymentMethod === "Cash on Delivery"
-          ? "Pending"
-          : "Paid",
+      // AMOUNT PAID = SELECTED TOTAL
+      amountPaid: selectedTotal,
     };
 
-    // Get existing orders
+    /* =========================================
+       GET OLD ORDERS
+    ========================================= */
+
     const existingOrders =
       JSON.parse(
         localStorage.getItem("orders")
       ) || [];
 
-    // Save order
+    /* =========================================
+       SAVE ORDER
+    ========================================= */
+
     const updatedOrders = [
       ...existingOrders,
       newOrder,
@@ -196,18 +365,45 @@ function Cart() {
       JSON.stringify(updatedOrders)
     );
 
-    // Show success
-    setPaymentSuccess(true);
+    /* =========================================
+       REMOVE ONLY ORDERED PRODUCTS FROM CART
+    ========================================= */
 
-    // Clear cart
-    localStorage.removeItem("cart");
-    setCart([]);
+    const remainingCart = cart.filter(
+      (product) =>
+        !selectedIds.includes(product.id)
+    );
 
-    // Go to My Orders after short delay
-    setTimeout(() => {
-      setShowPaymentPopup(false);
-      navigate("/my-orders");
-    }, 1800);
+    setCart(remainingCart);
+
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(remainingCart)
+    );
+
+    /* =========================================
+       SUCCESS
+    ========================================= */
+
+    setSuccessAmount(selectedTotal);
+
+    setShowPaymentPopup(false);
+
+    setShowSuccessPopup(true);
+
+    setSelectedIds([]);
+
+    resetPaymentDetails();
+  };
+
+  /* =========================================
+     MY ORDERS
+  ========================================= */
+
+  const goToMyOrders = () => {
+    setShowSuccessPopup(false);
+
+    navigate("/my-orders");
   };
 
   return (
@@ -247,9 +443,8 @@ function Cart() {
 
       </header>
 
-
       {/* =====================================
-          CART SECTION
+          CART
       ===================================== */}
 
       <section className="customer-actions">
@@ -257,10 +452,6 @@ function Cart() {
         <h1>🛒 My Cart</h1>
 
         {cart.length === 0 ? (
-
-          /* =================================
-             EMPTY CART
-          ================================= */
 
           <div className="info-box">
 
@@ -289,174 +480,270 @@ function Cart() {
         ) : (
 
           <>
+
             {/* =================================
-                CART PRODUCTS
+                SELECT ALL
+            ================================= */}
+
+            <div
+              className="info-box"
+              style={{
+                marginBottom: "20px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "10px",
+              }}
+            >
+
+              <label
+                style={{
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+
+                <input
+                  type="checkbox"
+                  checked={
+                    cart.length > 0 &&
+                    selectedIds.length ===
+                      cart.length
+                  }
+                  onChange={
+                    selectAllProducts
+                  }
+                />
+
+                {" "} Select All Products
+
+              </label>
+
+              <span>
+                Selected:{" "}
+                <strong>
+                  {selectedIds.length}
+                </strong>
+              </span>
+
+            </div>
+
+            {/* =================================
+                PRODUCTS
             ================================= */}
 
             <div className="customer-card-grid">
 
-              {cart.map((product) => (
+              {cart.map((product) => {
 
-                <div
-                  className="customer-feature-card"
-                  key={product.id}
-                >
+                const isSelected =
+                  selectedIds.includes(
+                    product.id
+                  );
 
-                  <img
-                    src={product.image}
-                    alt={product.brand}
+                return (
+
+                  <div
+                    className="customer-feature-card"
+                    key={product.id}
                     style={{
-                      width: "120px",
-                      height: "120px",
-                      objectFit: "contain",
-                      borderRadius: "10px",
+                      border: isSelected
+                        ? "2px solid #ea580c"
+                        : "1px solid #ddd",
+                      position: "relative",
                     }}
-                  />
+                  >
 
-                  <div>
-
-                    <h3>
-                      {product.brand}
-                    </h3>
-
-                    <p>
-                      <strong>
-                        Category:
-                      </strong>{" "}
-                      {product.category}
-                    </p>
-
-                    <p>
-                      <strong>
-                        Price:
-                      </strong>{" "}
-                      ₹{product.price} / Bag
-                    </p>
-
-                    <p>
-                      <strong>
-                        Available Stock:
-                      </strong>{" "}
-                      {product.stock} Bags
-                    </p>
-
-
-                    {/* QUANTITY */}
+                    {/* CHECKBOX */}
 
                     <div
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                        marginTop: "10px",
+                        position: "absolute",
+                        top: "15px",
+                        left: "15px",
+                        zIndex: 2,
                       }}
                     >
 
-                      <strong>
-                        Quantity:
-                      </strong>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          decreaseQuantity(
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() =>
+                          toggleProductSelection(
                             product.id
                           )
                         }
                         style={{
-                          width: "32px",
-                          height: "32px",
-                          border: "none",
-                          borderRadius: "6px",
+                          width: "20px",
+                          height: "20px",
                           cursor: "pointer",
-                          fontSize: "18px",
-                          fontWeight: "bold",
                         }}
-                      >
-                        −
-                      </button>
+                      />
 
-                      <span
+                    </div>
+
+                    {/* IMAGE */}
+
+                    <img
+                      src={product.image}
+                      alt={product.brand}
+                      style={{
+                        width: "120px",
+                        height: "120px",
+                        objectFit: "contain",
+                        borderRadius: "10px",
+                      }}
+                    />
+
+                    {/* INFORMATION */}
+
+                    <div>
+
+                      <h3>
+                        {product.brand}
+                      </h3>
+
+                      <p>
+                        <strong>
+                          Category:
+                        </strong>{" "}
+                        {product.category}
+                      </p>
+
+                      <p>
+                        <strong>
+                          Price:
+                        </strong>{" "}
+                        ₹{product.price} / Bag
+                      </p>
+
+                      <p>
+                        <strong>
+                          Available Stock:
+                        </strong>{" "}
+                        {product.stock} Bags
+                      </p>
+
+                      {/* QUANTITY */}
+
+                      <div
                         style={{
-                          fontWeight: "bold",
-                          minWidth: "25px",
-                          textAlign: "center",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                          marginTop: "10px",
                         }}
                       >
-                        {product.quantity}
-                      </span>
+
+                        <strong>
+                          Quantity:
+                        </strong>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            decreaseQuantity(
+                              product.id
+                            )
+                          }
+                          style={{
+                            width: "32px",
+                            height: "32px",
+                            border: "none",
+                            borderRadius: "6px",
+                            background: "#ea580c",
+                            color: "white",
+                            fontSize: "20px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          −
+                        </button>
+
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {product.quantity}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            increaseQuantity(
+                              product.id
+                            )
+                          }
+                          style={{
+                            width: "32px",
+                            height: "32px",
+                            border: "none",
+                            borderRadius: "6px",
+                            background: "#ea580c",
+                            color: "white",
+                            fontSize: "20px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          +
+                        </button>
+
+                      </div>
+
+                      {/* PRODUCT TOTAL */}
+
+                      <p
+                        style={{
+                          marginTop: "12px",
+                          fontWeight: "bold",
+                          color: "#16a34a",
+                        }}
+                      >
+                        Product Total: ₹
+                        {Number(
+                          product.price
+                        ) *
+                          Number(
+                            product.quantity
+                          )}
+                      </p>
+
+                      {/* REMOVE */}
 
                       <button
                         type="button"
                         onClick={() =>
-                          increaseQuantity(
+                          removeFromCart(
                             product.id
                           )
                         }
                         style={{
-                          width: "32px",
-                          height: "32px",
+                          marginTop: "10px",
+                          padding: "8px 14px",
                           border: "none",
                           borderRadius: "6px",
+                          background: "#dc3545",
+                          color: "white",
                           cursor: "pointer",
-                          fontSize: "18px",
-                          fontWeight: "bold",
+                          fontWeight: "600",
                         }}
                       >
-                        +
+                        🗑️ Remove
                       </button>
 
                     </div>
 
-
-                    {/* ITEM TOTAL */}
-
-                    <p
-                      style={{
-                        marginTop: "12px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Item Total: ₹
-                      {Number(product.price) *
-                        Number(product.quantity)}
-                    </p>
-
-
-                    {/* REMOVE */}
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        removeFromCart(
-                          product.id
-                        )
-                      }
-                      style={{
-                        marginTop: "8px",
-                        padding: "8px 14px",
-                        border: "none",
-                        borderRadius: "6px",
-                        background: "#dc3545",
-                        color: "white",
-                        cursor: "pointer",
-                        fontWeight: "600",
-                      }}
-                    >
-                      🗑️ Remove
-                    </button>
-
                   </div>
 
-                </div>
-
-              ))}
+                );
+              })}
 
             </div>
 
-
             {/* =================================
-                TOTAL + PLACE ORDER
+                TOTAL
             ================================= */}
 
             <div
@@ -467,22 +754,30 @@ function Cart() {
               }}
             >
 
+              <p>
+                Cart Total:{" "}
+                <strong>
+                  ₹{totalCartAmount}
+                </strong>
+              </p>
+
               <h2>
-                Total Amount: ₹
-                {totalAmount}
+                Selected Total: ₹
+                {selectedTotal}
               </h2>
+
+              <p>
+                {selectedIds.length === 0
+                  ? "Select a product to order."
+                  : `${selectedIds.length} product(s) selected.`}
+              </p>
 
               <button
                 type="button"
                 className="cart-top-btn"
                 onClick={handlePlaceOrder}
-                style={{
-                  marginTop: "10px",
-                  border: "none",
-                  cursor: "pointer",
-                }}
               >
-                🛒 Place Order
+                🛒 Place Selected Order
               </button>
 
             </div>
@@ -493,7 +788,6 @@ function Cart() {
 
       </section>
 
-
       {/* =====================================
           PAYMENT POPUP
       ===================================== */}
@@ -502,18 +796,9 @@ function Cart() {
 
         <div
           className="product-modal-overlay"
-          onClick={closePaymentPopup}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background:
-              "rgba(0, 0, 0, 0.55)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-            padding: "20px",
-          }}
+          onClick={() =>
+            setShowPaymentPopup(false)
+          }
         >
 
           <div
@@ -522,377 +807,478 @@ function Cart() {
               e.stopPropagation()
             }
             style={{
-              width: "100%",
-              maxWidth: "480px",
-              background: "#ffffff",
-              borderRadius: "18px",
-              padding: "30px",
-              boxSizing: "border-box",
-              position: "relative",
-              boxShadow:
-                "0 15px 40px rgba(0,0,0,0.25)",
+              maxWidth: "520px",
+              maxHeight: "90vh",
+              overflowY: "auto",
             }}
           >
 
-            {/* CLOSE BUTTON */}
+            <button
+              type="button"
+              className="modal-close"
+              onClick={() =>
+                setShowPaymentPopup(false)
+              }
+            >
+              ×
+            </button>
 
-            {!paymentSuccess && (
+            <h2>
+              💳 Payment
+            </h2>
 
-              <button
-                type="button"
-                className="modal-close"
-                onClick={() =>
-                  setShowPaymentPopup(false)
-                }
+            <p>
+              Payment for selected product(s)
+            </p>
+
+            {/* SELECTED PRODUCTS */}
+
+            <div
+              style={{
+                textAlign: "left",
+                marginTop: "15px",
+                padding: "12px",
+                background: "#f9fafb",
+                borderRadius: "8px",
+              }}
+            >
+
+              {selectedProducts.map(
+                (product) => (
+
+                  <p
+                    key={product.id}
+                    style={{
+                      margin: "8px 0",
+                    }}
+                  >
+                    <strong>
+                      {product.brand}
+                    </strong>
+                    {" × "}
+                    {product.quantity}
+                    {" = ₹"}
+                    {Number(product.price) *
+                      Number(
+                        product.quantity
+                      )}
+                  </p>
+
+                )
+              )}
+
+            </div>
+
+            {/* TOTAL */}
+
+            <div
+              style={{
+                background: "#fff7ed",
+                padding: "15px",
+                borderRadius: "10px",
+                marginTop: "15px",
+                textAlign: "center",
+              }}
+            >
+
+              <p
                 style={{
-                  position: "absolute",
-                  right: "15px",
-                  top: "10px",
-                  border: "none",
-                  background: "transparent",
-                  fontSize: "28px",
+                  margin: 0,
+                  color: "#6b7280",
+                }}
+              >
+                Amount to Pay
+              </p>
+
+              <h2
+                style={{
+                  margin: "5px 0",
+                  color: "#ea580c",
+                }}
+              >
+                ₹{selectedTotal}
+              </h2>
+
+            </div>
+
+            {/* PAYMENT METHODS */}
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                marginTop: "15px",
+              }}
+            >
+
+              {/* CASH */}
+
+              <label
+                style={{
+                  padding: "12px",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
                   cursor: "pointer",
                 }}
               >
-                ×
-              </button>
 
-            )}
-
-
-            {!paymentSuccess ? (
-
-              <>
-                {/* PAYMENT TITLE */}
-
-                <h2
-                  style={{
-                    textAlign: "center",
-                    marginBottom: "8px",
-                  }}
-                >
-                  💳 Payment
-                </h2>
-
-                <p
-                  style={{
-                    textAlign: "center",
-                    color: "#666",
-                  }}
-                >
-                  Complete your payment to
-                  confirm the order.
-                </p>
-
-
-                {/* =================================
-                    AMOUNT
-                ================================= */}
-
-                <div
-                  style={{
-                    marginTop: "20px",
-                    padding: "20px",
-                    borderRadius: "12px",
-                    background: "#fff7ed",
-                    border:
-                      "1px solid #fed7aa",
-                    textAlign: "center",
-                  }}
-                >
-
-                  <p
-                    style={{
-                      margin: 0,
-                      color: "#666",
-                    }}
-                  >
-                    Amount to Pay
-                  </p>
-
-                  <h1
-                    style={{
-                      margin:
-                        "8px 0 0",
-                      color: "#ea580c",
-                    }}
-                  >
-                    ₹{totalAmount}
-                  </h1>
-
-                </div>
-
-
-                {/* =================================
-                    PAYMENT METHOD
-                ================================= */}
-
-                <div
-                  style={{
-                    marginTop: "25px",
-                  }}
-                >
-
-                  <h3>
-                    Select Payment Method
-                  </h3>
-
-
-                  {/* UPI */}
-
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      padding: "12px",
-                      marginTop: "10px",
-                      border:
-                        "1px solid #ddd",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                    }}
-                  >
-
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="UPI"
-                      checked={
-                        paymentMethod === "UPI"
-                      }
-                      onChange={(e) =>
-                        setPaymentMethod(
-                          e.target.value
-                        )
-                      }
-                    />
-
-                    <span>
-                      📱 UPI
-                    </span>
-
-                  </label>
-
-
-                  {/* CARD */}
-
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      padding: "12px",
-                      marginTop: "10px",
-                      border:
-                        "1px solid #ddd",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                    }}
-                  >
-
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="Card"
-                      checked={
-                        paymentMethod === "Card"
-                      }
-                      onChange={(e) =>
-                        setPaymentMethod(
-                          e.target.value
-                        )
-                      }
-                    />
-
-                    <span>
-                      💳 Card
-                    </span>
-
-                  </label>
-
-
-                  {/* NET BANKING */}
-
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      padding: "12px",
-                      marginTop: "10px",
-                      border:
-                        "1px solid #ddd",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                    }}
-                  >
-
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="Net Banking"
-                      checked={
-                        paymentMethod ===
-                        "Net Banking"
-                      }
-                      onChange={(e) =>
-                        setPaymentMethod(
-                          e.target.value
-                        )
-                      }
-                    />
-
-                    <span>
-                      🏦 Net Banking
-                    </span>
-
-                  </label>
-
-
-                  {/* CASH ON DELIVERY */}
-
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      padding: "12px",
-                      marginTop: "10px",
-                      border:
-                        "1px solid #ddd",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                    }}
-                  >
-
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="Cash on Delivery"
-                      checked={
-                        paymentMethod ===
-                        "Cash on Delivery"
-                      }
-                      onChange={(e) =>
-                        setPaymentMethod(
-                          e.target.value
-                        )
-                      }
-                    />
-
-                    <span>
-                      💵 Cash on Delivery
-                    </span>
-
-                  </label>
-
-                </div>
-
-
-                {/* =================================
-                    PAYMENT BUTTON
-                ================================= */}
-
-                <button
-                  type="button"
-                  onClick={handlePayment}
-                  style={{
-                    width: "100%",
-                    marginTop: "25px",
-                    padding: "14px",
-                    border: "none",
-                    borderRadius: "9px",
-                    background: "#ea580c",
-                    color: "white",
-                    fontSize: "16px",
-                    fontWeight: "700",
-                    cursor: "pointer",
-                  }}
-                >
-                  💰 Pay ₹{totalAmount}
-                </button>
-
-
-                {/* CANCEL */}
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setShowPaymentPopup(false)
+                <input
+                  type="radio"
+                  name="payment"
+                  value="Cash on Delivery"
+                  checked={
+                    paymentMethod ===
+                    "Cash on Delivery"
                   }
-                  style={{
-                    width: "100%",
-                    marginTop: "10px",
-                    padding: "12px",
-                    border: "1px solid #ddd",
-                    borderRadius: "9px",
-                    background: "#f3f4f6",
-                    color: "#333",
-                    fontSize: "15px",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                  }}
-                >
-                  Cancel
-                </button>
+                  onChange={(e) =>
+                    handlePaymentMethodChange(
+                      e.target.value
+                    )
+                  }
+                />
 
-              </>
+                {" "} 💵 Cash on Delivery
 
-            ) : (
+              </label>
 
-              /* =================================
-                 PAYMENT SUCCESS
-              ================================= */
+              {/* UPI */}
 
-              <div
+              <label
                 style={{
-                  textAlign: "center",
-                  padding: "20px 5px",
+                  padding: "12px",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  cursor: "pointer",
                 }}
               >
 
-                <div
-                  style={{
-                    fontSize: "60px",
-                  }}
-                >
-                  ✅
-                </div>
+                <input
+                  type="radio"
+                  name="payment"
+                  value="UPI"
+                  checked={
+                    paymentMethod === "UPI"
+                  }
+                  onChange={(e) =>
+                    handlePaymentMethodChange(
+                      e.target.value
+                    )
+                  }
+                />
 
-                <h2
-                  style={{
-                    color: "#16a34a",
-                    marginTop: "10px",
-                  }}
-                >
-                  Payment Successful!
-                </h2>
+                {" "} 📱 UPI
 
-                <p>
-                  Your order has been
-                  confirmed successfully.
-                </p>
+              </label>
+
+              {/* CARD */}
+
+              <label
+                style={{
+                  padding: "12px",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                }}
+              >
+
+                <input
+                  type="radio"
+                  name="payment"
+                  value="Card"
+                  checked={
+                    paymentMethod === "Card"
+                  }
+                  onChange={(e) =>
+                    handlePaymentMethodChange(
+                      e.target.value
+                    )
+                  }
+                />
+
+                {" "} 💳 Card
+
+              </label>
+
+              {/* NET BANKING */}
+
+              <label
+                style={{
+                  padding: "12px",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                }}
+              >
+
+                <input
+                  type="radio"
+                  name="payment"
+                  value="Net Banking"
+                  checked={
+                    paymentMethod ===
+                    "Net Banking"
+                  }
+                  onChange={(e) =>
+                    handlePaymentMethodChange(
+                      e.target.value
+                    )
+                  }
+                />
+
+                {" "} 🏦 Net Banking
+
+              </label>
+
+            </div>
+
+            {/* =================================
+                CARD FORM
+            ================================= */}
+
+            {paymentMethod === "Card" && (
+
+              <div
+                style={{
+                  marginTop: "20px",
+                  textAlign: "left",
+                }}
+              >
 
                 <h3>
-                  Amount Paid: ₹
-                  {totalAmount}
+                  💳 Card Details
                 </h3>
 
-                <p
+                <input
+                  type="text"
+                  placeholder="Cardholder Name"
+                  value={cardName}
+                  onChange={(e) =>
+                    setCardName(
+                      e.target.value
+                    )
+                  }
                   style={{
-                    color: "#666",
+                    width: "100%",
+                    padding: "12px",
+                    marginBottom: "10px",
+                    boxSizing: "border-box",
+                    border: "1px solid #ccc",
+                    borderRadius: "7px",
+                  }}
+                />
+
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength="16"
+                  placeholder="Card Number (16 digits)"
+                  value={cardNumber}
+                  onChange={(e) =>
+                    setCardNumber(
+                      e.target.value.replace(
+                        /\D/g,
+                        ""
+                      )
+                    )
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    marginBottom: "10px",
+                    boxSizing: "border-box",
+                    border: "1px solid #ccc",
+                    borderRadius: "7px",
+                  }}
+                />
+
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "10px",
                   }}
                 >
-                  Payment Method:{" "}
-                  <strong>
-                    {paymentMethod}
-                  </strong>
-                </p>
+
+                  <input
+                    type="text"
+                    placeholder="MM/YY"
+                    maxLength="5"
+                    value={expiry}
+                    onChange={(e) =>
+                      setExpiry(
+                        e.target.value
+                      )
+                    }
+                    style={{
+                      width: "50%",
+                      padding: "12px",
+                      border: "1px solid #ccc",
+                      borderRadius: "7px",
+                      boxSizing: "border-box",
+                    }}
+                  />
+
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    maxLength="3"
+                    placeholder="CVV"
+                    value={cvv}
+                    onChange={(e) =>
+                      setCvv(
+                        e.target.value.replace(
+                          /\D/g,
+                          ""
+                        )
+                      )
+                    }
+                    style={{
+                      width: "50%",
+                      padding: "12px",
+                      border: "1px solid #ccc",
+                      borderRadius: "7px",
+                      boxSizing: "border-box",
+                    }}
+                  />
+
+                </div>
 
               </div>
 
             )}
+
+            {/* =================================
+                NET BANKING
+            ================================= */}
+
+            {paymentMethod ===
+              "Net Banking" && (
+
+              <div
+                style={{
+                  marginTop: "20px",
+                  textAlign: "left",
+                }}
+              >
+
+                <h3>
+                  🏦 Net Banking Details
+                </h3>
+
+                <select
+                  value={bank}
+                  onChange={(e) =>
+                    setBank(e.target.value)
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    marginBottom: "10px",
+                    border: "1px solid #ccc",
+                    borderRadius: "7px",
+                  }}
+                >
+
+                  <option value="">
+                    Select Bank
+                  </option>
+
+                  <option value="SBI">
+                    State Bank of India
+                  </option>
+
+                  <option value="HDFC">
+                    HDFC Bank
+                  </option>
+
+                  <option value="ICICI">
+                    ICICI Bank
+                  </option>
+
+                  <option value="Axis">
+                    Axis Bank
+                  </option>
+
+                  <option value="Canara">
+                    Canara Bank
+                  </option>
+
+                </select>
+
+                <input
+                  type="text"
+                  placeholder="Demo User ID"
+                  value={bankUserId}
+                  onChange={(e) =>
+                    setBankUserId(
+                      e.target.value
+                    )
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    marginBottom: "10px",
+                    boxSizing: "border-box",
+                    border: "1px solid #ccc",
+                    borderRadius: "7px",
+                  }}
+                />
+
+                <input
+                  type="password"
+                  placeholder="Demo Password"
+                  value={bankPassword}
+                  onChange={(e) =>
+                    setBankPassword(
+                      e.target.value
+                    )
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    boxSizing: "border-box",
+                    border: "1px solid #ccc",
+                    borderRadius: "7px",
+                  }}
+                />
+
+              </div>
+
+            )}
+
+            {/* UPI */}
+
+            {paymentMethod === "UPI" && (
+
+              <div
+                style={{
+                  marginTop: "20px",
+                  padding: "15px",
+                  background: "#f0fdf4",
+                  borderRadius: "8px",
+                  textAlign: "center",
+                }}
+              >
+
+                📱 UPI payment selected.
+
+              </div>
+
+            )}
+
+            {/* PAY */}
+
+            <button
+              type="button"
+              className="save-product-btn"
+              onClick={confirmPayment}
+              style={{
+                width: "100%",
+                marginTop: "20px",
+              }}
+            >
+              ✅ Pay ₹{selectedTotal}
+            </button>
 
           </div>
 
@@ -900,6 +1286,82 @@ function Cart() {
 
       )}
 
+      {/* =====================================
+          SUCCESS POPUP
+      ===================================== */}
+
+      {showSuccessPopup && (
+
+        <div className="product-modal-overlay">
+
+          <div
+            className="product-modal"
+            style={{
+              textAlign: "center",
+              maxWidth: "500px",
+            }}
+          >
+
+            <div
+              style={{
+                width: "75px",
+                height: "75px",
+                margin: "10px auto 20px",
+                borderRadius: "50%",
+                background: "#4ade80",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontSize: "45px",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            >
+              ✓
+            </div>
+
+            <h2
+              style={{
+                color: "#16a34a",
+                fontSize: "28px",
+              }}
+            >
+              Payment Successful!
+            </h2>
+
+            <p>
+              Your selected product order
+              has been confirmed.
+            </p>
+
+            <h3>
+              Amount Paid: ₹
+              {successAmount}
+            </h3>
+
+            <p>
+              Payment Method:{" "}
+              <strong>
+                {paymentMethod}
+              </strong>
+            </p>
+
+            <button
+              type="button"
+              className="cart-top-btn"
+              onClick={goToMyOrders}
+              style={{
+                marginTop: "15px",
+              }}
+            >
+              📦 View My Orders
+            </button>
+
+          </div>
+
+        </div>
+
+      )}
 
       {/* =====================================
           CONTINUE SHOPPING
