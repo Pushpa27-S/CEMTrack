@@ -6,30 +6,34 @@ function Cart() {
   const navigate = useNavigate();
 
   const [cart, setCart] = useState([]);
-  const [selectedIds, setSelectedIds] = useState([]);
 
+  // Payment popup
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  const [paymentMethod, setPaymentMethod] =
-    useState("Cash on Delivery");
+  // Selected product
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const [successAmount, setSuccessAmount] = useState(0);
+  // Payment mode
+  const [paymentMode, setPaymentMode] = useState("Cash");
+
+  // UPI app
+  const [upiApp, setUpiApp] = useState("Google Pay");
+
+  // UPI ID
+  const [upiId, setUpiId] = useState("");
 
   // Card details
-  const [cardName, setCardName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
 
-  // Net banking details
+  // Net banking
   const [bank, setBank] = useState("");
-  const [bankUserId, setBankUserId] = useState("");
-  const [bankPassword, setBankPassword] = useState("");
 
-  /* =========================================
-     LOAD CART
-  ========================================= */
+  // ===============================
+  // LOAD CART
+  // ===============================
 
   useEffect(() => {
     const savedCart =
@@ -38,52 +42,12 @@ function Cart() {
     setCart(savedCart);
   }, []);
 
-  /* =========================================
-     SELECT / UNSELECT PRODUCT
-  ========================================= */
+  // ===============================
+  // SAVE CART
+  // ===============================
 
-  const toggleProductSelection = (id) => {
-    setSelectedIds((previousIds) => {
-      if (previousIds.includes(id)) {
-        return previousIds.filter(
-          (productId) => productId !== id
-        );
-      }
-
-      return [...previousIds, id];
-    });
-  };
-
-  /* =========================================
-     SELECT ALL
-  ========================================= */
-
-  const selectAllProducts = () => {
-    if (selectedIds.length === cart.length) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(
-        cart.map((product) => product.id)
-      );
-    }
-  };
-
-  /* =========================================
-     REMOVE PRODUCT
-  ========================================= */
-
-  const removeFromCart = (id) => {
-    const updatedCart = cart.filter(
-      (item) => item.id !== id
-    );
-
+  const updateCart = (updatedCart) => {
     setCart(updatedCart);
-
-    setSelectedIds((previousIds) =>
-      previousIds.filter(
-        (productId) => productId !== id
-      )
-    );
 
     localStorage.setItem(
       "cart",
@@ -91,9 +55,28 @@ function Cart() {
     );
   };
 
-  /* =========================================
-     INCREASE QUANTITY
-  ========================================= */
+  // ===============================
+  // REMOVE PRODUCT
+  // ===============================
+
+  const removeFromCart = (id) => {
+    const updatedCart = cart.filter(
+      (item) => item.id !== id
+    );
+
+    updateCart(updatedCart);
+
+    if (
+      selectedProduct &&
+      selectedProduct.id === id
+    ) {
+      setSelectedProduct(null);
+    }
+  };
+
+  // ===============================
+  // INCREASE QUANTITY
+  // ===============================
 
   const increaseQuantity = (id) => {
     const updatedCart = cart.map((item) => {
@@ -115,17 +98,24 @@ function Cart() {
       return item;
     });
 
-    setCart(updatedCart);
+    updateCart(updatedCart);
 
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(updatedCart)
-    );
+    // Update selected product also
+    if (
+      selectedProduct &&
+      selectedProduct.id === id
+    ) {
+      const updatedProduct = updatedCart.find(
+        (item) => item.id === id
+      );
+
+      setSelectedProduct(updatedProduct);
+    }
   };
 
-  /* =========================================
-     DECREASE QUANTITY
-  ========================================= */
+  // ===============================
+  // DECREASE QUANTITY
+  // ===============================
 
   const decreaseQuantity = (id) => {
     const updatedCart = cart.map((item) => {
@@ -142,49 +132,40 @@ function Cart() {
       return item;
     });
 
-    setCart(updatedCart);
+    updateCart(updatedCart);
 
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(updatedCart)
-    );
+    if (
+      selectedProduct &&
+      selectedProduct.id === id
+    ) {
+      const updatedProduct = updatedCart.find(
+        (item) => item.id === id
+      );
+
+      setSelectedProduct(updatedProduct);
+    }
   };
 
-  /* =========================================
-     SELECTED PRODUCTS
-  ========================================= */
+  // ===============================
+  // SELECT PRODUCT TO ORDER
+  // ===============================
 
-  const selectedProducts = cart.filter((product) =>
-    selectedIds.includes(product.id)
-  );
+  const selectProduct = (product) => {
+    setSelectedProduct(product);
+  };
 
-  /* =========================================
-     SELECTED TOTAL
-  ========================================= */
+  // ===============================
+  // SELECTED PRODUCT TOTAL
+  // ===============================
 
-  const selectedTotal = selectedProducts.reduce(
-    (total, item) =>
-      total +
-      Number(item.price) *
-        Number(item.quantity),
-    0
-  );
+  const selectedTotal = selectedProduct
+    ? Number(selectedProduct.price) *
+      Number(selectedProduct.quantity)
+    : 0;
 
-  /* =========================================
-     TOTAL CART AMOUNT
-  ========================================= */
-
-  const totalCartAmount = cart.reduce(
-    (total, item) =>
-      total +
-      Number(item.price) *
-        Number(item.quantity),
-    0
-  );
-
-  /* =========================================
-     PLACE SELECTED ORDER
-  ========================================= */
+  // ===============================
+  // OPEN PAYMENT
+  // ===============================
 
   const handlePlaceOrder = () => {
     if (cart.length === 0) {
@@ -192,59 +173,52 @@ function Cart() {
       return;
     }
 
-    if (selectedProducts.length === 0) {
+    if (!selectedProduct) {
       alert(
-        "Please select at least one product to order."
+        "Please select one product to order."
       );
+
       return;
     }
+
+    setPaymentMode("Cash");
+    setUpiApp("Google Pay");
+
+    setUpiId("");
+    setCardNumber("");
+    setCardName("");
+    setExpiry("");
+    setCvv("");
+    setBank("");
 
     setShowPaymentPopup(true);
   };
 
-  /* =========================================
-     RESET PAYMENT DETAILS
-  ========================================= */
-
-  const resetPaymentDetails = () => {
-    setCardName("");
-    setCardNumber("");
-    setExpiry("");
-    setCvv("");
-
-    setBank("");
-    setBankUserId("");
-    setBankPassword("");
-  };
-
-  /* =========================================
-     CHANGE PAYMENT METHOD
-  ========================================= */
-
-  const handlePaymentMethodChange = (method) => {
-    setPaymentMethod(method);
-    resetPaymentDetails();
-  };
-
-  /* =========================================
-     VALIDATE PAYMENT
-  ========================================= */
+  // ===============================
+  // VALIDATE PAYMENT
+  // ===============================
 
   const validatePayment = () => {
-    if (paymentMethod === "Cash on Delivery") {
+    // CASH
+    if (paymentMode === "Cash") {
       return true;
     }
 
-    if (paymentMethod === "UPI") {
+    // UPI
+    if (paymentMode === "UPI") {
+      if (upiId.trim() === "") {
+        alert("Please enter your UPI ID.");
+        return false;
+      }
+
       return true;
     }
 
-    /* CARD */
-
-    if (paymentMethod === "Card") {
+    // CARD
+    if (paymentMode === "Card") {
       if (
-        cardName.trim() === "" ||
         cardNumber.trim() === "" ||
+        cardName.trim() === "" ||
         expiry.trim() === "" ||
         cvv.trim() === ""
       ) {
@@ -255,37 +229,23 @@ function Cart() {
         return false;
       }
 
-      if (cardNumber.length !== 16) {
-        alert(
-          "Card number must contain 16 digits."
-        );
-
+      if (cardNumber.length < 12) {
+        alert("Please enter a valid card number.");
         return false;
       }
 
-      if (cvv.length !== 3) {
-        alert(
-          "CVV must contain 3 digits."
-        );
-
+      if (cvv.length < 3) {
+        alert("Please enter a valid CVV.");
         return false;
       }
 
       return true;
     }
 
-    /* NET BANKING */
-
-    if (paymentMethod === "Net Banking") {
-      if (
-        bank === "" ||
-        bankUserId.trim() === "" ||
-        bankPassword.trim() === ""
-      ) {
-        alert(
-          "Please enter all net banking details."
-        );
-
+    // NET BANKING
+    if (paymentMode === "Net Banking") {
+      if (bank === "") {
+        alert("Please select your bank.");
         return false;
       }
 
@@ -295,15 +255,13 @@ function Cart() {
     return false;
   };
 
-  /* =========================================
-     CONFIRM PAYMENT
-  ========================================= */
+  // ===============================
+  // CONFIRM PAYMENT + ORDER
+  // ===============================
 
   const confirmPayment = () => {
-    if (selectedProducts.length === 0) {
-      alert(
-        "Please select a product to order."
-      );
+    if (!selectedProduct) {
+      alert("Please select a product.");
       return;
     }
 
@@ -311,107 +269,113 @@ function Cart() {
       return;
     }
 
-    /* Generate Order ID */
-
+    // Generate Order ID
     const generatedOrderId =
       "ORD-" +
       Date.now()
         .toString()
         .slice(-6);
 
-    /* =========================================
-       CREATE ORDER
-    ========================================= */
+    // Payment information
+    let paymentDetails = {
+      mode: paymentMode,
+    };
 
+    if (paymentMode === "UPI") {
+      paymentDetails = {
+        mode: "UPI",
+        app: upiApp,
+        upiId: upiId,
+      };
+    }
+
+    if (paymentMode === "Card") {
+      paymentDetails = {
+        mode: "Card",
+        cardHolder: cardName,
+        cardNumber:
+          "**** **** **** " +
+          cardNumber.slice(-4),
+      };
+    }
+
+    if (paymentMode === "Net Banking") {
+      paymentDetails = {
+        mode: "Net Banking",
+        bank: bank,
+      };
+    }
+
+    // Create order
     const newOrder = {
       orderId: generatedOrderId,
 
-      date: new Date().toLocaleDateString(),
+      date:
+        new Date().toLocaleDateString(),
 
-      status: "Placed",
+      status: "Paid",
 
-      // ONLY SELECTED PRODUCTS
-      products: selectedProducts,
+      products: [
+        selectedProduct
+      ],
 
-      // ONLY SELECTED PRODUCTS TOTAL
       totalAmount: selectedTotal,
 
-      paymentMethod: paymentMethod,
+      paidAmount: selectedTotal,
 
-      // AMOUNT PAID = SELECTED TOTAL
-      amountPaid: selectedTotal,
+      paymentMode: paymentMode,
+
+      paymentDetails: paymentDetails,
     };
 
-    /* =========================================
-       GET OLD ORDERS
-    ========================================= */
-
+    // Get previous orders
     const existingOrders =
       JSON.parse(
         localStorage.getItem("orders")
       ) || [];
 
-    /* =========================================
-       SAVE ORDER
-    ========================================= */
-
+    // Add new order
     const updatedOrders = [
       ...existingOrders,
       newOrder,
     ];
 
+    // Save orders
     localStorage.setItem(
       "orders",
       JSON.stringify(updatedOrders)
     );
 
-    /* =========================================
-       REMOVE ONLY ORDERED PRODUCTS FROM CART
-    ========================================= */
-
-    const remainingCart = cart.filter(
-      (product) =>
-        !selectedIds.includes(product.id)
+    // Remove only ordered product
+    const updatedCart = cart.filter(
+      (item) =>
+        item.id !== selectedProduct.id
     );
 
-    setCart(remainingCart);
+    updateCart(updatedCart);
 
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(remainingCart)
-    );
-
-    /* =========================================
-       SUCCESS
-    ========================================= */
-
-    setSuccessAmount(selectedTotal);
-
+    // Close popup
     setShowPaymentPopup(false);
 
-    setShowSuccessPopup(true);
+    setSelectedProduct(null);
 
-    setSelectedIds([]);
+    // Success
+    alert(
+      "Payment successful!\n\n" +
+      "Order ID: " +
+      generatedOrderId +
+      "\nAmount Paid: ₹" +
+      selectedTotal
+    );
 
-    resetPaymentDetails();
-  };
-
-  /* =========================================
-     MY ORDERS
-  ========================================= */
-
-  const goToMyOrders = () => {
-    setShowSuccessPopup(false);
-
+    // Go to orders
     navigate("/my-orders");
   };
 
   return (
     <div className="customer-home">
 
-      {/* =====================================
-          HEADER
-      ===================================== */}
+      {/* ================= HEADER ================= */}
 
       <header className="customer-header">
 
@@ -433,6 +397,13 @@ function Cart() {
           </Link>
 
           <Link
+            to="/my-orders"
+            className="cart-top-btn"
+          >
+            📦 My Orders
+          </Link>
+
+          <Link
             to="/customer-home"
             className="cart-top-btn"
           >
@@ -443,9 +414,8 @@ function Cart() {
 
       </header>
 
-      {/* =====================================
-          CART
-      ===================================== */}
+
+      {/* ================= CART ================= */}
 
       <section className="customer-actions">
 
@@ -460,8 +430,8 @@ function Cart() {
             </h2>
 
             <p>
-              Browse our cement products
-              and add products to your cart.
+              Browse our cement products and
+              add products to your cart.
             </p>
 
             <Link
@@ -481,303 +451,257 @@ function Cart() {
 
           <>
 
-            {/* =================================
-                SELECT ALL
-            ================================= */}
-
-            <div
-              className="info-box"
-              style={{
-                marginBottom: "20px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: "10px",
-              }}
-            >
-
-              <label
-                style={{
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                }}
-              >
-
-                <input
-                  type="checkbox"
-                  checked={
-                    cart.length > 0 &&
-                    selectedIds.length ===
-                      cart.length
-                  }
-                  onChange={
-                    selectAllProducts
-                  }
-                />
-
-                {" "} Select All Products
-
-              </label>
-
-              <span>
-                Selected:{" "}
-                <strong>
-                  {selectedIds.length}
-                </strong>
-              </span>
-
-            </div>
-
-            {/* =================================
-                PRODUCTS
-            ================================= */}
+            {/* ================= PRODUCTS ================= */}
 
             <div className="customer-card-grid">
 
-              {cart.map((product) => {
+              {cart.map((product) => (
 
-                const isSelected =
-                  selectedIds.includes(
-                    product.id
-                  );
+                <div
+                  className="customer-feature-card"
+                  key={product.id}
+                  style={{
+                    border:
+                      selectedProduct?.id ===
+                      product.id
+                        ? "3px solid #ea580c"
+                        : "1px solid #ddd",
 
-                return (
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    selectProduct(product)
+                  }
+                >
+
+                  {/* SELECT */}
 
                   <div
-                    className="customer-feature-card"
-                    key={product.id}
                     style={{
-                      border: isSelected
-                        ? "2px solid #ea580c"
-                        : "1px solid #ddd",
-                      position: "relative",
+                      display: "flex",
+                      justifyContent:
+                        "space-between",
+                      alignItems: "center",
+                      marginBottom: "10px",
                     }}
                   >
 
-                    {/* CHECKBOX */}
+                    <label>
+
+                      <input
+                        type="radio"
+                        name="selectedProduct"
+                        checked={
+                          selectedProduct?.id ===
+                          product.id
+                        }
+                        onChange={() =>
+                          selectProduct(product)
+                        }
+                      />
+
+                      {" "}
+                      Select to Order
+
+                    </label>
+
+                  </div>
+
+
+                  {/* IMAGE */}
+
+                  <img
+                    src={product.image}
+                    alt={product.brand}
+                    style={{
+                      width: "90px",
+                      height: "90px",
+                      objectFit: "contain",
+                      borderRadius: "10px",
+                    }}
+                  />
+
+
+                  {/* DETAILS */}
+
+                  <div>
+
+                    <h3>
+                      {product.brand}
+                    </h3>
+
+                    <p>
+                      <strong>
+                        Category:
+                      </strong>{" "}
+                      {product.category}
+                    </p>
+
+                    <p>
+                      <strong>
+                        Price:
+                      </strong>{" "}
+                      ₹{product.price} / Bag
+                    </p>
+
+                    <p>
+                      <strong>
+                        Available Stock:
+                      </strong>{" "}
+                      {product.stock} Bags
+                    </p>
+
+
+                    {/* QUANTITY */}
 
                     <div
                       style={{
-                        position: "absolute",
-                        top: "15px",
-                        left: "15px",
-                        zIndex: 2,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        marginTop: "10px",
                       }}
+                      onClick={(e) =>
+                        e.stopPropagation()
+                      }
                     >
 
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() =>
-                          toggleProductSelection(
-                            product.id
-                          )
-                        }
-                        style={{
-                          width: "20px",
-                          height: "20px",
-                          cursor: "pointer",
-                        }}
-                      />
-
-                    </div>
-
-                    {/* IMAGE */}
-
-                    <img
-                      src={product.image}
-                      alt={product.brand}
-                      style={{
-                        width: "120px",
-                        height: "120px",
-                        objectFit: "contain",
-                        borderRadius: "10px",
-                      }}
-                    />
-
-                    {/* INFORMATION */}
-
-                    <div>
-
-                      <h3>
-                        {product.brand}
-                      </h3>
-
-                      <p>
-                        <strong>
-                          Category:
-                        </strong>{" "}
-                        {product.category}
-                      </p>
-
-                      <p>
-                        <strong>
-                          Price:
-                        </strong>{" "}
-                        ₹{product.price} / Bag
-                      </p>
-
-                      <p>
-                        <strong>
-                          Available Stock:
-                        </strong>{" "}
-                        {product.stock} Bags
-                      </p>
-
-                      {/* QUANTITY */}
-
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "12px",
-                          marginTop: "10px",
-                        }}
-                      >
-
-                        <strong>
-                          Quantity:
-                        </strong>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            decreaseQuantity(
-                              product.id
-                            )
-                          }
-                          style={{
-                            width: "32px",
-                            height: "32px",
-                            border: "none",
-                            borderRadius: "6px",
-                            background: "#ea580c",
-                            color: "white",
-                            fontSize: "20px",
-                            cursor: "pointer",
-                          }}
-                        >
-                          −
-                        </button>
-
-                        <span
-                          style={{
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {product.quantity}
-                        </span>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            increaseQuantity(
-                              product.id
-                            )
-                          }
-                          style={{
-                            width: "32px",
-                            height: "32px",
-                            border: "none",
-                            borderRadius: "6px",
-                            background: "#ea580c",
-                            color: "white",
-                            fontSize: "20px",
-                            cursor: "pointer",
-                          }}
-                        >
-                          +
-                        </button>
-
-                      </div>
-
-                      {/* PRODUCT TOTAL */}
-
-                      <p
-                        style={{
-                          marginTop: "12px",
-                          fontWeight: "bold",
-                          color: "#16a34a",
-                        }}
-                      >
-                        Product Total: ₹
-                        {Number(
-                          product.price
-                        ) *
-                          Number(
-                            product.quantity
-                          )}
-                      </p>
-
-                      {/* REMOVE */}
+                      <strong>
+                        Quantity:
+                      </strong>
 
                       <button
                         type="button"
                         onClick={() =>
-                          removeFromCart(
+                          decreaseQuantity(
                             product.id
                           )
                         }
-                        style={{
-                          marginTop: "10px",
-                          padding: "8px 14px",
-                          border: "none",
-                          borderRadius: "6px",
-                          background: "#dc3545",
-                          color: "white",
-                          cursor: "pointer",
-                          fontWeight: "600",
-                        }}
                       >
-                        🗑️ Remove
+                        −
+                      </button>
+
+                      <span>
+                        {product.quantity}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          increaseQuantity(
+                            product.id
+                          )
+                        }
+                      >
+                        +
                       </button>
 
                     </div>
 
+
+                    {/* PRODUCT TOTAL */}
+
+                    <p>
+
+                      <strong>
+                        Product Total:
+                      </strong>{" "}
+
+                      ₹
+                      {Number(product.price) *
+                        Number(product.quantity)}
+
+                    </p>
+
+
+                    {/* REMOVE */}
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+
+                        removeFromCart(
+                          product.id
+                        );
+                      }}
+                      style={{
+                        marginTop: "12px",
+                        padding: "8px 14px",
+                        border: "none",
+                        borderRadius: "6px",
+                        background:
+                          "#dc3545",
+                        color: "white",
+                        cursor: "pointer",
+                        fontWeight: "600",
+                      }}
+                    >
+                      🗑️ Remove
+                    </button>
+
                   </div>
 
-                );
-              })}
+                </div>
+
+              ))}
 
             </div>
 
-            {/* =================================
-                TOTAL
-            ================================= */}
+
+            {/* ================= SELECTED PRODUCT ================= */}
+
+            {selectedProduct && (
+
+              <div
+                className="info-box"
+                style={{
+                  marginTop: "25px",
+                }}
+              >
+
+                <h2>
+                  Selected Product
+                </h2>
+
+                <p>
+
+                  <strong>
+                    {selectedProduct.brand}
+                  </strong>
+
+                  {" - "}
+
+                  {selectedProduct.quantity}
+                  {" Bags"}
+
+                </p>
+
+                <h2>
+                  Amount to Pay: ₹
+                  {selectedTotal}
+                </h2>
+
+              </div>
+
+            )}
+
+
+            {/* ================= PLACE ORDER ================= */}
 
             <div
               className="info-box"
               style={{
                 marginTop: "25px",
-                textAlign: "center",
               }}
             >
-
-              <p>
-                Cart Total:{" "}
-                <strong>
-                  ₹{totalCartAmount}
-                </strong>
-              </p>
-
-              <h2>
-                Selected Total: ₹
-                {selectedTotal}
-              </h2>
-
-              <p>
-                {selectedIds.length === 0
-                  ? "Select a product to order."
-                  : `${selectedIds.length} product(s) selected.`}
-              </p>
 
               <button
                 type="button"
                 className="cart-top-btn"
                 onClick={handlePlaceOrder}
               >
-                🛒 Place Selected Order
+                💳 Proceed to Payment
               </button>
 
             </div>
@@ -788,11 +712,12 @@ function Cart() {
 
       </section>
 
-      {/* =====================================
-          PAYMENT POPUP
-      ===================================== */}
 
-      {showPaymentPopup && (
+      {/* =====================================================
+          PAYMENT POPUP
+      ===================================================== */}
+
+      {showPaymentPopup && selectedProduct && (
 
         <div
           className="product-modal-overlay"
@@ -808,10 +733,11 @@ function Cart() {
             }
             style={{
               maxWidth: "520px",
-              maxHeight: "90vh",
-              overflowY: "auto",
+              width: "95%",
             }}
           >
+
+            {/* CLOSE */}
 
             <button
               type="button"
@@ -823,224 +749,248 @@ function Cart() {
               ×
             </button>
 
+
             <h2>
               💳 Payment
             </h2>
 
             <p>
-              Payment for selected product(s)
+              <strong>
+                {selectedProduct.brand}
+              </strong>
             </p>
 
-            {/* SELECTED PRODUCTS */}
+            <h3
+              style={{
+                color: "#ea580c",
+              }}
+            >
+              Amount to Pay: ₹
+              {selectedTotal}
+            </h3>
+
+
+            {/* ================= PAYMENT MODE ================= */}
 
             <div
               style={{
                 textAlign: "left",
-                marginTop: "15px",
-                padding: "12px",
-                background: "#f9fafb",
-                borderRadius: "8px",
+                marginTop: "20px",
               }}
             >
 
-              {selectedProducts.map(
-                (product) => (
+              <label>
+                <strong>
+                  Payment Mode
+                </strong>
+              </label>
 
-                  <p
-                    key={product.id}
-                    style={{
-                      margin: "8px 0",
-                    }}
-                  >
-                    <strong>
-                      {product.brand}
-                    </strong>
-                    {" × "}
-                    {product.quantity}
-                    {" = ₹"}
-                    {Number(product.price) *
-                      Number(
-                        product.quantity
-                      )}
-                  </p>
+              <select
+                value={paymentMode}
+                onChange={(e) =>
+                  setPaymentMode(
+                    e.target.value
+                  )
+                }
+                style={{
+                  width: "100%",
+                  padding: "11px",
+                  marginTop: "8px",
+                  borderRadius: "8px",
+                  border:
+                    "1px solid #ccc",
+                }}
+              >
 
-                )
-              )}
+                <option value="Cash">
+                  💵 Cash
+                </option>
+
+                <option value="UPI">
+                  📱 UPI
+                </option>
+
+                <option value="Card">
+                  💳 Card
+                </option>
+
+                <option value="Net Banking">
+                  🏦 Net Banking
+                </option>
+
+              </select>
 
             </div>
 
-            {/* TOTAL */}
 
-            <div
-              style={{
-                background: "#fff7ed",
-                padding: "15px",
-                borderRadius: "10px",
-                marginTop: "15px",
-                textAlign: "center",
-              }}
-            >
+            {/* =================================================
+                UPI
+            ================================================= */}
 
-              <p
-                style={{
-                  margin: 0,
-                  color: "#6b7280",
-                }}
-              >
-                Amount to Pay
-              </p>
-
-              <h2
-                style={{
-                  margin: "5px 0",
-                  color: "#ea580c",
-                }}
-              >
-                ₹{selectedTotal}
-              </h2>
-
-            </div>
-
-            {/* PAYMENT METHODS */}
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-                marginTop: "15px",
-              }}
-            >
-
-              {/* CASH */}
-
-              <label
-                style={{
-                  padding: "12px",
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-
-                <input
-                  type="radio"
-                  name="payment"
-                  value="Cash on Delivery"
-                  checked={
-                    paymentMethod ===
-                    "Cash on Delivery"
-                  }
-                  onChange={(e) =>
-                    handlePaymentMethodChange(
-                      e.target.value
-                    )
-                  }
-                />
-
-                {" "} 💵 Cash on Delivery
-
-              </label>
-
-              {/* UPI */}
-
-              <label
-                style={{
-                  padding: "12px",
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-
-                <input
-                  type="radio"
-                  name="payment"
-                  value="UPI"
-                  checked={
-                    paymentMethod === "UPI"
-                  }
-                  onChange={(e) =>
-                    handlePaymentMethodChange(
-                      e.target.value
-                    )
-                  }
-                />
-
-                {" "} 📱 UPI
-
-              </label>
-
-              {/* CARD */}
-
-              <label
-                style={{
-                  padding: "12px",
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-
-                <input
-                  type="radio"
-                  name="payment"
-                  value="Card"
-                  checked={
-                    paymentMethod === "Card"
-                  }
-                  onChange={(e) =>
-                    handlePaymentMethodChange(
-                      e.target.value
-                    )
-                  }
-                />
-
-                {" "} 💳 Card
-
-              </label>
-
-              {/* NET BANKING */}
-
-              <label
-                style={{
-                  padding: "12px",
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-
-                <input
-                  type="radio"
-                  name="payment"
-                  value="Net Banking"
-                  checked={
-                    paymentMethod ===
-                    "Net Banking"
-                  }
-                  onChange={(e) =>
-                    handlePaymentMethodChange(
-                      e.target.value
-                    )
-                  }
-                />
-
-                {" "} 🏦 Net Banking
-
-              </label>
-
-            </div>
-
-            {/* =================================
-                CARD FORM
-            ================================= */}
-
-            {paymentMethod === "Card" && (
+            {paymentMode === "UPI" && (
 
               <div
                 style={{
-                  marginTop: "20px",
+                  marginTop: "18px",
+                  textAlign: "left",
+                }}
+              >
+
+                <h3>
+                  📱 Choose UPI App
+                </h3>
+
+
+                {/* UPI APPS */}
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(2, 1fr)",
+                    gap: "10px",
+                    marginTop: "10px",
+                  }}
+                >
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setUpiApp(
+                        "Google Pay"
+                      )
+                    }
+                    style={{
+                      padding: "13px",
+                      borderRadius: "8px",
+                      border:
+                        upiApp ===
+                        "Google Pay"
+                          ? "2px solid #ea580c"
+                          : "1px solid #ddd",
+                      background:
+                        upiApp ===
+                        "Google Pay"
+                          ? "#fff7ed"
+                          : "white",
+                      cursor: "pointer",
+                      fontWeight: "600",
+                    }}
+                  >
+                    🟢 Google Pay
+                  </button>
+
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setUpiApp("PhonePe")
+                    }
+                    style={{
+                      padding: "13px",
+                      borderRadius: "8px",
+                      border:
+                        upiApp === "PhonePe"
+                          ? "2px solid #ea580c"
+                          : "1px solid #ddd",
+                      background:
+                        upiApp === "PhonePe"
+                          ? "#fff7ed"
+                          : "white",
+                      cursor: "pointer",
+                      fontWeight: "600",
+                    }}
+                  >
+                    🟣 PhonePe
+                  </button>
+
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setUpiApp("Paytm")
+                    }
+                    style={{
+                      padding: "13px",
+                      borderRadius: "8px",
+                      border:
+                        upiApp === "Paytm"
+                          ? "2px solid #ea580c"
+                          : "1px solid #ddd",
+                      background:
+                        upiApp === "Paytm"
+                          ? "#fff7ed"
+                          : "white",
+                      cursor: "pointer",
+                      fontWeight: "600",
+                    }}
+                  >
+                    🔵 Paytm
+                  </button>
+
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setUpiApp("Other UPI")
+                    }
+                    style={{
+                      padding: "13px",
+                      borderRadius: "8px",
+                      border:
+                        upiApp ===
+                        "Other UPI"
+                          ? "2px solid #ea580c"
+                          : "1px solid #ddd",
+                      background:
+                        upiApp ===
+                        "Other UPI"
+                          ? "#fff7ed"
+                          : "white",
+                      cursor: "pointer",
+                      fontWeight: "600",
+                    }}
+                  >
+                    📲 Other UPI
+                  </button>
+
+                </div>
+
+
+                {/* UPI ID */}
+
+                <input
+                  type="text"
+                  placeholder="Enter UPI ID (example@upi)"
+                  value={upiId}
+                  onChange={(e) =>
+                    setUpiId(e.target.value)
+                  }
+                  style={{
+                    width: "100%",
+                    boxSizing: "border-box",
+                    padding: "12px",
+                    marginTop: "15px",
+                    borderRadius: "8px",
+                    border:
+                      "1px solid #ccc",
+                  }}
+                />
+
+              </div>
+
+            )}
+
+
+            {/* =================================================
+                CARD
+            ================================================= */}
+
+            {paymentMode === "Card" && (
+
+              <div
+                style={{
+                  marginTop: "18px",
                   textAlign: "left",
                 }}
               >
@@ -1051,29 +1001,9 @@ function Cart() {
 
                 <input
                   type="text"
-                  placeholder="Cardholder Name"
-                  value={cardName}
-                  onChange={(e) =>
-                    setCardName(
-                      e.target.value
-                    )
-                  }
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    marginBottom: "10px",
-                    boxSizing: "border-box",
-                    border: "1px solid #ccc",
-                    borderRadius: "7px",
-                  }}
-                />
-
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength="16"
-                  placeholder="Card Number (16 digits)"
+                  placeholder="Card Number"
                   value={cardNumber}
+                  maxLength="16"
                   onChange={(e) =>
                     setCardNumber(
                       e.target.value.replace(
@@ -1084,11 +1014,32 @@ function Cart() {
                   }
                   style={{
                     width: "100%",
-                    padding: "12px",
-                    marginBottom: "10px",
                     boxSizing: "border-box",
-                    border: "1px solid #ccc",
-                    borderRadius: "7px",
+                    padding: "12px",
+                    marginTop: "10px",
+                    borderRadius: "8px",
+                    border:
+                      "1px solid #ccc",
+                  }}
+                />
+
+                <input
+                  type="text"
+                  placeholder="Card Holder Name"
+                  value={cardName}
+                  onChange={(e) =>
+                    setCardName(
+                      e.target.value
+                    )
+                  }
+                  style={{
+                    width: "100%",
+                    boxSizing: "border-box",
+                    padding: "12px",
+                    marginTop: "10px",
+                    borderRadius: "8px",
+                    border:
+                      "1px solid #ccc",
                   }}
                 />
 
@@ -1096,14 +1047,15 @@ function Cart() {
                   style={{
                     display: "flex",
                     gap: "10px",
+                    marginTop: "10px",
                   }}
                 >
 
                   <input
                     type="text"
                     placeholder="MM/YY"
-                    maxLength="5"
                     value={expiry}
+                    maxLength="5"
                     onChange={(e) =>
                       setExpiry(
                         e.target.value
@@ -1112,18 +1064,17 @@ function Cart() {
                     style={{
                       width: "50%",
                       padding: "12px",
-                      border: "1px solid #ccc",
-                      borderRadius: "7px",
-                      boxSizing: "border-box",
+                      borderRadius: "8px",
+                      border:
+                        "1px solid #ccc",
                     }}
                   />
 
                   <input
                     type="password"
-                    inputMode="numeric"
-                    maxLength="3"
                     placeholder="CVV"
                     value={cvv}
+                    maxLength="3"
                     onChange={(e) =>
                       setCvv(
                         e.target.value.replace(
@@ -1135,9 +1086,9 @@ function Cart() {
                     style={{
                       width: "50%",
                       padding: "12px",
-                      border: "1px solid #ccc",
-                      borderRadius: "7px",
-                      boxSizing: "border-box",
+                      borderRadius: "8px",
+                      border:
+                        "1px solid #ccc",
                     }}
                   />
 
@@ -1147,22 +1098,23 @@ function Cart() {
 
             )}
 
-            {/* =================================
-                NET BANKING
-            ================================= */}
 
-            {paymentMethod ===
+            {/* =================================================
+                NET BANKING
+            ================================================= */}
+
+            {paymentMode ===
               "Net Banking" && (
 
               <div
                 style={{
-                  marginTop: "20px",
+                  marginTop: "18px",
                   textAlign: "left",
                 }}
               >
 
                 <h3>
-                  🏦 Net Banking Details
+                  🏦 Select Bank
                 </h3>
 
                 <select
@@ -1173,9 +1125,10 @@ function Cart() {
                   style={{
                     width: "100%",
                     padding: "12px",
-                    marginBottom: "10px",
-                    border: "1px solid #ccc",
-                    borderRadius: "7px",
+                    marginTop: "10px",
+                    borderRadius: "8px",
+                    border:
+                      "1px solid #ccc",
                   }}
                 >
 
@@ -1183,178 +1136,70 @@ function Cart() {
                     Select Bank
                   </option>
 
-                  <option value="SBI">
+                  <option>
                     State Bank of India
                   </option>
 
-                  <option value="HDFC">
+                  <option>
                     HDFC Bank
                   </option>
 
-                  <option value="ICICI">
+                  <option>
                     ICICI Bank
                   </option>
 
-                  <option value="Axis">
+                  <option>
                     Axis Bank
                   </option>
 
-                  <option value="Canara">
-                    Canara Bank
+                  <option>
+                    Kotak Mahindra Bank
+                  </option>
+
+                  <option>
+                    Bank of Baroda
                   </option>
 
                 </select>
 
-                <input
-                  type="text"
-                  placeholder="Demo User ID"
-                  value={bankUserId}
-                  onChange={(e) =>
-                    setBankUserId(
-                      e.target.value
-                    )
-                  }
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    marginBottom: "10px",
-                    boxSizing: "border-box",
-                    border: "1px solid #ccc",
-                    borderRadius: "7px",
-                  }}
-                />
-
-                <input
-                  type="password"
-                  placeholder="Demo Password"
-                  value={bankPassword}
-                  onChange={(e) =>
-                    setBankPassword(
-                      e.target.value
-                    )
-                  }
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    boxSizing: "border-box",
-                    border: "1px solid #ccc",
-                    borderRadius: "7px",
-                  }}
-                />
-
               </div>
 
             )}
 
-            {/* UPI */}
 
-            {paymentMethod === "UPI" && (
-
-              <div
-                style={{
-                  marginTop: "20px",
-                  padding: "15px",
-                  background: "#f0fdf4",
-                  borderRadius: "8px",
-                  textAlign: "center",
-                }}
-              >
-
-                📱 UPI payment selected.
-
-              </div>
-
-            )}
-
-            {/* PAY */}
+            {/* ================= CONFIRM ================= */}
 
             <button
               type="button"
-              className="save-product-btn"
+              className="cart-top-btn"
               onClick={confirmPayment}
               style={{
                 width: "100%",
-                marginTop: "20px",
+                marginTop: "25px",
               }}
             >
               ✅ Pay ₹{selectedTotal}
             </button>
 
-          </div>
-
-        </div>
-
-      )}
-
-      {/* =====================================
-          SUCCESS POPUP
-      ===================================== */}
-
-      {showSuccessPopup && (
-
-        <div className="product-modal-overlay">
-
-          <div
-            className="product-modal"
-            style={{
-              textAlign: "center",
-              maxWidth: "500px",
-            }}
-          >
-
-            <div
-              style={{
-                width: "75px",
-                height: "75px",
-                margin: "10px auto 20px",
-                borderRadius: "50%",
-                background: "#4ade80",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                fontSize: "45px",
-                color: "white",
-                fontWeight: "bold",
-              }}
-            >
-              ✓
-            </div>
-
-            <h2
-              style={{
-                color: "#16a34a",
-                fontSize: "28px",
-              }}
-            >
-              Payment Successful!
-            </h2>
-
-            <p>
-              Your selected product order
-              has been confirmed.
-            </p>
-
-            <h3>
-              Amount Paid: ₹
-              {successAmount}
-            </h3>
-
-            <p>
-              Payment Method:{" "}
-              <strong>
-                {paymentMethod}
-              </strong>
-            </p>
 
             <button
               type="button"
-              className="cart-top-btn"
-              onClick={goToMyOrders}
+              onClick={() =>
+                setShowPaymentPopup(false)
+              }
               style={{
-                marginTop: "15px",
+                width: "100%",
+                marginTop: "10px",
+                padding: "11px",
+                border: "none",
+                borderRadius: "8px",
+                background: "#6c757d",
+                color: "white",
+                cursor: "pointer",
+                fontWeight: "600",
               }}
             >
-              📦 View My Orders
+              Cancel
             </button>
 
           </div>
@@ -1362,22 +1207,6 @@ function Cart() {
         </div>
 
       )}
-
-      {/* =====================================
-          CONTINUE SHOPPING
-      ===================================== */}
-
-      <div
-        style={{
-          margin: "0 40px 40px",
-        }}
-      >
-
-        <Link to="/customer-products">
-          ← Continue Shopping
-        </Link>
-
-      </div>
 
     </div>
   );
