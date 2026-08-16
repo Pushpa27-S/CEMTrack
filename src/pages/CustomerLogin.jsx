@@ -1,73 +1,121 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./CustomerLogin.css";
 
 function CustomerLogin() {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-const handleLogin = (e) => {
-e.preventDefault();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-// Store customer login status
-localStorage.setItem("customerLoggedIn", "true");
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-// Go to customer home
-navigate("/customer-home");
+    setError("");
+    setLoading(true);
 
-};
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
 
-return (
-<div className="login-page">
-<div className="login-card">
+      const data = await response.json();
 
-    <h1>CEMTrack</h1>
+      if (data.success) {
+        // Store customer login status
+        localStorage.setItem("customerLoggedIn", "true");
 
-    <h2>Customer Login</h2>
+        // Store customer information if returned by backend
+        if (data.customer) {
+          localStorage.setItem(
+            "customer",
+            JSON.stringify(data.customer)
+          );
+        }
 
-    <p>
-      Welcome! Login to browse products and place your orders.
-    </p>
+        // Go to customer home
+        navigate("/customer-home");
+      } else {
+        setError(data.message || "Invalid email or password");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Unable to connect to the server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    <form onSubmit={handleLogin}>
+  return (
+    <div className="login-page">
+      <div className="login-card">
 
-      <input
-        type="email"
-        placeholder="Enter Email"
-        required
-      />
+        <h1>CEMTrack</h1>
 
-      <input
-        type="password"
-        placeholder="Enter Password"
-        required
-      />
+        <h2>Customer Login</h2>
 
-      <button type="submit">
-        Login
-      </button>
+        <p>
+          Welcome! Login to browse products and place your orders.
+        </p>
 
-    </form>
+        <form onSubmit={handleLogin}>
 
-    <div className="customer-login-links">
+          <input
+            type="email"
+            placeholder="Enter Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-      <Link to="/forgot-password">
-        Forgot Password?
-      </Link>
+          <input
+            type="password"
+            placeholder="Enter Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-      <p>
-        Don't have an account?{" "}
+          {error && (
+            <p className="login-error">
+              {error}
+            </p>
+          )}
 
-        <Link to="/register">
-          Register
-        </Link>
-      </p>
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
 
+        </form>
+
+        <div className="customer-login-links">
+
+          <Link to="/forgot-password">
+            Forgot Password?
+          </Link>
+
+          <p>
+            Don't have an account?{" "}
+
+            <Link to="/register">
+              Register
+            </Link>
+          </p>
+
+        </div>
+
+      </div>
     </div>
-
-  </div>
-</div>
-
-);
+  );
 }
 
 export default CustomerLogin;
