@@ -3,17 +3,18 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
 
 function Register() {
-
   const navigate = useNavigate();
-
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     mobile: "",
+    address: "",
     password: "",
     confirmPassword: ""
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({
@@ -22,14 +23,14 @@ function Register() {
     });
   };
 
-  const register = (e) => {
-
+  const register = async (e) => {
     e.preventDefault();
 
     if (
       form.name === "" ||
       form.email === "" ||
       form.mobile === "" ||
+      form.address === "" ||
       form.password === "" ||
       form.confirmPassword === ""
     ) {
@@ -37,8 +38,7 @@ function Register() {
       return;
     }
 
-    const emailRegex =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(form.email)) {
       alert("Invalid Email.");
@@ -57,7 +57,12 @@ function Register() {
 
     if (!passwordRegex.test(form.password)) {
       alert(
-        "Password must contain:\n\nMinimum 8 characters\nOne uppercase\nOne lowercase\nOne number\nOne special character."
+        "Password must contain:\n\n" +
+        "Minimum 8 characters\n" +
+        "One uppercase\n" +
+        "One lowercase\n" +
+        "One number\n" +
+        "One special character."
       );
       return;
     }
@@ -67,14 +72,45 @@ function Register() {
       return;
     }
 
-    alert("Account Created Successfully!");
+    setLoading(true);
 
-    navigate("/customerlogin");
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            customer_name: form.name,
+            email: form.email,
+            password: form.password,
+            phone_no: form.mobile,
+            address: form.address
+          })
+        }
+      );
 
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Account Created Successfully!");
+        navigate("/customerlogin");
+      } else {
+        alert(data.message || "Registration failed.");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert(
+        "Unable to connect to the server. Please make sure the backend is running."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-
     <div className="register-page">
 
       <div className="register-card">
@@ -95,6 +131,7 @@ function Register() {
             placeholder="Full Name"
             value={form.name}
             onChange={handleChange}
+            required
           />
 
           <input
@@ -103,6 +140,7 @@ function Register() {
             placeholder="Email Address"
             value={form.email}
             onChange={handleChange}
+            required
           />
 
           <input
@@ -111,6 +149,16 @@ function Register() {
             placeholder="Mobile Number"
             value={form.mobile}
             onChange={handleChange}
+            required
+          />
+
+          <input
+            type="text"
+            name="address"
+            placeholder="Address"
+            value={form.address}
+            onChange={handleChange}
+            required
           />
 
           <input
@@ -119,6 +167,7 @@ function Register() {
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
+            required
           />
 
           <input
@@ -127,10 +176,11 @@ function Register() {
             placeholder="Confirm Password"
             value={form.confirmPassword}
             onChange={handleChange}
+            required
           />
 
-          <button type="submit">
-            Create Account
+          <button type="submit" disabled={loading}>
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
 
         </form>
@@ -141,14 +191,15 @@ function Register() {
 
           <br />
 
-          <Link to="/customerlogin">Back to Login</Link>
-
+          <Link to="/customerlogin">
+            Back to Login
+          </Link>
 
         </div>
 
       </div>
-      </div>
 
+    </div>
   );
 }
 

@@ -178,3 +178,70 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
 });
+app.post("/api/register", async (req, res) => {
+  try {
+    const {
+      customer_name,
+      email,
+      password,
+      phone_no,
+      address
+    } = req.body;
+
+    // Check required fields
+    if (
+      !customer_name ||
+      !email ||
+      !password ||
+      !phone_no ||
+      !address
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
+    }
+
+    // Check whether email already exists
+    const [existingCustomer] = await db.query(
+      "SELECT customer_id FROM customer WHERE email = ?",
+      [email]
+    );
+
+    if (existingCustomer.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: "An account with this email already exists"
+      });
+    }
+
+    // Insert new customer
+    const [result] = await db.query(
+      `INSERT INTO customer
+      (customer_name, email, password, phone_no, Address)
+      VALUES (?, ?, ?, ?, ?)`,
+      [
+        customer_name,
+        email,
+        password,
+        phone_no,
+        address
+      ]
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Customer registered successfully",
+      customer_id: result.insertId
+    });
+
+  } catch (error) {
+    console.error("Registration error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Registration failed",
+      error: error.message
+    });
+  }
+});

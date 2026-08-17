@@ -5,6 +5,7 @@ import "./AdminLogin.css";
 function AdminLogin() {
   const navigate = useNavigate();
 
+  const [role, setRole] = useState("Admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -14,53 +15,35 @@ function AdminLogin() {
     e.preventDefault();
 
     setError("");
-
-    // Password must contain at least 8 characters
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long.");
-      return;
-    }
-
-    // Password rules:
-    // At least one uppercase letter
-    // At least one lowercase letter
-    // At least one number
-    // At least one special character
-
-    const passwordPattern =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]+$/;
-
-    if (!passwordPattern.test(password)) {
-      setError(
-        "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character (! @ # $ % ^ & *)."
-      );
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/admin/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email,
-            password: password,
-          }),
-        }
-      );
+      const url =
+        role === "Admin"
+          ? "http://localhost:5000/api/admin/login"
+          : "http://localhost:5000/api/login";
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
       const data = await response.json();
 
-      if (data.success) {
-        // Store admin login status
+      if (!response.ok || !data.success) {
+        setError(data.message || "Invalid email or password");
+        return;
+      }
+
+      if (role === "Admin") {
         localStorage.setItem("adminLoggedIn", "true");
 
-        // Store admin information
         if (data.owner) {
           localStorage.setItem(
             "owner",
@@ -68,21 +51,25 @@ function AdminLogin() {
           );
         }
 
-        // Go to admin dashboard
         navigate("/dashboard");
       } else {
-        setError(
-          data.message || "Invalid email or password"
-        );
+        localStorage.setItem("customerLoggedIn", "true");
+
+        if (data.customer) {
+          localStorage.setItem(
+            "customer",
+            JSON.stringify(data.customer)
+          );
+        }
+
+        navigate("/customer-home");
       }
 
     } catch (error) {
-      console.error("Admin login error:", error);
-
+      console.error("Login error:", error);
       setError(
-        "Unable to connect to the server. Please try again."
+        "Unable to connect to the server. Please make sure the backend is running."
       );
-
     } finally {
       setLoading(false);
     }
@@ -90,16 +77,48 @@ function AdminLogin() {
 
   return (
     <div className="login-page">
-
       <div className="login-card">
 
         <h1>CEMTrack</h1>
 
-        <h2>Admin Login</h2>
+        <h2>Login</h2>
 
         <p>
-          Welcome back! Please login to continue.
+          Welcome back! Please select your account type
+          and login.
         </p>
+
+        <div className="role-selection">
+
+          <label className="role-label">
+            <input
+              type="radio"
+              name="role"
+              value="Admin"
+              checked={role === "Admin"}
+              onChange={() => {
+                setRole("Admin");
+                setError("");
+              }}
+            />
+            Admin
+          </label>
+
+          <label className="role-label">
+            <input
+              type="radio"
+              name="role"
+              value="Customer"
+              checked={role === "Customer"}
+              onChange={() => {
+                setRole("Customer");
+                setError("");
+              }}
+            />
+            Customer
+          </label>
+
+        </div>
 
         <form onSubmit={handleLogin}>
 
@@ -126,7 +145,9 @@ function AdminLogin() {
           )}
 
           <button type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading
+              ? "Logging in..."
+              : `Login as ${role}`}
           </button>
 
         </form>
@@ -137,10 +158,18 @@ function AdminLogin() {
             Forgot Password?
           </Link>
 
+          {role === "Customer" && (
+            <p>
+              Don't have an account?{" "}
+              <Link to="/register">
+                Register
+              </Link>
+            </p>
+          )}
+
         </div>
 
       </div>
-
     </div>
   );
 }
