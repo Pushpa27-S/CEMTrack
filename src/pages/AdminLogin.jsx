@@ -20,8 +20,8 @@ function AdminLogin() {
     try {
       const url =
         role === "Admin"
-          ? "http://10.188.62.112:5000/api/admin/login"
-          : "http://10.188.62.112:5000/api/login";
+          ? "http://localhost:5000/api/admin/login"
+          : "http://localhost:5000/api/login";
 
       const response = await fetch(url, {
         method: "POST",
