@@ -41,9 +41,19 @@ function AdminLogin() {
         return;
       }
 
+      // ==========================================
+      // ADMIN LOGIN
+      // ==========================================
       if (role === "Admin") {
+        // Store admin login status
         localStorage.setItem("adminLoggedIn", "true");
 
+        // Store admin JWT
+        if (data.token) {
+          localStorage.setItem("adminToken", data.token);
+        }
+
+        // Store admin/owner information
         if (data.owner) {
           localStorage.setItem(
             "owner",
@@ -51,10 +61,23 @@ function AdminLogin() {
           );
         }
 
+        // Go to admin dashboard
         navigate("/dashboard");
-      } else {
+      }
+
+      // ==========================================
+      // CUSTOMER LOGIN
+      // ==========================================
+      else {
+        // Store customer login status
         localStorage.setItem("customerLoggedIn", "true");
 
+        // Store customer JWT
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+
+        // Store customer information
         if (data.customer) {
           localStorage.setItem(
             "customer",
@@ -62,11 +85,12 @@ function AdminLogin() {
           );
         }
 
+        // Go to customer home
         navigate("/customer-home");
       }
-
     } catch (error) {
       console.error("Login error:", error);
+
       setError(
         "Unable to connect to the server. Please make sure the backend is running."
       );

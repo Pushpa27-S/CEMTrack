@@ -34,12 +34,17 @@ function CustomerLogin() {
         // Store customer login status
         localStorage.setItem("customerLoggedIn", "true");
 
-        // Store customer information if returned by backend
+        // Store customer information
         if (data.customer) {
           localStorage.setItem(
             "customer",
             JSON.stringify(data.customer)
           );
+        }
+
+        // Store JWT token
+        if (data.token) {
+          localStorage.setItem("token", data.token);
         }
 
         // Go to customer home
