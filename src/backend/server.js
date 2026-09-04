@@ -2,8 +2,11 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import db from "./db.js";
+import jwt from "jsonwebtoken";
+import authenticateToken from "./middleware/authMiddleware.js";
 
 dotenv.config();
+console.log("JWT_SECRET loaded:", !!process.env.JWT_SECRET);
 
 const app = express();
 
@@ -53,7 +56,6 @@ app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check that both fields were entered
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -61,13 +63,11 @@ app.post("/api/login", async (req, res) => {
       });
     }
 
-    // Find customer using email
     const [rows] = await db.query(
       "SELECT customer_id, customer_name, email, password FROM customer WHERE email = ?",
       [email]
     );
 
-    // Email does not exist
     if (rows.length === 0) {
       return res.status(401).json({
         success: false,
@@ -77,7 +77,6 @@ app.post("/api/login", async (req, res) => {
 
     const customer = rows[0];
 
-    // Check password
     if (customer.password !== password) {
       return res.status(401).json({
         success: false,
@@ -85,17 +84,27 @@ app.post("/api/login", async (req, res) => {
       });
     }
 
-    // Customer login successful
+    const token = jwt.sign(
+      {
+        customer_id: customer.customer_id,
+        role: "customer",
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "2h",
+      }
+    );
+
     res.json({
       success: true,
       message: "Login successful",
+      token: token,
       customer: {
         customer_id: customer.customer_id,
         customer_name: customer.customer_name,
         email: customer.email,
       },
     });
-
   } catch (error) {
     console.error("Customer login error:", error);
 
@@ -115,7 +124,6 @@ app.post("/api/admin/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check that both fields were entered
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -123,13 +131,11 @@ app.post("/api/admin/login", async (req, res) => {
       });
     }
 
-    // Find owner/admin using email
     const [rows] = await db.query(
       "SELECT owner_id, owner_name, email, password FROM owner WHERE email = ?",
       [email]
     );
 
-    // Email does not exist
     if (rows.length === 0) {
       return res.status(401).json({
         success: false,
@@ -139,7 +145,6 @@ app.post("/api/admin/login", async (req, res) => {
 
     const owner = rows[0];
 
-    // Check password
     if (owner.password !== password) {
       return res.status(401).json({
         success: false,
@@ -147,17 +152,27 @@ app.post("/api/admin/login", async (req, res) => {
       });
     }
 
-    // Admin login successful
+    const token = jwt.sign(
+      {
+        owner_id: owner.owner_id,
+        role: "admin",
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "2h",
+      }
+    );
+
     res.json({
       success: true,
       message: "Admin login successful",
+      token: token,
       owner: {
         owner_id: owner.owner_id,
         owner_name: owner.owner_name,
         email: owner.email,
       },
     });
-
   } catch (error) {
     console.error("Admin login error:", error);
 
@@ -170,14 +185,9 @@ app.post("/api/admin/login", async (req, res) => {
 
 
 // ==================================================
-// START SERVER
+// CUSTOMER REGISTRATION
 // ==================================================
 
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-});
 app.post("/api/register", async (req, res) => {
   try {
     const {
@@ -185,10 +195,9 @@ app.post("/api/register", async (req, res) => {
       email,
       password,
       phone_no,
-      address
+      address,
     } = req.body;
 
-    // Check required fields
     if (
       !customer_name ||
       !email ||
@@ -198,11 +207,10 @@ app.post("/api/register", async (req, res) => {
     ) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required"
+        message: "All fields are required",
       });
     }
 
-    // Check whether email already exists
     const [existingCustomer] = await db.query(
       "SELECT customer_id FROM customer WHERE email = ?",
       [email]
@@ -211,11 +219,10 @@ app.post("/api/register", async (req, res) => {
     if (existingCustomer.length > 0) {
       return res.status(409).json({
         success: false,
-        message: "An account with this email already exists"
+        message: "An account with this email already exists",
       });
     }
 
-    // Insert new customer
     const [result] = await db.query(
       `INSERT INTO customer
       (customer_name, email, password, phone_no, Address)
@@ -225,23 +232,101 @@ app.post("/api/register", async (req, res) => {
         email,
         password,
         phone_no,
-        address
+        address,
       ]
     );
 
     res.status(201).json({
       success: true,
       message: "Customer registered successfully",
-      customer_id: result.insertId
+      customer_id: result.insertId,
     });
-
   } catch (error) {
     console.error("Registration error:", error);
 
     res.status(500).json({
       success: false,
       message: "Registration failed",
-      error: error.message
+      error: error.message,
     });
   }
+});
+
+
+// ==================================================
+// CUSTOMER AUTHORIZATION MIDDLEWARE
+// ==================================================
+
+const requireCustomer = (req, res, next) => {
+  if (!req.user || req.user.role !== "customer") {
+    return res.status(403).json({
+      success: false,
+      message: "Customer access required",
+    });
+  }
+
+  next();
+};
+
+
+// ==================================================
+// ADMIN AUTHORIZATION MIDDLEWARE
+// ==================================================
+
+const requireAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({
+      success: false,
+      message: "Admin access required",
+    });
+  }
+
+  next();
+};
+
+
+// ==================================================
+// TEST CUSTOMER PROTECTED ROUTE
+// ==================================================
+
+app.get(
+  "/api/customer/protected",
+  authenticateToken,
+  requireCustomer,
+  (req, res) => {
+    res.json({
+      success: true,
+      message: "Customer authorization successful",
+      user: req.user,
+    });
+  }
+);
+
+
+// ==================================================
+// TEST ADMIN PROTECTED ROUTE
+// ==================================================
+
+app.get(
+  "/api/admin/protected",
+  authenticateToken,
+  requireAdmin,
+  (req, res) => {
+    res.json({
+      success: true,
+      message: "Admin authorization successful",
+      user: req.user,
+    });
+  }
+);
+
+
+// ==================================================
+// START SERVER
+// ==================================================
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Backend server running on http://localhost:${PORT}`);
 });
