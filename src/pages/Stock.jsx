@@ -1,707 +1,1098 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Stock.css";
-import productsData from "../data/ProductsData";
 
 import {
-ResponsiveContainer,
-BarChart,
-Bar,
-XAxis,
-YAxis,
-CartesianGrid,
-Tooltip,
-Legend,
-LineChart,
-Line
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  LineChart,
+  Line
 } from "recharts";
+
+// ========================================
+// BACKEND STOCK API
+// ========================================
+
+const STOCK_API_URL =
+  "http://localhost:5000/api/admin/inventory/stock";
 
 function Stock() {
 
-const [products, setProducts] = useState(
-productsData.map((product) => ({
-id: product.id,
-product: product.brand,
-category: product.category,
-stock: product.stock,
-price: product.price,
-image: product.image,
-}))
-);
+  // ========================================
+  // STATES
+  // ========================================
 
-const [name, setName] = useState("");
-const [qty, setQty] = useState("");
-const [editingId, setEditingId] = useState(null);
-const [search, setSearch] = useState("");
-const [selectedProducts, setSelectedProducts] = useState([]);
+  const [products, setProducts] = useState([]);
 
-/* ================================
-DASHBOARD COUNTS
-================================= */
+  const [search, setSearch] = useState("");
 
-const totalProducts = products.length;
+  const [editingProduct, setEditingProduct] =
+    useState(null);
 
-const totalStock = products.reduce(
-(sum, item) => sum + item.stock,
-0
-);
+  const [newStock, setNewStock] =
+    useState("");
 
-const highStock = products.filter(
-(item) => item.stock > 30
-).length;
+  const [loading, setLoading] =
+    useState(true);
 
-const lowStock = products.filter(
-(item) => item.stock > 0 && item.stock <= 30
-).length;
 
-const outStock = products.filter(
-(item) => item.stock === 0
-).length;
+  // ========================================
+  // GET STOCK FROM DATABASE
+  // ========================================
 
-/* ================================
-STATUS
-================================= */
+  const fetchStock = async () => {
 
-const getStatus = (stock) => {
+    try {
 
-if (stock === 0) return "OutofStock";
+      setLoading(true);
 
-if (stock <= 30) return "LowStock";
+      const response =
+        await fetch(STOCK_API_URL);
 
-return "HighStock";
+      const data =
+        await response.json();
 
-};
 
-/* ================================
-SEARCH
-================================= */
+      if (!response.ok) {
 
-const filteredProducts = products.filter((item) =>
-item.product
-.toLowerCase()
-.includes(search.toLowerCase())
-);
+        throw new Error(
+          data.message ||
+          "Failed to load stock"
+        );
 
-/* ================================
-CHART DATA
+      }
 
- Brand + Category are combined
- so every product appears separately.
 
-================================= */
+      setProducts(
+        data.products || []
+      );
 
-const chartData = products.map((item) => ({
-...item,
 
-displayName:
-  `${item.product} - ${item.category}`,
+    } catch (error) {
 
-}));
+      console.error(
+        "Fetch stock error:",
+        error
+      );
 
-/* ================================
-ADD PRODUCT
-================================= */
+      alert(
+        "Failed to load stock from database"
+      );
 
-const addProduct = () => {
+    } finally {
 
-if (!name || !qty) {
-
-  alert("Enter Product Details");
-
-  return;
-
-}
-
-const newProduct = {
-
-  id:
-    products.length > 0
-      ? Math.max(
-          ...products.map((p) => p.id)
-        ) + 1
-      : 1,
-
-  product: name,
-
-  category: "OPC 53",
-
-  stock: Number(qty),
-
-};
-
-setProducts([
-  ...products,
-  newProduct
-]);
-
-setName("");
-setQty("");
-
-};
-
-/* ================================
-UPDATE BUTTON
-================================= */
-
-const editProduct = (item) => {
-
-setEditingId(item.id);
-
-setName(item.product);
-
-setQty("");
-
-};
-
-/* ================================
-UPDATE STOCK
-================================= */
-
-const updateProduct = () => {
-
-if (!qty) {
-
-  alert("Enter New Stock");
-
-  return;
-
-}
-
-setProducts(
-
-  products.map((item) => {
-
-    if (item.id === editingId) {
-
-      const finalStock =
-        item.stock + Number(qty);
-
-      return {
-
-        ...item,
-
-        stock: finalStock,
-
-      };
+      setLoading(false);
 
     }
 
-    return item;
+  };
 
-  })
 
-);
+  // ========================================
+  // LOAD STOCK WHEN PAGE OPENS
+  // ========================================
 
-alert("Stock Updated Successfully");
+  useEffect(() => {
 
-setEditingId(null);
+    fetchStock();
 
-setName("");
-setQty("");
+  }, []);
 
-};
 
-/* ================================
-DELETE PRODUCT
-================================= */
+  // ========================================
+  // DASHBOARD COUNTS
+  // ========================================
 
-const deleteProduct = (id) => {
+  const totalProducts =
+    products.length;
 
-setProducts(
-  products.filter(
-    (item) => item.id !== id
-  )
-);
 
-};
+  const totalStock =
+    products.reduce(
+      (sum, item) =>
+        sum +
+        Number(
+          item.stock_quantity || 0
+        ),
+      0
+    );
 
-/* ================================
-CHART TOOLTIP
-================================= */
 
-const CustomTooltip = ({ active, payload }) => {
+  const highStock =
+    products.filter(
+      (item) =>
+        Number(item.stock_quantity) >
+        Number(item.minimum_stock)
+    ).length;
 
-if (
-  active &&
-  payload &&
-  payload.length
-) {
 
-  const item = payload[0].payload;
+  const lowStock =
+    products.filter(
+      (item) =>
+        Number(item.stock_quantity) > 0 &&
+        Number(item.stock_quantity) <=
+        Number(item.minimum_stock)
+    ).length;
+
+
+  const outStock =
+    products.filter(
+      (item) =>
+        Number(item.stock_quantity) === 0
+    ).length;
+
+
+  // ========================================
+  // GET STOCK STATUS
+  // ========================================
+
+  const getStatus = (product) => {
+
+    const stock =
+      Number(
+        product.stock_quantity
+      );
+
+    const minimumStock =
+      Number(
+        product.minimum_stock
+      );
+
+
+    if (stock === 0) {
+
+      return "OutofStock";
+
+    }
+
+
+    if (stock <= minimumStock) {
+
+      return "LowStock";
+
+    }
+
+
+    return "HighStock";
+
+  };
+
+
+  // ========================================
+  // SEARCH PRODUCTS
+  // ========================================
+
+  const filteredProducts =
+    products.filter((item) => {
+
+      const searchText =
+        search.toLowerCase();
+
+
+      const productName =
+        (
+          item.product_name || ""
+        ).toLowerCase();
+
+
+      const brand =
+        (
+          item.brand || ""
+        ).toLowerCase();
+
+
+      return (
+
+        productName.includes(
+          searchText
+        ) ||
+
+        brand.includes(
+          searchText
+        )
+
+      );
+
+    });
+
+
+  // ========================================
+  // CHART DATA
+  // ========================================
+
+  const chartData =
+    products.map((item) => ({
+
+      ...item,
+
+      stock:
+        Number(
+          item.stock_quantity || 0
+        ),
+
+      displayName:
+        `${item.brand} - ${item.category}`
+
+    }));
+
+
+  // ========================================
+  // CLICK UPDATE BUTTON
+  // ========================================
+
+  const editProduct = (product) => {
+
+    setEditingProduct(product);
+
+    setNewStock("");
+
+  };
+
+
+  // ========================================
+  // CANCEL UPDATE
+  // ========================================
+
+  const cancelUpdate = () => {
+
+    setEditingProduct(null);
+
+    setNewStock("");
+
+  };
+
+
+  // ========================================
+  // UPDATE STOCK IN DATABASE
+  // ========================================
+
+  const updateStock = async () => {
+
+    if (!editingProduct) {
+
+      alert(
+        "Please select a product first."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      newStock === "" ||
+      Number(newStock) < 0
+    ) {
+
+      alert(
+        "Please enter a valid stock quantity."
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+
+          `${STOCK_API_URL}/${editingProduct.product_id}`,
+
+          {
+
+            method: "PUT",
+
+            headers: {
+
+              "Content-Type":
+                "application/json"
+
+            },
+
+            body: JSON.stringify({
+
+              stock_quantity:
+                Number(newStock)
+
+            })
+
+          }
+
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        throw new Error(
+
+          data.message ||
+          "Failed to update stock"
+
+        );
+
+      }
+
+
+      alert(
+        "Stock updated successfully!"
+      );
+
+
+      // Reload latest database stock
+
+      await fetchStock();
+
+
+      // Clear form
+
+      setEditingProduct(null);
+
+      setNewStock("");
+
+
+    } catch (error) {
+
+      console.error(
+        "Update stock error:",
+        error
+      );
+
+      alert(error.message);
+
+    }
+
+  };
+
+
+  // ========================================
+  // CHART TOOLTIP
+  // ========================================
+
+  const CustomTooltip = ({
+    active,
+    payload
+  }) => {
+
+    if (
+      active &&
+      payload &&
+      payload.length
+    ) {
+
+      const item =
+        payload[0].payload;
+
+
+      return (
+
+        <div
+          style={{
+
+            background: "#ffffff",
+
+            border:
+              "1px solid #d9d9d9",
+
+            borderRadius: "8px",
+
+            padding: "12px 16px",
+
+            boxShadow:
+              "0 4px 12px rgba(0,0,0,0.15)"
+
+          }}
+        >
+
+          <p
+            style={{
+
+              margin:
+                "0 0 8px",
+
+              fontWeight: "700",
+
+              fontSize: "15px"
+
+            }}
+          >
+
+            {item.product_name}
+
+          </p>
+
+
+          <p
+            style={{
+              margin: "5px 0"
+            }}
+          >
+
+            <strong>
+              Brand:
+            </strong>
+
+            {" "}
+
+            {item.brand}
+
+          </p>
+
+
+          <p
+            style={{
+              margin: "5px 0"
+            }}
+          >
+
+            <strong>
+              Category:
+            </strong>
+
+            {" "}
+
+            {item.category}
+
+          </p>
+
+
+          <p
+            style={{
+              margin: "5px 0"
+            }}
+          >
+
+            <strong>
+              Stock:
+            </strong>
+
+            {" "}
+
+            {item.stock_quantity}
+
+            {" "}
+
+            Bags
+
+          </p>
+
+        </div>
+
+      );
+
+    }
+
+
+    return null;
+
+  };
+
+
+  // ========================================
+  // LOADING
+  // ========================================
+
+  if (loading) {
+
+    return (
+
+      <div className="stock-page">
+
+        <h2>
+          Loading stock...
+        </h2>
+
+      </div>
+
+    );
+
+  }
+
+
+  // ========================================
+  // PAGE
+  // ========================================
 
   return (
 
-    <div
-      style={{
-        background: "#ffffff",
-        border: "1px solid #d9d9d9",
-        borderRadius: "8px",
-        padding: "12px 16px",
-        boxShadow:
-          "0 4px 12px rgba(0,0,0,0.15)"
-      }}
-    >
+    <div className="stock-page">
 
-      <p
-        style={{
-          margin: "0 0 8px",
-          fontWeight: "700",
-          fontSize: "15px"
-        }}
-      >
-        {item.product}
-      </p>
 
-      <p style={{ margin: "5px 0" }}>
-        <strong>Category:</strong>{" "}
-        {item.category}
-      </p>
+      {/* =================================
+          TITLE
+      ================================= */}
 
-      <p style={{ margin: "5px 0" }}>
-        <strong>Stock:</strong>{" "}
-        {item.stock} Bags
-      </p>
+      <h1 className="title">
 
-    </div>
+        🏗️ CemTrack Stock Management
 
-  );
+      </h1>
 
-}
 
-return null;
+      {/* =================================
+          DASHBOARD CARDS
+      ================================= */}
 
-};
+      <div className="cards">
 
-return (
 
-<div className="stock-page">
+        <div className="card">
 
+          <h3>
+            Total Products
+          </h3>
 
-  {/* ================================
-      TITLE
-  ================================= */}
+          <h2>
+            {totalProducts}
+          </h2>
 
-  <h1 className="title">
-    🏗️ CemTrack Stock Management
-  </h1>
+        </div>
 
 
-  {/* ================================
-      DASHBOARD CARDS
-  ================================= */}
+        <div className="card">
 
-  <div className="cards">
+          <h3>
+            Total Stock
+          </h3>
 
-    <div className="card">
+          <h2>
+            {totalStock}
+          </h2>
 
-      <h3>Total Products</h3>
+        </div>
 
-      <h2>{totalProducts}</h2>
 
-    </div>
+        <div className="card">
 
+          <h3>
+            High Stock
+          </h3>
 
-    <div className="card">
+          <h2>
+            {highStock}
+          </h2>
 
-      <h3>Total Stock</h3>
+        </div>
 
-      <h2>{totalStock}</h2>
 
-    </div>
+        <div className="card">
 
+          <h3>
+            Low Stock
+          </h3>
 
-    <div className="card">
+          <h2>
+            {lowStock}
+          </h2>
 
-      <h3>High Stock</h3>
+        </div>
 
-      <h2>{highStock}</h2>
 
-    </div>
+        <div className="card">
 
+          <h3>
+            Out of Stock
+          </h3>
 
-    <div className="card">
+          <h2>
+            {outStock}
+          </h2>
 
-      <h3>Low Stock</h3>
+        </div>
 
-      <h2>{lowStock}</h2>
 
-    </div>
+      </div>
 
 
-    <div className="card">
+      {/* =================================
+          SEARCH
+      ================================= */}
 
-      <h3>Out of Stock</h3>
+      <div className="search-box">
 
-      <h2>{outStock}</h2>
+        <input
 
-    </div>
+          type="text"
 
-  </div>
+          placeholder="🔍 Search Product or Brand..."
 
+          value={search}
 
-  {/* ================================
-      SEARCH
-  ================================= */}
+          onChange={(e) =>
+            setSearch(
+              e.target.value
+            )
+          }
 
-  <div className="search-box">
-
-    <input
-      type="text"
-      placeholder="🔍 Search Product..."
-      value={search}
-      onChange={(e) =>
-        setSearch(e.target.value)
-      }
-    />
-
-  </div>
-
-
-  {/* ================================
-      ADD / UPDATE FORM
-  ================================= */}
-
-  <div className="form">
-
-    <input
-      type="text"
-      placeholder="Product Name"
-      value={name}
-      disabled={editingId !== null}
-      onChange={(e) =>
-        setName(e.target.value)
-      }
-    />
-
-
-    {editingId !== null && (
-
-      <input
-        type="number"
-        value={
-          products.find(
-            (p) => p.id === editingId
-          )?.stock || 0
-        }
-        readOnly
-        placeholder="Current Stock"
-      />
-
-    )}
-
-
-    <input
-      type="number"
-      placeholder={
-        editingId
-          ? "Add New Stock"
-          : "Enter Stock Quantity"
-      }
-      value={qty}
-      onChange={(e) =>
-        setQty(e.target.value)
-      }
-    />
-
-
-    <button
-      onClick={() => {
-
-        if (editingId) {
-
-          updateProduct();
-
-        } else {
-
-          alert(
-            "Please click the Update button in the table to update stock."
-          );
-
-        }
-
-      }}
-    >
-      Update Stock
-    </button>
-
-  </div>
-
-
-  {/* ================================
-      BAR CHART
-  ================================= */}
-
-  <div className="chart">
-
-    <h3>Stock Quantity</h3>
-
-    <ResponsiveContainer
-      width="100%"
-      height={500}
-    >
-
-      <BarChart
-        data={chartData}
-        margin={{
-          top: 20,
-          right: 30,
-          left: 20,
-          bottom: 130
-        }}
-      >
-
-        <CartesianGrid
-          strokeDasharray="3 3"
         />
 
+      </div>
 
-        <XAxis
-          dataKey="displayName"
-          angle={-45}
-          textAnchor="end"
-          interval={0}
-          height={140}
-          tick={{
-            fontSize: 14,
-            fontWeight: 600
-          }}
-        />
 
+      {/* =================================
+          UPDATE STOCK FORM
+      ================================= */}
 
-        <YAxis />
+      {editingProduct && (
 
+        <div className="form">
 
-        <Tooltip
-          content={<CustomTooltip />}
-        />
 
+          <input
 
-        <Legend />
+            type="text"
 
+            value={
+              `${editingProduct.product_name} - ${editingProduct.category}`
+            }
 
-        <Bar
-          dataKey="stock"
-          name="Stock"
-          fill="#86efe4"
-          radius={[
-            8,
-            8,
-            0,
-            0
-          ]}
-        />
+            readOnly
 
-      </BarChart>
+          />
 
-    </ResponsiveContainer>
 
-  </div>
+          <input
 
+            type="number"
 
-  {/* ================================
-      LINE CHART
-  ================================= */}
+            value={
+              editingProduct.stock_quantity
+            }
 
-  <div className="chart">
+            readOnly
 
-    <h3>Stock Trend</h3>
+          />
 
-    <ResponsiveContainer
-      width="100%"
-      height={500}
-    >
 
-      <LineChart
-        data={chartData}
-        margin={{
-          top: 20,
-          right: 30,
-          left: 20,
-          bottom: 130
-        }}
-      >
+          <input
 
-        <CartesianGrid
-          strokeDasharray="3 3"
-        />
+            type="number"
 
+            placeholder="Enter New Total Stock"
 
-        <XAxis
-          dataKey="displayName"
-          angle={-45}
-          textAnchor="end"
-          interval={0}
-          height={140}
-          tick={{
-            fontSize: 14,
-            fontWeight: 600
-          }}
-        />
+            value={newStock}
 
+            onChange={(e) =>
+              setNewStock(
+                e.target.value
+              )
+            }
 
-        <YAxis />
+          />
 
 
-        <Tooltip
-          content={<CustomTooltip />}
-        />
+          <button
+            onClick={updateStock}
+          >
 
+            Update Stock
 
-        <Legend />
+          </button>
 
 
-        <Line
-          type="monotone"
-          dataKey="stock"
-          name="Stock"
-          stroke="#22a7c5"
-          strokeWidth={3}
-          dot={{
-            r: 5
-          }}
-          activeDot={{
-            r: 8
-          }}
-        />
+          <button
+            onClick={cancelUpdate}
+          >
 
-      </LineChart>
+            Cancel
 
-    </ResponsiveContainer>
+          </button>
 
-  </div>
 
+        </div>
 
-  {/* ================================
-      STOCK TABLE
-  ================================= */}
+      )}
 
-  <table className="stock-table">
 
-    <thead>
+      {/* =================================
+          BAR CHART
+      ================================= */}
 
-      <tr>
+      <div className="chart">
 
-        <th>ID</th>
 
-        <th>Product</th>
+        <h3>
+          Stock Quantity
+        </h3>
 
-        <th>Category</th>
 
-        <th>Current Stock</th>
+        <ResponsiveContainer
+          width="100%"
+          height={500}
+        >
 
-        <th>Status</th>
+          <BarChart
 
-        <th>Actions</th>
+            data={chartData}
 
-      </tr>
+            margin={{
 
-    </thead>
+              top: 20,
 
+              right: 30,
 
-    <tbody>
+              left: 20,
 
-      {filteredProducts.length > 0 ? (
+              bottom: 130
 
-        filteredProducts.map(
-          (item) => (
+            }}
 
-            <tr key={item.id}>
+          >
 
-              <td>
-                {item.id}
-              </td>
 
+            <CartesianGrid
+              strokeDasharray="3 3"
+            />
 
-              <td>
-                {item.product}
-              </td>
 
+            <XAxis
 
-              <td>
-                {item.category}
-              </td>
+              dataKey="displayName"
 
+              angle={-45}
 
-              <td>
-                {item.stock}
-              </td>
+              textAnchor="end"
 
+              interval={0}
 
-              <td>
+              height={140}
 
-                <span
-                  className={getStatus(
-                    item.stock
-                  )}
-                >
+              tick={{
 
-                  {getStatus(
-                    item.stock
-                  ) === "HighStock"
+                fontSize: 12,
 
-                    ? "High Stock"
+                fontWeight: 600
 
-                    : getStatus(
-                        item.stock
-                      ) === "LowStock"
+              }}
 
-                    ? "Low Stock"
+            />
 
-                    : "Out of Stock"}
 
-                </span>
+            <YAxis />
 
-              </td>
 
+            <Tooltip
+              content={
+                <CustomTooltip />
+              }
+            />
 
-              <td>
 
-                <button
-                  className="edit-btn"
-                  onClick={() =>
-                    editProduct(item)
+            <Legend />
+
+
+            <Bar
+
+              dataKey="stock"
+
+              name="Stock"
+
+              fill="#86efe4"
+
+              radius={[
+                8,
+                8,
+                0,
+                0
+              ]}
+
+            />
+
+
+          </BarChart>
+
+        </ResponsiveContainer>
+
+
+      </div>
+
+
+      {/* =================================
+          LINE CHART
+      ================================= */}
+
+      <div className="chart">
+
+
+        <h3>
+          Current Stock Overview
+        </h3>
+
+
+        <ResponsiveContainer
+          width="100%"
+          height={500}
+        >
+
+          <LineChart
+
+            data={chartData}
+
+            margin={{
+
+              top: 20,
+
+              right: 30,
+
+              left: 20,
+
+              bottom: 130
+
+            }}
+
+          >
+
+
+            <CartesianGrid
+              strokeDasharray="3 3"
+            />
+
+
+            <XAxis
+
+              dataKey="displayName"
+
+              angle={-45}
+
+              textAnchor="end"
+
+              interval={0}
+
+              height={140}
+
+              tick={{
+
+                fontSize: 12,
+
+                fontWeight: 600
+
+              }}
+
+            />
+
+
+            <YAxis />
+
+
+            <Tooltip
+              content={
+                <CustomTooltip />
+              }
+            />
+
+
+            <Legend />
+
+
+            <Line
+
+              type="monotone"
+
+              dataKey="stock"
+
+              name="Stock"
+
+              stroke="#22a7c5"
+
+              strokeWidth={3}
+
+              dot={{
+                r: 5
+              }}
+
+              activeDot={{
+                r: 8
+              }}
+
+            />
+
+
+          </LineChart>
+
+        </ResponsiveContainer>
+
+
+      </div>
+
+
+      {/* =================================
+          STOCK TABLE
+      ================================= */}
+
+      <table className="stock-table">
+
+
+        <thead>
+
+          <tr>
+
+            <th>
+              ID
+            </th>
+
+            <th>
+              Product
+            </th>
+
+            <th>
+              Brand
+            </th>
+
+            <th>
+              Category
+            </th>
+
+            <th>
+              Current Stock
+            </th>
+
+            <th>
+              Minimum Stock
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Actions
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+
+          {filteredProducts.length > 0 ? (
+
+            filteredProducts.map(
+              (item) => (
+
+                <tr
+                  key={
+                    item.product_id
                   }
                 >
-                  Update
-                </button>
 
 
-                <button
-                  className="delete-btn"
-                  onClick={() =>
-                    deleteProduct(
-                      item.id
-                    )
-                  }
-                >
-                  Delete
-                </button>
+                  <td>
+                    {item.product_id}
+                  </td>
+
+
+                  <td>
+                    {item.product_name}
+                  </td>
+
+
+                  <td>
+                    {item.brand}
+                  </td>
+
+
+                  <td>
+                    {item.category}
+                  </td>
+
+
+                  <td>
+                    {item.stock_quantity}
+                  </td>
+
+
+                  <td>
+                    {item.minimum_stock}
+                  </td>
+
+
+                  <td>
+
+                    <span
+                      className={
+                        getStatus(item)
+                      }
+                    >
+
+                      {getStatus(item) ===
+                      "HighStock"
+
+                        ? "High Stock"
+
+                        : getStatus(item) ===
+                          "LowStock"
+
+                        ? "Low Stock"
+
+                        : "Out of Stock"}
+
+                    </span>
+
+                  </td>
+
+
+                  <td>
+
+                    <button
+
+                      className="edit-btn"
+
+                      onClick={() =>
+                        editProduct(item)
+                      }
+
+                    >
+
+                      Update
+
+                    </button>
+
+                  </td>
+
+
+                </tr>
+
+              )
+            )
+
+          ) : (
+
+            <tr>
+
+              <td
+                colSpan="8"
+              >
+
+                No Products Found
 
               </td>
 
             </tr>
 
-          )
-        )
+          )}
 
-      ) : (
 
-        <tr>
+        </tbody>
 
-          <td colSpan="6">
-            No Products Found
-          </td>
 
-        </tr>
+      </table>
 
-      )}
 
-    </tbody>
+    </div>
 
-  </table>
-
-</div>
-
-);
+  );
 
 }
 

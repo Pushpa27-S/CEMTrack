@@ -1,14 +1,28 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import db from "./db.js";
+import customerRoutes from "./routes/customerRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import inventoryRoutes from "./routes/inventoryRoutes.js";
 
 dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/images",express.static(path.join(__dirname, "public/images")));
+//app.use("/images", express.static(path.join(__dirname, "uploads")));
+app.use("/api/admin/customers", customerRoutes);
+app.use("/api/admin/products", productRoutes);
+app.use("/api/admin/inventory", inventoryRoutes);
+
 
 
 // ==================================================
@@ -168,16 +182,6 @@ app.post("/api/admin/login", async (req, res) => {
   }
 });
 
-
-// ==================================================
-// START SERVER
-// ==================================================
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-});
 app.post("/api/register", async (req, res) => {
   try {
     const {
@@ -244,4 +248,10 @@ app.post("/api/register", async (req, res) => {
       error: error.message
     });
   }
+});
+// START SERVER
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Backend server running on http://localhost:${PORT}`);
 });

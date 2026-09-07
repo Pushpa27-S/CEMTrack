@@ -142,7 +142,7 @@
   border: none;
   padding: 8px 14px;
   border-radius: 7px;
-  background: #26c7dc;
+  background: #26d0dc;
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
@@ -150,7 +150,21 @@
 }
 
 .delete-btn:hover {
-  background: #0891b2;
+  background: #1caeb9;
+}
+.edit-btn {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 7px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.edit-btn:hover {
+  background: #1d4ed8;
 }
 
 /* =================================
