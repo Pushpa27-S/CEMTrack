@@ -3,204 +3,97 @@ import "./MYOrders.css";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
-  const [selectedOrders, setSelectedOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // ===============================
-  // FETCH ORDERS
-  // ===============================
+  // ==========================================
+  // GET CUSTOMER ID
+  // ==========================================
+
+  const customerId = localStorage.getItem("customer_id") || "101";
+
+  // ==========================================
+  // FETCH ORDERS FROM DATABASE
+  // ==========================================
 
   useEffect(() => {
-    loadOrders();
+    const loadOrders = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-    window.addEventListener("storage", loadOrders);
-
-    return () => {
-      window.removeEventListener("storage", loadOrders);
-    };
-  }, []);
-
-  const loadOrders = () => {
-    const savedOrders =
-      JSON.parse(localStorage.getItem("orders")) || [];
-
-    setOrders(savedOrders);
-  };
-
-  // ===============================
-  // SELECT / UNSELECT ORDER
-  // ===============================
-
-  const handleSelectOrder = (orderId) => {
-    setSelectedOrders((previous) => {
-      if (previous.includes(orderId)) {
-        return previous.filter(
-          (id) => id !== orderId
+        const response = await fetch(
+          `http://localhost:5000/api/orders/customer/${customerId}`
         );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(
+            data.message || "Failed to fetch orders"
+          );
+        }
+
+        setOrders(data.orders || []);
+
+      } catch (err) {
+        console.error("Orders error:", err);
+        setError(err.message);
+
+      } finally {
+        setLoading(false);
       }
+    };
 
-      return [...previous, orderId];
-    });
-  };
+    loadOrders();
+  }, [customerId]);
 
-  // ===============================
-  // SELECT ALL ORDERS
-  // ===============================
+  // ==========================================
+  // LOADING
+  // ==========================================
 
-  const handleSelectAll = () => {
-    if (selectedOrders.length === orders.length) {
-      setSelectedOrders([]);
-    } else {
-      setSelectedOrders(
-        orders.map(
-          (order, index) =>
-            order.orderId || `order-${index}`
-        )
-      );
-    }
-  };
-
-  // ===============================
-  // DELETE SELECTED ORDERS
-  // ===============================
-
-  const deleteSelectedOrders = () => {
-    if (selectedOrders.length === 0) {
-      alert("Please select at least one order.");
-      return;
-    }
-
-    const answer = window.confirm(
-      `Are you sure you want to delete ${selectedOrders.length} selected order(s)?`
+  if (loading) {
+    return (
+      <div className="orders-page">
+        <div className="no-orders">
+          <h2>Loading Orders...</h2>
+          <p>Please wait.</p>
+        </div>
+      </div>
     );
+  }
 
-    if (!answer) {
-      return;
-    }
+  // ==========================================
+  // ERROR
+  // ==========================================
 
-    const updatedOrders = orders.filter(
-      (order, index) => {
-        const orderKey =
-          order.orderId || `order-${index}`;
-
-        return !selectedOrders.includes(orderKey);
-      }
+  if (error) {
+    return (
+      <div className="orders-page">
+        <div className="no-orders">
+          <h2>Unable to Load Orders</h2>
+          <p>{error}</p>
+        </div>
+      </div>
     );
+  }
 
-    localStorage.setItem(
-      "orders",
-      JSON.stringify(updatedOrders)
-    );
+  // ==========================================
+  // NO ORDERS
+  // ==========================================
 
-    setOrders(updatedOrders);
-    setSelectedOrders([]);
+  if (orders.length === 0) {
+    return (
+      <div className="orders-page">
 
-    alert("Selected orders deleted successfully.");
-  };
-
-  // ===============================
-  // CLEAR ALL ORDERS
-  // ===============================
-
-  const clearOrders = () => {
-    const answer = window.confirm(
-      "Are you sure you want to clear all orders?"
-    );
-
-    if (answer) {
-      localStorage.removeItem("orders");
-
-      setOrders([]);
-      setSelectedOrders([]);
-    }
-  };
-
-  return (
-    <div className="orders-page">
-
-      {/* ================= HEADER ================= */}
-
-      <div className="orders-header">
-
-        <div>
-          <h1>Orders</h1>
-          <p>Customer Orders</p>
+        <div className="orders-header">
+          <div>
+            <h1>Orders</h1>
+            <p>Customer Orders</p>
+          </div>
         </div>
 
-        {orders.length > 0 && (
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              alignItems: "center",
-              flexWrap: "wrap",
-            }}
-          >
-
-            {/* SELECT ALL */}
-
-            <label
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                fontWeight: "600",
-                cursor: "pointer",
-              }}
-            >
-
-              <input
-                type="checkbox"
-                checked={
-                  orders.length > 0 &&
-                  selectedOrders.length ===
-                    orders.length
-                }
-                onChange={handleSelectAll}
-                style={{
-                  width: "18px",
-                  height: "18px",
-                  cursor: "pointer",
-                }}
-              />
-
-              Select All
-
-            </label>
-
-            {/* DELETE SELECTED */}
-
-            {selectedOrders.length > 0 && (
-              <button
-                className="clear-orders-btn"
-                onClick={
-                  deleteSelectedOrders
-                }
-              >
-                🗑️ Delete Selected (
-                {selectedOrders.length})
-              </button>
-            )}
-
-            {/* CLEAR ALL */}
-
-            <button
-              className="clear-orders-btn"
-              onClick={clearOrders}
-            >
-              🗑️ Clear All Orders
-            </button>
-
-          </div>
-        )}
-
-      </div>
-
-      {/* ================= NO ORDERS ================= */}
-
-      {orders.length === 0 ? (
-
         <div className="no-orders">
-
           <div className="no-orders-icon">
             📦
           </div>
@@ -211,278 +104,181 @@ function Orders() {
             Orders placed by customers will
             automatically appear here.
           </p>
-
         </div>
 
-      ) : (
+      </div>
+    );
+  }
 
-        /* ================= ORDER LIST ================= */
+  // ==========================================
+  // DISPLAY ORDERS
+  // ==========================================
 
-        <div className="orders-container">
+  return (
+    <div className="orders-page">
 
-          {orders.map((order, index) => {
+      <div className="orders-header">
 
-            const orderKey =
-              order.orderId ||
-              `order-${index}`;
+        <div>
+          <h1>Orders</h1>
+          <p>Customer Orders</p>
+        </div>
 
-            const isSelected =
-              selectedOrders.includes(
-                orderKey
-              );
+      </div>
 
-            return (
+      <div className="orders-container">
 
-              <div
-                className="order-card"
-                key={orderKey}
-                style={{
-                  border: isSelected
-                    ? "2px solid #ea580c"
-                    : undefined,
-                }}
-              >
+        {orders.map((order) => (
 
-                {/* ================= ORDER HEADER ================= */}
+          <div
+            className="order-card"
+            key={order.order_id}
+          >
 
-                <div className="order-top">
+            {/* ORDER HEADER */}
 
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "12px",
-                      alignItems: "flex-start",
-                    }}
-                  >
+            <div className="order-top">
 
-                    {/* CHECKBOX */}
+              <div>
 
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() =>
-                        handleSelectOrder(
-                          orderKey
-                        )
-                      }
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        marginTop: "5px",
-                        cursor: "pointer",
-                      }}
-                    />
+                <h2>
+                  Order #{order.order_id}
+                </h2>
 
-                    <div>
+                <p>
+                  📅 Date:{" "}
+                  {order.order_date
+                    ? new Date(
+                        order.order_date
+                      ).toLocaleString()
+                    : "N/A"}
+                </p>
 
-                      <h2>
-                        Order #{order.orderId}
-                      </h2>
-
-                      <p>
-                        📅 Date: {order.date}
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                  <span
-                    className={`order-status ${
-                      order.status === "Placed"
-                        ? "placed"
-                        : "other-status"
-                    }`}
-                  >
-                    {order.status}
-                  </span>
-
-                </div>
-
-                {/* ================= PRODUCTS ================= */}
-
-                <div className="order-products">
-
-                  <h3>
-                    Order Details
-                  </h3>
-
-                  {order.products &&
-                  order.products.length > 0 ? (
-
-                    order.products.map(
-                      (product, productIndex) => (
-
-                        <div
-                          className="order-product"
-                          key={
-                            product.id ||
-                            productIndex
-                          }
-                        >
-
-                          {/* PRODUCT IMAGE */}
-
-                          <div className="order-product-image">
-
-                            {product.image ? (
-
-                              <img
-                                src={product.image}
-                                alt={product.brand}
-                              />
-
-                            ) : (
-
-                              <span>🧱</span>
-
-                            )}
-
-                          </div>
-
-                          {/* PRODUCT DETAILS */}
-
-                          <div className="order-product-details">
-
-                            <h3>
-                              {product.brand}
-                            </h3>
-
-                            <p>
-                              <strong>
-                                Category:
-                              </strong>{" "}
-                              {product.category}
-                            </p>
-
-                            <p>
-                              <strong>
-                                Price:
-                              </strong>{" "}
-                              ₹
-                              {product.price}
-                              {" "} / Bag
-                            </p>
-
-                            <p>
-                              <strong>
-                                Quantity:
-                              </strong>{" "}
-                              {product.quantity}
-                              {" "} Bags
-                            </p>
-
-                            <p>
-                              <strong>
-                                Product Total:
-                              </strong>{" "}
-                              ₹
-                              {Number(
-                                product.price
-                              ) *
-                                Number(
-                                  product.quantity
-                                )}
-                            </p>
-
-                          </div>
-
-                        </div>
-
-                      )
-                    )
-
-                  ) : (
-
-                    <p>
-                      No product information
-                      available.
-                    </p>
-
-                  )}
-
-                </div>
-
-                {/* ================= TOTAL ================= */}
-
-                <div className="order-bottom">
-
-                  <div className="order-total">
-
-                    <span>
-                      Total Amount
-                    </span>
-
-                    <strong>
-                      ₹{order.totalAmount}
-                    </strong>
-
-                  </div>
-
-                  <div className="order-status-text">
-
-                    Status:
-                    {" "}
-
-                    <strong>
-                      {order.status}
-                    </strong>
-
-                  </div>
-
-                </div>
-
-                {/* ================= PAYMENT ================= */}
-
-                {order.paymentMethod && (
-
-                  <div
-                    style={{
-                      marginTop: "15px",
-                      padding: "12px",
-                      background: "#f8f9fa",
-                      borderRadius: "8px",
-                    }}
-                  >
-
-                    <p
-                      style={{
-                        margin: "5px 0",
-                      }}
-                    >
-                      <strong>
-                        Payment Method:
-                      </strong>{" "}
-                      {order.paymentMethod}
-                    </p>
-
-                    <p
-                      style={{
-                        margin: "5px 0",
-                        color: "#16a34a",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      <strong>
-                        Amount Paid:
-                      </strong>{" "}
-                      ₹
-                      {order.amountPaid ??
-                        order.totalAmount}
-                    </p>
-
-                  </div>
-
-                )}
+                <p>
+                  👤 Customer ID:{" "}
+                  {order.customer_id}
+                </p>
 
               </div>
 
-            );
-          })}
+              <span
+                className={`order-status ${
+                  order.delivery_status === "Placed"
+                    ? "placed"
+                    : "other-status"
+                }`}
+              >
+                {order.delivery_status}
+              </span>
 
-        </div>
+            </div>
 
-      )}
+            {/* ORDER DETAILS */}
+
+            <div className="order-products">
+
+              <h3>
+                Order Details
+              </h3>
+
+              <div className="order-product">
+
+                {/* PRODUCT IMAGE */}
+
+                <div className="order-product-image">
+                  <span>🧱</span>
+                </div>
+
+                {/* PRODUCT DETAILS */}
+
+                <div className="order-product-details">
+
+                  <h3>
+                    {order.brand ||
+                      order.product_name}
+                  </h3>
+
+                  <p>
+                    <strong>
+                      Product:
+                    </strong>{" "}
+                    {order.product_name}
+                  </p>
+
+                  <p>
+                    <strong>
+                      Category:
+                    </strong>{" "}
+                    {order.category}
+                  </p>
+
+                  <p>
+                    <strong>
+                      Price:
+                    </strong>{" "}
+                    ₹{order.unit_price} / Bag
+                  </p>
+
+                  <p>
+                    <strong>
+                      Quantity:
+                    </strong>{" "}
+                    {order.quantity} Bags
+                  </p>
+
+                  <p>
+                    <strong>
+                      GST:
+                    </strong>{" "}
+                    ₹{order.GST}
+                  </p>
+
+                  <p>
+                    <strong>
+                      Discount:
+                    </strong>{" "}
+                    ₹{order.discount}
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* TOTAL */}
+
+            <div className="order-bottom">
+
+              <div className="order-total">
+
+                <span>
+                  Total Amount
+                </span>
+
+                <strong>
+                  ₹{order.total_amount}
+                </strong>
+
+              </div>
+
+              <div className="order-status-text">
+
+                Status:{" "}
+
+                <strong>
+                  {order.delivery_status}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        ))}
+
+      </div>
 
     </div>
   );
