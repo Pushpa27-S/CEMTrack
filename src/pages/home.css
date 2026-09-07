@@ -1,85 +1,160 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.hero{
-    width:100%;
-    height:100vh;
-    background-size:cover;
-    background-position:center;
-    background-repeat:no-repeat;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+/* ================= HERO SECTION ================= */
+
+.hero {
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.overlay{
-    background:rgba(0,0,0,0.45);
-    width:100%;
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    color:white;
-    text-align:center;
+.overlay {
+    background: rgba(0, 0, 0, 0.52);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    padding: 20px;
 }
 
-.overlay h1{
-    font-size:60px;
-    margin-bottom:20px;
+.overlay h1 {
+    font-size: 60px;
+    margin-bottom: 20px;
+    font-weight: 700;
 }
 
-.overlay p{
-    font-size:22px;
-    width:70%;
-    line-height:35px;
+.overlay p {
+    font-size: 22px;
+    width: 70%;
+    max-width: 900px;
+    line-height: 35px;
 }
 
-.btn{
-    margin-top:35px;
-    padding:15px 35px;
-    border:none;
-    border-radius:8px;
-    background:#ff9800;
-    color:white;
-    font-size:18px;
-    cursor:pointer;
+/* ================= GET STARTED BUTTON ================= */
+
+.btn {
+    margin-top: 35px;
+    padding: 15px 35px;
+    border: none;
+    border-radius: 8px;
+    background: #F97316;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
 }
 
-.btn:hover{
-    background:#e68900;
+.btn:hover {
+    background: #C2410C;
+    transform: translateY(-2px);
 }
 
-.features{
-    padding:70px 50px;
-    background:#f5f5f5;
-    text-align:center;
+/* ================= FEATURES SECTION ================= */
+
+.features {
+    padding: 80px 50px;
+    background: #FFF7ED;
+    text-align: center;
 }
 
-.features h2{
-    margin-bottom:40px;
-    color:#2c3e50;
+.features h2 {
+    margin-bottom: 45px;
+    color: #C2410C;
+    font-size: 36px;
 }
 
-.feature-container{
-    display:flex;
-    justify-content:center;
-    gap:30px;
-    flex-wrap:wrap;
+/* ================= FEATURE CARDS ================= */
+
+.feature-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
 }
 
-.feature-card{
-    width:300px;
-    background:white;
-    padding:30px;
-    border-radius:12px;
-    box-shadow:0 3px 10px rgba(0,0,0,0.15);
+.feature-card {
+    width: 300px;
+    background: white;
+    padding: 35px 30px;
+    border-radius: 12px;
+    border: 1px solid #FED7AA;
+    box-shadow: 0 4px 12px rgba(194, 65, 12, 0.12);
+    transition: 0.3s ease;
 }
 
-.feature-card h3{
-    margin-bottom:15px;
-    color:#2c3e50;
+.feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(194, 65, 12, 0.18);
+}
+
+.feature-card h3 {
+    margin-bottom: 15px;
+    color: #C2410C;
+    font-size: 21px;
+}
+
+.feature-card p {
+    color: #4B5563;
+    line-height: 1.7;
+    font-size: 16px;
+}
+
+/* ================= RESPONSIVE DESIGN ================= */
+
+@media (max-width: 768px) {
+
+    .overlay h1 {
+        font-size: 42px;
+    }
+
+    .overlay p {
+        width: 90%;
+        font-size: 18px;
+        line-height: 28px;
+    }
+
+    .features {
+        padding: 60px 20px;
+    }
+
+    .features h2 {
+        font-size: 30px;
+    }
+
+    .feature-card {
+        width: 90%;
+        max-width: 350px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .overlay h1 {
+        font-size: 34px;
+    }
+
+    .overlay p {
+        font-size: 16px;
+        line-height: 25px;
+    }
+
+    .btn {
+        padding: 13px 28px;
+        font-size: 16px;
+    }
 }
