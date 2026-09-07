@@ -1,6 +1,4 @@
 import express from "express";
-console.log("PAYMENT ROUTE VERSION LOADED");
-console.log("THIS IS THE PAYMENT CODE WE ARE RUNNING");
 import cors from "cors";
 import dotenv from "dotenv";
 import db from "./db.js";
@@ -8,12 +6,14 @@ import jwt from "jsonwebtoken";
 import authenticateToken from "./middleware/authMiddleware.js";
 
 dotenv.config();
-console.log("JWT_SECRET loaded:", !!process.env.JWT_SECRET);
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+console.log("CEMTrack server starting...");
+console.log("JWT_SECRET loaded:", !!process.env.JWT_SECRET);
 
 
 // ==================================================
@@ -34,7 +34,6 @@ app.get("/", (req, res) => {
 
 app.get("/api/test-db", async (req, res) => {
   try {
-
     const [rows] = await db.query(
       "SELECT 1 AS connected"
     );
@@ -46,7 +45,6 @@ app.get("/api/test-db", async (req, res) => {
     });
 
   } catch (error) {
-
     console.error("Database connection error:", error);
 
     res.status(500).json({
@@ -61,18 +59,14 @@ app.get("/api/test-db", async (req, res) => {
 // ==================================================
 // CUSTOMER LOGIN
 // ==================================================
-console.log("PAYMENT API REGISTERED");
+
 app.post("/api/login", async (req, res) => {
   try {
-
-<<<<<<< Updated upstream
-=======
     const {
       email,
       password
     } = req.body;
 
->>>>>>> Stashed changes
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -107,15 +101,14 @@ app.post("/api/login", async (req, res) => {
       });
     }
 
-<<<<<<< Updated upstream
     const token = jwt.sign(
       {
         customer_id: customer.customer_id,
-        role: "customer",
+        role: "customer"
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "2h",
+        expiresIn: "2h"
       }
     );
 
@@ -123,20 +116,14 @@ app.post("/api/login", async (req, res) => {
       success: true,
       message: "Login successful",
       token: token,
-=======
-    res.json({
-      success: true,
-      message: "Login successful",
-
->>>>>>> Stashed changes
       customer: {
         customer_id: customer.customer_id,
         customer_name: customer.customer_name,
         email: customer.email
       }
     });
-  } catch (error) {
 
+  } catch (error) {
     console.error("Customer login error:", error);
 
     res.status(500).json({
@@ -154,15 +141,11 @@ app.post("/api/login", async (req, res) => {
 
 app.post("/api/admin/login", async (req, res) => {
   try {
-
-<<<<<<< Updated upstream
-=======
     const {
       email,
       password
     } = req.body;
 
->>>>>>> Stashed changes
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -197,15 +180,14 @@ app.post("/api/admin/login", async (req, res) => {
       });
     }
 
-<<<<<<< Updated upstream
     const token = jwt.sign(
       {
         owner_id: owner.owner_id,
-        role: "admin",
+        role: "admin"
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "2h",
+        expiresIn: "2h"
       }
     );
 
@@ -213,20 +195,14 @@ app.post("/api/admin/login", async (req, res) => {
       success: true,
       message: "Admin login successful",
       token: token,
-=======
-    res.json({
-      success: true,
-      message: "Admin login successful",
-
->>>>>>> Stashed changes
       owner: {
         owner_id: owner.owner_id,
         owner_name: owner.owner_name,
         email: owner.email
       }
     });
-  } catch (error) {
 
+  } catch (error) {
     console.error("Admin login error:", error);
 
     res.status(500).json({
@@ -240,68 +216,10 @@ app.post("/api/admin/login", async (req, res) => {
 
 // ==================================================
 // CUSTOMER REGISTRATION
-<<<<<<< Updated upstream
 // ==================================================
 
 app.post("/api/register", async (req, res) => {
   try {
-    const {
-      customer_name,
-      email,
-      password,
-      phone_no,
-      address,
-    } = req.body;
-
-    if (
-      !customer_name ||
-      !email ||
-      !password ||
-      !phone_no ||
-      !address
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
-
-    const [existingCustomer] = await db.query(
-      "SELECT customer_id FROM customer WHERE email = ?",
-      [email]
-    );
-
-    if (existingCustomer.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: "An account with this email already exists",
-      });
-    }
-
-    const [result] = await db.query(
-      `INSERT INTO customer
-      (customer_name, email, password, phone_no, Address)
-      VALUES (?, ?, ?, ?, ?)`,
-      [
-        customer_name,
-        email,
-        password,
-        phone_no,
-        address,
-      ]
-    );
-
-    res.status(201).json({
-      success: true,
-      message: "Customer registered successfully",
-      customer_id: result.insertId,
-=======
-// ==================================================
-
-app.post("/api/register", async (req, res) => {
-
-  try {
-
     const {
       customer_name,
       email,
@@ -317,71 +235,58 @@ app.post("/api/register", async (req, res) => {
       !phone_no ||
       !address
     ) {
-
       return res.status(400).json({
         success: false,
         message: "All fields are required"
       });
     }
 
-    const [existingCustomer] =
-      await db.query(
-        `SELECT customer_id
-         FROM customer
-         WHERE email = ?`,
-        [email]
-      );
+    const [existingCustomer] = await db.query(
+      `SELECT customer_id
+       FROM customer
+       WHERE email = ?`,
+      [email]
+    );
 
     if (existingCustomer.length > 0) {
-
       return res.status(409).json({
         success: false,
         message: "An account with this email already exists"
       });
     }
 
-    const [result] =
-      await db.query(
-        `INSERT INTO customer
-        (
-          customer_name,
-          email,
-          password,
-          phone_no,
-          address
-        )
-        VALUES (?, ?, ?, ?, ?)`,
-        [
-          customer_name,
-          email,
-          password,
-          phone_no,
-          address
-        ]
-      );
+    const [result] = await db.query(
+      `INSERT INTO customer
+      (
+        customer_name,
+        email,
+        password,
+        phone_no,
+        address
+      )
+      VALUES (?, ?, ?, ?, ?)`,
+      [
+        customer_name,
+        email,
+        password,
+        phone_no,
+        address
+      ]
+    );
 
     res.status(201).json({
-
       success: true,
-
       message: "Customer registered successfully",
-
       customer_id: result.insertId
-
     });
 
   } catch (error) {
-
     console.error("Registration error:", error);
 
     res.status(500).json({
-
       success: false,
-
       message: "Registration failed",
-
       error: error.message
-
     });
   }
 });
@@ -392,23 +297,20 @@ app.post("/api/register", async (req, res) => {
 // ==================================================
 
 app.get("/api/products", async (req, res) => {
-
   try {
-
-    const [rows] =
-      await db.query(
-        `SELECT
-          product_id,
-          product_name,
-          brand,
-          category,
-          price,
-          stock_quantity,
-          minimum_stock,
-          last_updated
-         FROM products
-         ORDER BY product_id`
-      );
+    const [rows] = await db.query(
+      `SELECT
+        product_id,
+        product_name,
+        brand,
+        category,
+        price,
+        stock_quantity,
+        minimum_stock,
+        last_updated
+       FROM products
+       ORDER BY product_id`
+    );
 
     res.json({
       success: true,
@@ -416,7 +318,6 @@ app.get("/api/products", async (req, res) => {
     });
 
   } catch (error) {
-
     console.error("Get products error:", error);
 
     res.status(500).json({
@@ -433,29 +334,25 @@ app.get("/api/products", async (req, res) => {
 // ==================================================
 
 app.get("/api/products/:productId", async (req, res) => {
-
   try {
-
     const { productId } = req.params;
 
-    const [rows] =
-      await db.query(
-        `SELECT
-          product_id,
-          product_name,
-          brand,
-          category,
-          price,
-          stock_quantity,
-          minimum_stock,
-          last_updated
-         FROM products
-         WHERE product_id = ?`,
-        [productId]
-      );
+    const [rows] = await db.query(
+      `SELECT
+        product_id,
+        product_name,
+        brand,
+        category,
+        price,
+        stock_quantity,
+        minimum_stock,
+        last_updated
+       FROM products
+       WHERE product_id = ?`,
+      [productId]
+    );
 
     if (rows.length === 0) {
-
       return res.status(404).json({
         success: false,
         message: "Product not found"
@@ -468,7 +365,6 @@ app.get("/api/products/:productId", async (req, res) => {
     });
 
   } catch (error) {
-
     console.error("Get product error:", error);
 
     res.status(500).json({
@@ -485,25 +381,21 @@ app.get("/api/products/:productId", async (req, res) => {
 // ==================================================
 
 app.get("/api/products/:productId/stock", async (req, res) => {
-
   try {
-
     const { productId } = req.params;
 
-    const [rows] =
-      await db.query(
-        `SELECT
-          product_id,
-          product_name,
-          stock_quantity,
-          price
-         FROM products
-         WHERE product_id = ?`,
-        [productId]
-      );
+    const [rows] = await db.query(
+      `SELECT
+        product_id,
+        product_name,
+        stock_quantity,
+        price
+       FROM products
+       WHERE product_id = ?`,
+      [productId]
+    );
 
     if (rows.length === 0) {
-
       return res.status(404).json({
         success: false,
         message: "Product not found"
@@ -516,7 +408,6 @@ app.get("/api/products/:productId/stock", async (req, res) => {
     });
 
   } catch (error) {
-
     console.error("Stock check error:", error);
 
     res.status(500).json({
@@ -533,9 +424,7 @@ app.get("/api/products/:productId/stock", async (req, res) => {
 // ==================================================
 
 app.post("/api/cart", async (req, res) => {
-
   try {
-
     const {
       customer_id,
       product_id,
@@ -543,7 +432,6 @@ app.post("/api/cart", async (req, res) => {
     } = req.body;
 
     if (!customer_id || !product_id) {
-
       return res.status(400).json({
         success: false,
         message: "customer_id and product_id are required"
@@ -552,8 +440,7 @@ app.post("/api/cart", async (req, res) => {
 
     const qty = Number(quantity) || 1;
 
-    if (qty < 1) {
-
+    if (!Number.isInteger(qty) || qty < 1) {
       return res.status(400).json({
         success: false,
         message: "Quantity must be at least 1"
@@ -572,7 +459,6 @@ app.post("/api/cart", async (req, res) => {
     );
 
     if (products.length === 0) {
-
       return res.status(404).json({
         success: false,
         message: "Product not found"
@@ -582,7 +468,6 @@ app.post("/api/cart", async (req, res) => {
     const product = products[0];
 
     if (qty > Number(product.stock_quantity)) {
-
       return res.status(400).json({
         success: false,
         message:
@@ -599,7 +484,6 @@ app.post("/api/cart", async (req, res) => {
     );
 
     if (existing.length > 0) {
-
       const newQuantity =
         Number(existing[0].quantity) + qty;
 
@@ -607,7 +491,6 @@ app.post("/api/cart", async (req, res) => {
         newQuantity >
         Number(product.stock_quantity)
       ) {
-
         return res.status(400).json({
           success: false,
           message:
@@ -652,7 +535,6 @@ app.post("/api/cart", async (req, res) => {
     });
 
   } catch (error) {
-
     console.error("Add to cart error:", error);
 
     res.status(500).json({
@@ -669,9 +551,7 @@ app.post("/api/cart", async (req, res) => {
 // ==================================================
 
 app.get("/api/cart/:customerId", async (req, res) => {
-
   try {
-
     const { customerId } = req.params;
 
     const [rows] = await db.query(
@@ -706,7 +586,6 @@ app.get("/api/cart/:customerId", async (req, res) => {
     });
 
   } catch (error) {
-
     console.error("Get cart error:", error);
 
     res.status(500).json({
@@ -723,16 +602,13 @@ app.get("/api/cart/:customerId", async (req, res) => {
 // ==================================================
 
 app.put("/api/cart/:cartId", async (req, res) => {
-
   try {
-
     const { cartId } = req.params;
     const { quantity } = req.body;
 
     const qty = Number(quantity);
 
     if (!Number.isInteger(qty) || qty < 1) {
-
       return res.status(400).json({
         success: false,
         message: "Quantity must be at least 1"
@@ -751,7 +627,6 @@ app.put("/api/cart/:cartId", async (req, res) => {
     );
 
     if (items.length === 0) {
-
       return res.status(404).json({
         success: false,
         message: "Cart item not found"
@@ -762,7 +637,6 @@ app.put("/api/cart/:cartId", async (req, res) => {
       qty >
       Number(items[0].stock_quantity)
     ) {
-
       return res.status(400).json({
         success: false,
         message:
@@ -784,7 +658,6 @@ app.put("/api/cart/:cartId", async (req, res) => {
     });
 
   } catch (error) {
-
     console.error("Update cart error:", error);
 
     res.status(500).json({
@@ -801,9 +674,7 @@ app.put("/api/cart/:cartId", async (req, res) => {
 // ==================================================
 
 app.delete("/api/cart/:cartId", async (req, res) => {
-
   try {
-
     const { cartId } = req.params;
 
     const [result] = await db.query(
@@ -813,7 +684,6 @@ app.delete("/api/cart/:cartId", async (req, res) => {
     );
 
     if (result.affectedRows === 0) {
-
       return res.status(404).json({
         success: false,
         message: "Cart item not found"
@@ -826,12 +696,11 @@ app.delete("/api/cart/:cartId", async (req, res) => {
     });
 
   } catch (error) {
-
     console.error("Remove cart error:", error);
 
     res.status(500).json({
       success: false,
-      message: "Failed to remove product",
+      message: "Failed to remove product from cart",
       error: error.message
     });
   }
@@ -843,25 +712,22 @@ app.delete("/api/cart/:cartId", async (req, res) => {
 // ==================================================
 
 app.post("/api/orders", async (req, res) => {
-
-  const connection = await db.getConnection();
+  let connection;
 
   try {
-
     const {
       customer_id,
       product_id,
       quantity
     } = req.body;
 
-    console.log("ORDER DATA RECEIVED:",req.body);
+    console.log("ORDER DATA RECEIVED:", req.body);
 
     if (
       !customer_id ||
       !product_id ||
       !quantity
     ) {
-
       return res.status(400).json({
         success: false,
         message:
@@ -875,12 +741,13 @@ app.post("/api/orders", async (req, res) => {
       !Number.isInteger(itemQuantity) ||
       itemQuantity <= 0
     ) {
-
       return res.status(400).json({
         success: false,
         message: "Quantity must be greater than zero"
       });
     }
+
+    connection = await db.getConnection();
 
     await connection.beginTransaction();
 
@@ -898,7 +765,6 @@ app.post("/api/orders", async (req, res) => {
       );
 
     if (products.length === 0) {
-
       await connection.rollback();
 
       return res.status(404).json({
@@ -913,7 +779,6 @@ app.post("/api/orders", async (req, res) => {
       Number(product.stock_quantity) <
       itemQuantity
     ) {
-
       await connection.rollback();
 
       return res.status(400).json({
@@ -971,16 +836,33 @@ app.post("/api/orders", async (req, res) => {
         ]
       );
 
-    await connection.query
-      
+    // Reduce stock after successful order
+    await connection.query(
+      `UPDATE products
+       SET stock_quantity = stock_quantity - ?
+       WHERE product_id = ?`,
+      [
+        itemQuantity,
+        product_id
+      ]
+    );
+
+    // Remove the ordered product from customer's cart
+    await connection.query(
+      `DELETE FROM cart
+       WHERE customer_id = ?
+       AND product_id = ?`,
+      [
+        customer_id,
+        product_id
+      ]
+    );
+
     await connection.commit();
 
     res.status(201).json({
-
       success: true,
-
       message: "Order created successfully",
-
       order: {
         order_id: orderResult.insertId,
         customer_id: customer_id,
@@ -992,12 +874,12 @@ app.post("/api/orders", async (req, res) => {
         total_amount: totalAmount,
         delivery_status: "Pending"
       }
-
     });
 
   } catch (error) {
-
-    await connection.rollback();
+    if (connection) {
+      await connection.rollback();
+    }
 
     console.error("Create order error:", error);
 
@@ -1008,9 +890,9 @@ app.post("/api/orders", async (req, res) => {
     });
 
   } finally {
-
-    connection.release();
-
+    if (connection) {
+      connection.release();
+    }
   }
 });
 
@@ -1022,9 +904,7 @@ app.post("/api/orders", async (req, res) => {
 app.get(
   "/api/orders/customer/:customerId",
   async (req, res) => {
-
     try {
-
       const { customerId } = req.params;
 
       const [rows] = await db.query(
@@ -1056,15 +936,11 @@ app.get(
       });
 
     } catch (error) {
-
-      console.error(
-        "Fetch customer orders error:",
-        error
-      );
+      console.error("Get customer orders error:", error);
 
       res.status(500).json({
         success: false,
-        message: "Failed to fetch customer orders",
+        message: "Failed to fetch orders",
         error: error.message
       });
     }
@@ -1076,304 +952,12 @@ app.get(
 // CUSTOMER - VIEW SINGLE ORDER
 // ==================================================
 
-app.get(
-  "/api/orders/:orderId",
-  async (req, res) => {
-
-    try {
-
-      const { orderId } = req.params;
-
-      const [rows] = await db.query(
-        `SELECT
-          o.order_id,
-          o.customer_id,
-          o.product_id,
-          p.product_name,
-          p.brand,
-          p.category,
-          o.quantity,
-          o.unit_price,
-          o.GST,
-        o.discount,
-        o.total_amount,
-        o.order_date,
-        o.delivery_status
-       FROM orders o
-       INNER JOIN products p
-         ON o.product_id = p.product_id
-       ORDER BY o.order_date DESC`
-    );
-
-    res.json({
-      success: true,
-      orders: rows
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Fetch all orders error:",
-      error
-    );
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch orders",
-      error: error.message
-    });
-  }
-});
-
-
-// ==================================================
-// ADMIN - UPDATE ORDER STATUS
-// ==================================================
-
-app.put(
-  "/api/orders/:orderId/status",
-  async (req, res) => {
-
-    try {
-
-      const { orderId } = req.params;
-      const { delivery_status } = req.body;
-
-      if (!delivery_status) {
-
-        return res.status(400).json({
-          success: false,
-          message: "delivery_status is required"
-        });
-      }
-
-      const [result] = await db.query(
-        `UPDATE orders
-         SET delivery_status = ?
-         WHERE order_id = ?`,
-        [
-          delivery_status,
-          orderId
-        ]
-      );
-
-      if (result.affectedRows === 0) {
-
-        return res.status(404).json({
-          success: false,
-          message: "Order not found"
-        });
-      }
-
-      res.json({
-        success: true,
-        message: "Order status updated successfully"
-      });
-
-    } catch (error) {
-
-      console.error(
-        "Update order status error:",
-        error
-      );
-
-      res.status(500).json({
-        success: false,
-        message: "Failed to update order status",
-        error: error.message
-      });
-    }
-  }
-);
-
-// ==================================================
-// PAYMENT - CREATE PAYMENT
-// ==================================================
-
-app.post("/api/payment", async (req, res) => {
-  console.log("PAYMENT ROUTE CALLED");
-  const { order_id, customer_id, payment_method } = req.body;
-
-  if (!order_id || !customer_id || !payment_method) {
-    return res.status(400).json({
-      success: false,
-      message: "Missing payment details"
-    });
-  }
-
-  let connection;
-
+app.get("/api/orders/:orderId", async (req, res) => {
   try {
-    connection = await db.getConnection();
+    const { orderId } = req.params;
 
-    await connection.beginTransaction();
-
-    // Get order details
-    const [orders] = await connection.query(
-      `SELECT 
-          order_id,
-          customer_id,
-          product_id,
-          quantity,
-          total_amount,
-          delivery_status
-       FROM Orders
-       WHERE order_id = ? AND customer_id = ?`,
-      [order_id, customer_id]
-    );
-
-    if (orders.length === 0) {
-      await connection.rollback();
-
-      return res.status(404).json({
-        success: false,
-        message: "Order not found"
-      });
-    }
-
-    const order = orders[0];
-
-    // Check whether this order is already paid
-    const [existingPayments] = await connection.query(
-      `SELECT payment_id
-       FROM Payment
-       WHERE order_id = ?
-       AND payment_status = 'Paid'`,
-      [order_id]
-    );
-
-    if (existingPayments.length > 0) {
-      await connection.rollback();
-
-      return res.status(400).json({
-        success: false,
-        message: "This order has already been paid"
-      });
-    }
-
-    // Get current product stock
-    const [products] = await connection.query(
-      `SELECT product_id, product_name, stock_quantity
-       FROM Products
-       WHERE product_id = ?
-       FOR UPDATE`,
-      [order.product_id]
-    );
-
-    if (products.length === 0) {
-      await connection.rollback();
-
-      return res.status(404).json({
-        success: false,
-        message: "Product not found"
-      });
-    }
-
-    const product = products[0];
-
-    // Check stock before successful payment
-    if (Number(product.stock_quantity) < Number(order.quantity)) {
-      await connection.rollback();
-
-      return res.status(400).json({
-        success: false,
-        message: `Insufficient stock. Available stock: ${product.stock_quantity}`
-      });
-    }
-
-    const amount = Number(order.total_amount);
-    const payment_status = "Paid";
-
-    // Record payment
-    const [paymentResult] = await connection.query(
-      `INSERT INTO Payment
-       (order_id, customer_id, amount, payment_method, payment_status)
-       VALUES (?, ?, ?, ?, ?)`,
-      [
-        order_id,
-        customer_id,
-        amount,
-        payment_method,
-        payment_status
-      ]
-    );
-
-    // Reduce stock ONLY after payment is successfully recorded
-    await connection.query(
-      `UPDATE Products
-       SET stock_quantity = stock_quantity - ?,
-           last_updated = CURRENT_TIMESTAMP
-       WHERE product_id = ?`,
-      [order.quantity, order.product_id]
-    );
-
-    // Mark order as confirmed
-    await connection.query(
-      `UPDATE Orders
-       SET delivery_status = 'Confirmed'
-       WHERE order_id = ?`,
-      [order_id]
-    );
-
-    // Save everything
-    await connection.commit();
-
-    return res.status(201).json({
-      success: true,
-      message: "Payment successful and stock updated",
-      payment: {
-        payment_id: paymentResult.insertId,
-        order_id: order_id,
-        customer_id: customer_id,
-        amount: amount,
-        payment_method: payment_method,
-        payment_status: payment_status
-      }
-    });
-
-  } catch (error) {
-    if (connection) {
-      await connection.rollback();
-    }
-
-    console.error("Payment Error:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Payment failed",
-      error: error.message
-    });
-
-  } finally {
-    if (connection) {
-      connection.release();
-    }
-  }
-});
-
-
-// ==================================================
-// START SERVER
-// ==================================================
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-
-  console.log(
-    `Backend server running on http://localhost:${PORT}`
-  );
-
-});
-
-// ==================================================
-// ADMIN - VIEW ALL ORDERS
-// ==================================================
-
-app.get("/api/orders", async (req, res) => {
-  try {
-    const [rows] = await db.query(`
-      SELECT
+    const [rows] = await db.query(
+      `SELECT
         o.order_id,
         o.customer_id,
         o.product_id,
@@ -1387,128 +971,92 @@ app.get("/api/orders", async (req, res) => {
         o.total_amount,
         o.order_date,
         o.delivery_status
-      FROM orders o
-      JOIN products p
-        ON o.product_id = p.product_id
-      ORDER BY o.order_date DESC
-    `);
+       FROM orders o
+       INNER JOIN products p
+         ON o.product_id = p.product_id
+       WHERE o.order_id = ?`,
+      [orderId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      order: rows[0]
+    });
+
+  } catch (error) {
+    console.error("Get order error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch order",
+      error: error.message
+    });
+  }
+});
+
+
+// ==================================================
+// ADMIN - VIEW ALL ORDERS
+// ==================================================
+
+app.get("/api/admin/orders", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT
+        o.order_id,
+        o.customer_id,
+        c.customer_name,
+        c.email,
+        o.product_id,
+        p.product_name,
+        p.brand,
+        o.quantity,
+        o.unit_price,
+        o.GST,
+        o.discount,
+        o.total_amount,
+        o.order_date,
+        o.delivery_status
+       FROM orders o
+       INNER JOIN customer c
+         ON o.customer_id = c.customer_id
+       INNER JOIN products p
+         ON o.product_id = p.product_id
+       ORDER BY o.order_date DESC`
+    );
 
     res.json({
       success: true,
       orders: rows
->>>>>>> Stashed changes
     });
+
   } catch (error) {
-    console.error("Fetch all orders error:", error);
+    console.error("Get all orders error:", error);
 
     res.status(500).json({
       success: false,
-<<<<<<< Updated upstream
-      message: "Registration failed",
-      error: error.message,
-=======
-      message: "Failed to fetch orders",
+      message: "Failed to fetch all orders",
       error: error.message
->>>>>>> Stashed changes
     });
   }
 });
 
-<<<<<<< Updated upstream
 
-// ==================================================
-// CUSTOMER AUTHORIZATION MIDDLEWARE
-// ==================================================
-
-const requireCustomer = (req, res, next) => {
-  if (!req.user || req.user.role !== "customer") {
-    return res.status(403).json({
-      success: false,
-      message: "Customer access required",
-    });
-  }
-
-  next();
-};
-
-
-// ==================================================
-// ADMIN AUTHORIZATION MIDDLEWARE
-// ==================================================
-
-const requireAdmin = (req, res, next) => {
-  if (!req.user || req.user.role !== "admin") {
-    return res.status(403).json({
-      success: false,
-      message: "Admin access required",
-    });
-  }
-
-  next();
-};
-
-
-// ==================================================
-// TEST CUSTOMER PROTECTED ROUTE
-// ==================================================
-
-app.get(
-  "/api/customer/protected",
-  authenticateToken,
-  requireCustomer,
-  (req, res) => {
-    res.json({
-      success: true,
-      message: "Customer authorization successful",
-      user: req.user,
-    });
-  }
-);
-
-
-// ==================================================
-// TEST ADMIN PROTECTED ROUTE
-// ==================================================
-
-app.get(
-  "/api/admin/protected",
-  authenticateToken,
-  requireAdmin,
-  (req, res) => {
-    res.json({
-      success: true,
-      message: "Admin authorization successful",
-      user: req.user,
-    });
-  }
-);
-
-
-// ==================================================
-// START SERVER
-// ==================================================
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-});
-=======
 // ==================================================
 // ADMIN - UPDATE ORDER STATUS
 // ==================================================
 
-app.put("/api/orders/:orderId/status", async (req, res) => {
+app.put("/api/admin/orders/:orderId/status", async (req, res) => {
   try {
     const { orderId } = req.params;
     const { delivery_status } = req.body;
-
-    if (!delivery_status) {
-      return res.status(400).json({
-        success: false,
-        message: "Delivery status is required"
-      });
-    }
 
     const allowedStatuses = [
       "Pending",
@@ -1529,7 +1077,10 @@ app.put("/api/orders/:orderId/status", async (req, res) => {
       `UPDATE orders
        SET delivery_status = ?
        WHERE order_id = ?`,
-      [delivery_status, orderId]
+      [
+        delivery_status,
+        orderId
+      ]
     );
 
     if (result.affectedRows === 0) {
@@ -1555,4 +1106,13 @@ app.put("/api/orders/:orderId/status", async (req, res) => {
   }
 });
 
->>>>>>> Stashed changes
+
+// ==================================================
+// SERVER START
+// ==================================================
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`CEMTrack backend running on port ${PORT}`);
+});
