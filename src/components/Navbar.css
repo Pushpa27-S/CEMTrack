@@ -1,30 +1,50 @@
-.navbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:15px 30px;
-    background:#2c3e50;
-    color:white;
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: #2c3e50;
+    color: white;
 }
 
-.logo{
-    font-size:28px;
-    font-weight:bold;
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
 }
 
-.nav-links{
-    display:flex;
-    list-style:none;
-    gap:25px;
+.nav-links {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
 }
 
-.nav-links a{
-    color:white;
-    text-decoration:none;
-    font-size:18px;
-    transition:0.3s;
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 17px;
+    transition: 0.3s;
 }
 
-.nav-links a:hover{
-    color:#27ae60;
+.nav-links a:hover {
+    color: #27ae60;
+}
+
+.login-btn {
+    background: #F97316;
+    color: white;
+    padding: 9px 22px;
+    border-radius: 6px;
+    font-weight: bold;
+    border: 2px solid #F97316;
+}
+
+.nav-links .login-btn:hover {
+    background: #C2410C;
+    border-color: #C2410C;
+    color: white;
 }
