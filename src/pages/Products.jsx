@@ -261,6 +261,26 @@ function Products() {
 
   const [showAdd, setShowAdd] =
     useState(false);
+    const [showEdit, setShowEdit] =
+  useState(false);
+
+const [editProductName, setEditProductName] =
+  useState("");
+
+const [editBrand, setEditBrand] =
+  useState("");
+
+const [editCategory, setEditCategory] =
+  useState("OPC 53");
+
+const [editPrice, setEditPrice] =
+  useState("");
+
+const [editStock, setEditStock] =
+  useState("");
+
+const [editMinimumStock, setEditMinimumStock] =
+  useState("");
 
 
   // ADD PRODUCT STATES
@@ -398,6 +418,46 @@ function Products() {
     setShowDetails(true);
 
   };
+  // ========================================
+// OPEN EDIT PRODUCT
+// ========================================
+
+const handleEditClick = () => {
+
+  if (!selectedProduct) {
+    alert("Please select a product first.");
+    return;
+  }
+
+  setEditProductName(
+    selectedProduct.product_name || ""
+  );
+
+  setEditBrand(
+    selectedProduct.brand || ""
+  );
+
+  setEditCategory(
+    selectedProduct.category || "OPC 53"
+  );
+
+  setEditPrice(
+    selectedProduct.price || ""
+  );
+
+  setEditStock(
+    selectedProduct.stock_quantity || ""
+  );
+
+  setEditMinimumStock(
+    selectedProduct.minimum_stock || ""
+  );
+
+  setShowDetails(false);
+
+  setShowEdit(true);
+
+};
 
 
   // ========================================
@@ -512,6 +572,80 @@ function Products() {
     }
 
   };
+  // ========================================
+// UPDATE PRODUCT
+// ========================================
+
+const handleUpdateProduct = async (e) => {
+
+  e.preventDefault();
+
+  if (!selectedProduct) {
+    alert("No product selected.");
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      `${API_URL}/${selectedProduct.product_id}`,
+      {
+        method: "PUT",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+          product_name: editProductName,
+
+          brand: editBrand,
+
+          category: editCategory,
+
+          price: editPrice,
+
+          minimum_stock: editMinimumStock
+
+        })
+
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Failed to update product"
+      );
+
+    }
+
+    alert("Product updated successfully!");
+
+    await fetchProducts();
+
+    setShowEdit(false);
+
+    setShowDetails(false);
+
+    setSelectedProduct(null);
+
+  } catch (error) {
+
+    console.error(
+      "Update product error:",
+      error
+    );
+
+    alert(error.message);
+
+  }
+
+};
 
 
   // ========================================
@@ -667,6 +801,17 @@ function Products() {
             </select>
 
           </div>
+          {/* EDIT BUTTON */}
+
+<button
+  type="button"
+  className="edit-btn"
+  onClick={handleEditClick}
+>
+
+  ✏️ Edit Product
+
+</button>
 
 
           {/* DELETE */}
@@ -911,6 +1056,15 @@ function Products() {
                 {" "} Bags
 
               </p>
+              <button
+  type="button"
+  className="edit-btn"
+  onClick={handleEditClick}
+>
+
+  ✏️ Edit Product
+
+</button>
 
 
               {/* DELETE BUTTON */}
@@ -931,6 +1085,145 @@ function Products() {
           </div>
 
         )}
+        {/* ================================= */}
+{/* EDIT PRODUCT POPUP */}
+{/* ================================= */}
+
+{showEdit &&
+  selectedProduct && (
+
+    <div className="product-modal-overlay">
+
+      <div className="product-modal add-modal">
+
+        {/* CLOSE */}
+
+        <button
+          type="button"
+          className="modal-close"
+          onClick={() =>
+            setShowEdit(false)
+          }
+        >
+          ×
+        </button>
+
+
+        <h2>
+          Edit Product
+        </h2>
+
+
+        <form
+          onSubmit={handleUpdateProduct}
+        >
+
+
+          {/* PRODUCT NAME */}
+
+          <input
+            type="text"
+            placeholder="Product Name"
+            value={editProductName}
+            onChange={(e) =>
+              setEditProductName(
+                e.target.value
+              )
+            }
+            required
+          />
+
+
+          {/* BRAND */}
+
+          <input
+            type="text"
+            placeholder="Brand Name"
+            value={editBrand}
+            onChange={(e) =>
+              setEditBrand(
+                e.target.value
+              )
+            }
+            required
+          />
+
+
+          {/* CATEGORY */}
+
+          <select
+            value={editCategory}
+            onChange={(e) =>
+              setEditCategory(
+                e.target.value
+              )
+            }
+          >
+
+            <option value="OPC 53">
+              OPC 53
+            </option>
+
+            <option value="PPC">
+              PPC
+            </option>
+
+            <option value="White Cement">
+              White Cement
+            </option>
+
+          </select>
+
+
+          {/* PRICE */}
+
+          <input
+            type="number"
+            placeholder="Price"
+            value={editPrice}
+            onChange={(e) =>
+              setEditPrice(
+                e.target.value
+              )
+            }
+            required
+          />
+
+
+          {/* MINIMUM STOCK */}
+
+          <input
+            type="number"
+            placeholder="Minimum Stock"
+            value={editMinimumStock}
+            onChange={(e) =>
+              setEditMinimumStock(
+                e.target.value
+              )
+            }
+            required
+          />
+
+
+          {/* UPDATE BUTTON */}
+
+          <button
+            type="submit"
+            className="save-product-btn"
+          >
+
+            ✏️ Update Product
+
+          </button>
+
+
+        </form>
+
+      </div>
+
+    </div>
+
+  )}
 
 
       {/* ================================= */}

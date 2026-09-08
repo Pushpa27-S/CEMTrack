@@ -288,3 +288,13 @@ background: #1e8449;
 .view-cart-btn:hover {
   background: #1b5e20;
 }
+
+.edit-product-btn {
+  width: auto;
+  padding: 8px 14px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
