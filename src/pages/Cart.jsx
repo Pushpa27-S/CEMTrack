@@ -158,10 +158,14 @@ function Cart() {
   // SELECTED PRODUCT TOTAL
   // ===============================
 
-  const selectedTotal = selectedProduct
-    ? Number(selectedProduct.price) *
-      Number(selectedProduct.quantity)
-    : 0;
+  const selectedSubtotal = selectedProduct
+  ? Number(selectedProduct.price) *
+    Number(selectedProduct.quantity)
+  : 0;
+
+const selectedGST = selectedSubtotal * 0.18;
+
+const selectedTotal = selectedSubtotal + selectedGST;
 
   // ===============================
   // OPEN PAYMENT
@@ -259,94 +263,88 @@ function Cart() {
   // CONFIRM PAYMENT + ORDER
   // ===============================
 
-  const confirmPayment = () => {
-    if (!selectedProduct) {
-      alert("Please select a product.");
-      return;
-    }
+ const confirmPayment = async () => {
+  if (!selectedProduct) {
+    alert("Please select a product.");
+    return;
+  }
 
-    if (!validatePayment()) {
-      return;
-    }
+  if (!validatePayment()) {
+    return;
+  }
 
-    // Generate Order ID
-    const generatedOrderId =
-      "ORD-" +
-      Date.now()
-        .toString()
-        .slice(-6);
+  const customerId = 101;
+  const productId =
+    selectedProduct.product_id || selectedProduct.id;
+  const quantity =
+    selectedProduct.quantity || 1;
 
-    // Payment information
-    let paymentDetails = {
-      mode: paymentMode,
-    };
-
-    if (paymentMode === "UPI") {
-      paymentDetails = {
-        mode: "UPI",
-        app: upiApp,
-        upiId: upiId,
-      };
-    }
-
-    if (paymentMode === "Card") {
-      paymentDetails = {
-        mode: "Card",
-        cardHolder: cardName,
-        cardNumber:
-          "**** **** **** " +
-          cardNumber.slice(-4),
-      };
-    }
-
-    if (paymentMode === "Net Banking") {
-      paymentDetails = {
-        mode: "Net Banking",
-        bank: bank,
-      };
-    }
-
+  try {
     // Create order
-    const newOrder = {
-      orderId: generatedOrderId,
-
-      date:
-        new Date().toLocaleDateString(),
-
-      status: "Paid",
-
-      products: [
-        selectedProduct
-      ],
-
-      totalAmount: selectedTotal,
-
-      paidAmount: selectedTotal,
-
-      paymentMode: paymentMode,
-
-      paymentDetails: paymentDetails,
-    };
-
-    // Get previous orders
-    const existingOrders =
-      JSON.parse(
-        localStorage.getItem("orders")
-      ) || [];
-
-    // Add new order
-    const updatedOrders = [
-      ...existingOrders,
-      newOrder,
-    ];
-
-    // Save orders
-    localStorage.setItem(
-      "orders",
-      JSON.stringify(updatedOrders)
+    const orderResponse = await fetch(
+      "http://localhost:5000/api/orders",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customer_id: customerId,
+          product_id: productId,
+          quantity: quantity,
+        }),
+      }
     );
 
-    // Remove only ordered product
+    const orderData = await orderResponse.json();
+
+    if (!orderResponse.ok || !orderData.success) {
+      alert(
+        orderData.message ||
+        "Failed to create order."
+      );
+      return;
+    }
+
+    const orderId = orderData.order.order_id;
+
+    // Record payment
+    console.log("SENDING PAYMENT REQUEST");
+    const paymentResponse = await fetch(
+      "http://localhost:5000/api/payment",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          order_id: orderId,
+          customer_id: customerId,
+          payment_method: paymentMode,
+        }),
+      }
+    );
+
+    console.log("PAYMENT RESPONSE RECEIVED");
+    console.log("PAYMENT STATUS:",
+      paymentResponse.status);
+    
+
+    const paymentData =
+      await paymentResponse.json();
+
+    if (
+      !paymentResponse.ok ||
+      !paymentData.success
+    ) {
+      alert(
+        paymentData.message ||
+        "Payment failed."
+      );
+      return;
+    }
+
+    // Remove purchased product from cart
     const updatedCart = cart.filter(
       (item) =>
         item.id !== selectedProduct.id
@@ -354,23 +352,30 @@ function Cart() {
 
     updateCart(updatedCart);
 
-    // Close popup
     setShowPaymentPopup(false);
-
     setSelectedProduct(null);
 
-    // Success
     alert(
       "Payment successful!\n\n" +
       "Order ID: " +
-      generatedOrderId +
+      orderId +
       "\nAmount Paid: ₹" +
       selectedTotal
     );
 
-    // Go to orders
     navigate("/my-orders");
-  };
+
+  } catch (error) {
+    console.error(
+      "Order/Payment Error:",
+      error
+    );
+
+    alert(
+      "Cannot connect to backend server."
+    );
+  }
+};
 
   return (
     <div className="customer-home">

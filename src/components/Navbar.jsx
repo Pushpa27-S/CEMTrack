@@ -1,10 +1,14 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 
 function Navbar() {
   return (
     <nav className="navbar">
-      <h2 className="logo">CEMTrack</h2>
+      
+      <Link to="/" className="logo">
+        CEMTrack
+      </Link>
 
       <ul className="nav-links">
         <li>
@@ -18,7 +22,14 @@ function Navbar() {
         <li>
           <Link to="/contact">Contact</Link>
         </li>
+
+        <li>
+          <Link to="/adminlogin" className="login-btn">
+            Login
+          </Link>
+        </li>
       </ul>
+
     </nav>
   );
 }

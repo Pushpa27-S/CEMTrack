@@ -16,6 +16,7 @@ import Stock from "./pages/Stock";
 import Search from "./pages/Search";
 
 import AdminLogin from "./pages/AdminLogin";
+import AdminOrders from "./pages/AdminOrders";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 
@@ -25,6 +26,7 @@ import CustomerProducts from "./pages/CustomerProducts";
 import Cart from "./pages/Cart";
 import MyOrders from "./pages/MyOrders";
 import MyProfile from "./pages/MyProfile";
+
 
 import "./App.css";
 
@@ -73,6 +75,13 @@ return (
   />
 
   <Route
+    path="/adminorders"
+    element={<AdminOrders />}
+  />
+
+  
+
+  <Route
     path="/register"
     element={<Register />}
   />
@@ -118,6 +127,8 @@ return (
   {/* ================= ADMIN ================= */}
 
   <Route element={<AdminLayout />}>
+
+    
 
     <Route
       path="/dashboard"
