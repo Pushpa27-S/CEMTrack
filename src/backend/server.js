@@ -38,14 +38,160 @@ console.log("=================================");
 
 
 // ==================================================
+// AUTOMATIC ORDER STATUS SETTINGS
+// ==================================================
+//
+// DEMO TIMING
+//
+// Confirmed       -> immediately
+// Processing      -> after 1 minute
+// Shipped         -> after 2 minutes
+// Out for Delivery-> after 3 minutes
+// Delivered       -> after 4 minutes
+//
+// You can later change these values.
+//
+// ==================================================
+
+const ORDER_STATUS_TIMINGS = {
+  Processing: 1 * 60 * 1000,
+  Shipped: 2 * 60 * 1000,
+  "Out for Delivery": 3 * 60 * 1000,
+  Delivered: 4 * 60 * 1000
+};
+
+
+// ==================================================
+// AUTOMATIC ORDER STATUS UPDATE
+// ==================================================
+
+const updateAutomaticOrderStatuses = async () => {
+
+  try {
+
+    // ------------------------------------------------
+    // CONFIRMED -> PROCESSING
+    // ------------------------------------------------
+
+    await db.query(
+      `UPDATE orders
+       SET delivery_status = 'Processing'
+       WHERE delivery_status = 'Confirmed'
+       AND TIMESTAMPDIFF(
+         SECOND,
+         order_date,
+         NOW()
+       ) >= ?`,
+      [
+        Math.floor(
+          ORDER_STATUS_TIMINGS.Processing / 1000
+        )
+      ]
+    );
+
+
+    // ------------------------------------------------
+    // PROCESSING -> SHIPPED
+    // ------------------------------------------------
+
+    await db.query(
+      `UPDATE orders
+       SET delivery_status = 'Shipped'
+       WHERE delivery_status = 'Processing'
+       AND TIMESTAMPDIFF(
+         SECOND,
+         order_date,
+         NOW()
+       ) >= ?`,
+      [
+        Math.floor(
+          ORDER_STATUS_TIMINGS.Shipped / 1000
+        )
+      ]
+    );
+
+
+    // ------------------------------------------------
+    // SHIPPED -> OUT FOR DELIVERY
+    // ------------------------------------------------
+
+    await db.query(
+      `UPDATE orders
+       SET delivery_status = 'Out for Delivery'
+       WHERE delivery_status = 'Shipped'
+       AND TIMESTAMPDIFF(
+         SECOND,
+         order_date,
+         NOW()
+       ) >= ?`,
+      [
+        Math.floor(
+          ORDER_STATUS_TIMINGS["Out for Delivery"] / 1000
+        )
+      ]
+    );
+
+
+    // ------------------------------------------------
+    // OUT FOR DELIVERY -> DELIVERED
+    // ------------------------------------------------
+
+    await db.query(
+      `UPDATE orders
+       SET delivery_status = 'Delivered'
+       WHERE delivery_status = 'Out for Delivery'
+       AND TIMESTAMPDIFF(
+         SECOND,
+         order_date,
+         NOW()
+       ) >= ?`,
+      [
+        Math.floor(
+          ORDER_STATUS_TIMINGS.Delivered / 1000
+        )
+      ]
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Automatic order status update error:",
+      error
+    );
+
+  }
+
+};
+
+
+// ==================================================
+// RUN AUTOMATIC STATUS CHECK
+// ==================================================
+
+setInterval(
+  updateAutomaticOrderStatuses,
+  10 * 1000
+);
+
+
+// Run once when server starts
+updateAutomaticOrderStatuses();
+
+
+// ==================================================
 // HOME / SERVER TEST
 // ==================================================
 
 app.get("/", (req, res) => {
 
   return res.json({
+
     success: true,
-    message: "CEMTrack backend is running"
+
+    message:
+      "CEMTrack backend is running"
+
   });
 
 });
@@ -62,18 +208,29 @@ app.get("/api/test-db", async (req, res) => {
 
   try {
 
-    console.log("Testing MySQL connection...");
-
-    const [rows] = await db.query(
-      "SELECT 1 AS connected"
+    console.log(
+      "Testing MySQL connection..."
     );
 
-    console.log("MySQL test successful");
+    const [rows] =
+      await db.query(
+        "SELECT 1 AS connected"
+      );
+
+    console.log(
+      "MySQL test successful"
+    );
 
     return res.json({
+
       success: true,
-      message: "Database connected successfully",
-      result: rows
+
+      message:
+        "Database connected successfully",
+
+      result:
+        rows
+
     });
 
   } catch (error) {
@@ -84,9 +241,15 @@ app.get("/api/test-db", async (req, res) => {
     );
 
     return res.status(500).json({
+
       success: false,
-      message: "Database connection failed",
-      error: error.message
+
+      message:
+        "Database connection failed",
+
+      error:
+        error.message
+
     });
 
   }
@@ -98,269 +261,337 @@ app.get("/api/test-db", async (req, res) => {
 // CUSTOMER LOGIN
 // ==================================================
 
-app.post("/api/login", async (req, res) => {
-
-  console.log("=================================");
-  console.log("CUSTOMER LOGIN REQUEST");
-
-  try {
-
-    const {
-      email,
-      password
-    } = req.body;
+app.post(
+  "/api/login",
+  async (req, res) => {
 
     console.log(
-      "Customer email:",
-      email
+      "================================="
     );
 
     console.log(
-      "Customer password received:",
-      !!password
+      "CUSTOMER LOGIN REQUEST"
     );
 
+    try {
 
-    // ------------------------------------------------
-    // VALIDATE
-    // ------------------------------------------------
-
-    if (!email || !password) {
-
-      return res.status(400).json({
-        success: false,
-        message: "Email and password are required"
-      });
-
-    }
-
-
-    // ------------------------------------------------
-    // FIND CUSTOMER
-    // ------------------------------------------------
-
-    console.log(
-      "Checking customer table..."
-    );
-
-    const [rows] = await db.query(
-
-      `SELECT
-        customer_id,
-        customer_name,
+      const {
         email,
         password
-       FROM customer
-       WHERE email = ?`,
-
-      [email]
-
-    );
+      } = req.body;
 
 
-    console.log(
-      "Customer query completed"
-    );
+      if (!email || !password) {
 
-    console.log(
-      "Customers found:",
-      rows.length
-    );
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Email and password are required"
+
+        });
+
+      }
 
 
-    // ------------------------------------------------
-    // CUSTOMER NOT FOUND
-    // ------------------------------------------------
+      const [rows] =
+        await db.query(
 
-    if (rows.length === 0) {
+          `SELECT
+            customer_id,
+            customer_name,
+            email,
+            password
+           FROM customer
+           WHERE email = ?`,
 
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password"
+          [email]
+
+        );
+
+
+      if (rows.length === 0) {
+
+        return res.status(401).json({
+
+          success: false,
+
+          message:
+            "Invalid email or password"
+
+        });
+
+      }
+
+
+      const customer =
+        rows[0];
+
+
+      if (
+        customer.password !==
+        password
+      ) {
+
+        return res.status(401).json({
+
+          success: false,
+
+          message:
+            "Invalid email or password"
+
+        });
+
+      }
+
+
+      if (!process.env.JWT_SECRET) {
+
+        return res.status(500).json({
+
+          success: false,
+
+          message:
+            "JWT_SECRET is not configured"
+
+        });
+
+      }
+
+
+      const token =
+        jwt.sign(
+
+          {
+
+            customer_id:
+              customer.customer_id,
+
+            role:
+              "customer"
+
+          },
+
+          process.env.JWT_SECRET,
+
+          {
+            expiresIn:
+              "2h"
+          }
+
+        );
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          "Login successful",
+
+        token:
+
+          token,
+
+        customer: {
+
+          customer_id:
+            customer.customer_id,
+
+          customer_name:
+            customer.customer_name,
+
+          email:
+            customer.email
+
+        }
+
       });
 
-    }
-
-
-    const customer = rows[0];
-
-
-    // ------------------------------------------------
-    // PASSWORD CHECK
-    // ------------------------------------------------
-
-    if (customer.password !== password) {
-
-      console.log(
-        "Customer password mismatch"
-      );
-
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password"
-      });
-
-    }
-
-
-    console.log(
-      "Customer password correct"
-    );
-
-
-    // ------------------------------------------------
-    // JWT CHECK
-    // ------------------------------------------------
-
-    if (!process.env.JWT_SECRET) {
+    } catch (error) {
 
       console.error(
-        "JWT_SECRET is missing"
+        "CUSTOMER LOGIN ERROR:",
+        error
       );
 
       return res.status(500).json({
+
         success: false,
-        message: "JWT_SECRET is not configured"
+
+        message:
+          "Server error",
+
+        error:
+          error.message
+
       });
 
     }
 
-
-    // ------------------------------------------------
-    // CREATE CUSTOMER TOKEN
-    // ------------------------------------------------
-
-    const token = jwt.sign(
-
-      {
-        customer_id:
-          customer.customer_id,
-
-        role:
-          "customer"
-      },
-
-      process.env.JWT_SECRET,
-
-      {
-        expiresIn: "2h"
-      }
-
-    );
-
-
-    console.log(
-      "Customer JWT created"
-    );
-
-
-    // ------------------------------------------------
-    // RESPONSE
-    // ------------------------------------------------
-
-    return res.json({
-
-      success: true,
-
-      message:
-        "Login successful",
-
-      token:
-        token,
-
-      customer: {
-
-        customer_id:
-          customer.customer_id,
-
-        customer_name:
-          customer.customer_name,
-
-        email:
-          customer.email
-
-      }
-
-    });
-
-  } catch (error) {
-
-    console.error(
-      "CUSTOMER LOGIN ERROR:",
-      error
-    );
-
-    return res.status(500).json({
-
-      success: false,
-
-      message:
-        "Server error",
-
-      error:
-        error.message
-
-    });
-
   }
-
-});
+);
 
 
 // ==================================================
 // ADMIN LOGIN
 // ==================================================
 
-app.post("/api/admin/login", async (req, res) => {
-
-  console.log("=================================");
-  console.log("ADMIN LOGIN REQUEST RECEIVED");
-
-  try {
-
-    const {
-      email,
-      password
-    } = req.body;
-
+app.post(
+  "/api/admin/login",
+  async (req, res) => {
 
     console.log(
-      "Admin email:",
-      email
+      "================================="
     );
 
     console.log(
-      "Admin password received:",
-      !!password
+      "ADMIN LOGIN REQUEST RECEIVED"
     );
 
+    try {
 
-    // ------------------------------------------------
-    // VALIDATE
-    // ------------------------------------------------
+      const {
+        email,
+        password
+      } = req.body;
 
-    if (!email || !password) {
 
-      return res.status(400).json({
+      if (!email || !password) {
 
-        success: false,
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Email and password are required"
+
+        });
+
+      }
+
+
+      if (!process.env.JWT_SECRET) {
+
+        return res.status(500).json({
+
+          success: false,
+
+          message:
+            "JWT_SECRET is not configured"
+
+        });
+
+      }
+
+
+      const [rows] =
+        await db.query(
+
+          `SELECT
+            owner_id,
+            owner_name,
+            email,
+            password
+           FROM owner
+           WHERE email = ?`,
+
+          [email]
+
+        );
+
+
+      if (rows.length === 0) {
+
+        return res.status(401).json({
+
+          success: false,
+
+          message:
+            "Invalid email or password"
+
+        });
+
+      }
+
+
+      const owner =
+        rows[0];
+
+
+      if (
+        owner.password !==
+        password
+      ) {
+
+        return res.status(401).json({
+
+          success: false,
+
+          message:
+            "Invalid email or password"
+
+        });
+
+      }
+
+
+      const token =
+        jwt.sign(
+
+          {
+
+            owner_id:
+              owner.owner_id,
+
+            role:
+              "admin"
+
+          },
+
+          process.env.JWT_SECRET,
+
+          {
+
+            expiresIn:
+              "2h"
+
+          }
+
+        );
+
+
+      return res.json({
+
+        success: true,
 
         message:
-          "Email and password are required"
+          "Admin login successful",
+
+        token:
+          token,
+
+        owner: {
+
+          owner_id:
+            owner.owner_id,
+
+          owner_name:
+            owner.owner_name,
+
+          email:
+            owner.email
+
+        }
 
       });
 
-    }
-
-
-    // ------------------------------------------------
-    // CHECK JWT SECRET
-    // ------------------------------------------------
-
-    if (!process.env.JWT_SECRET) {
+    } catch (error) {
 
       console.error(
-        "JWT_SECRET is missing from .env"
+        "ADMIN LOGIN ERROR:",
+        error
       );
 
       return res.status(500).json({
@@ -368,255 +599,79 @@ app.post("/api/admin/login", async (req, res) => {
         success: false,
 
         message:
-          "JWT_SECRET is not configured"
+          "Server error",
+
+        error:
+          error.message
 
       });
 
     }
-
-
-    // ------------------------------------------------
-    // TEST MYSQL
-    // ------------------------------------------------
-
-    console.log(
-      "STEP 1 - Testing MySQL..."
-    );
-
-    const [test] = await db.query(
-      "SELECT 1 AS test"
-    );
-
-    console.log(
-      "STEP 2 - MySQL works:",
-      test
-    );
-
-
-    // ------------------------------------------------
-    // CHECK OWNER TABLE
-    // ------------------------------------------------
-
-    console.log(
-      "STEP 3 - Checking owner table..."
-    );
-
-    const [rows] = await db.query(
-
-      `SELECT
-        owner_id,
-        owner_name,
-        email,
-        password
-       FROM owner
-       WHERE email = ?`,
-
-      [email]
-
-    );
-
-
-    console.log(
-      "STEP 4 - Owner query completed"
-    );
-
-    console.log(
-      "ROWS FOUND:",
-      rows.length
-    );
-
-
-    // ------------------------------------------------
-    // OWNER NOT FOUND
-    // ------------------------------------------------
-
-    if (rows.length === 0) {
-
-      return res.status(401).json({
-
-        success: false,
-
-        message:
-          "Invalid email or password"
-
-      });
-
-    }
-
-
-    const owner = rows[0];
-
-
-    // ------------------------------------------------
-    // PASSWORD CHECK
-    // ------------------------------------------------
-
-    if (owner.password !== password) {
-
-      console.log(
-        "STEP 6 - Admin password mismatch"
-      );
-
-      return res.status(401).json({
-
-        success: false,
-
-        message:
-          "Invalid email or password"
-
-      });
-
-    }
-
-
-    console.log(
-      "STEP 7 - Admin password correct"
-    );
-
-
-    // ------------------------------------------------
-    // CREATE ADMIN JWT
-    // ------------------------------------------------
-
-    const token = jwt.sign(
-
-      {
-
-        owner_id:
-          owner.owner_id,
-
-        role:
-          "admin"
-
-      },
-
-      process.env.JWT_SECRET,
-
-      {
-
-        expiresIn:
-          "2h"
-
-      }
-
-    );
-
-
-    console.log(
-      "STEP 9 - Admin JWT created"
-    );
-
-
-    // ------------------------------------------------
-    // RESPONSE
-    // ------------------------------------------------
-
-    return res.json({
-
-      success: true,
-
-      message:
-        "Admin login successful",
-
-      token:
-        token,
-
-      owner: {
-
-        owner_id:
-          owner.owner_id,
-
-        owner_name:
-          owner.owner_name,
-
-        email:
-          owner.email
-
-      }
-
-    });
-
-  } catch (error) {
-
-    console.error(
-      "ADMIN LOGIN ERROR:",
-      error
-    );
-
-    return res.status(500).json({
-
-      success: false,
-
-      message:
-        "Server error",
-
-      error:
-        error.message
-
-    });
 
   }
-
-});
+);
 
 
 // ==================================================
 // GET ALL PRODUCTS
 // ==================================================
 
-app.get("/api/products", async (req, res) => {
+app.get(
+  "/api/products",
+  async (req, res) => {
 
-  try {
+    try {
 
-    const [rows] = await db.query(
+      const [rows] =
+        await db.query(
 
-      `SELECT
-        product_id,
-        product_name,
-        brand,
-        category,
-        price,
-        stock_quantity,
-        minimum_stock,
-        last_updated
-       FROM products
-       ORDER BY product_id`
+          `SELECT
+            product_id,
+            product_name,
+            brand,
+            category,
+            price,
+            stock_quantity,
+            minimum_stock,
+            last_updated
+           FROM products
+           ORDER BY product_id`
 
-    );
-
-
-    return res.json({
-
-      success: true,
-
-      products:
-        rows
-
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Get products error:",
-      error
-    );
+        );
 
 
-    return res.status(500).json({
+      return res.json({
 
-      success: false,
+        success: true,
 
-      message:
-        "Failed to fetch products",
+        products:
+          rows
 
-      error:
-        error.message
+      });
 
-    });
+    } catch (error) {
+
+      console.error(
+        "Get products error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Failed to fetch products",
+
+        error:
+          error.message
+
+      });
+
+    }
 
   }
-
-});
+);
 
 
 // ==================================================
@@ -634,23 +689,24 @@ app.get(
       } = req.params;
 
 
-      const [rows] = await db.query(
+      const [rows] =
+        await db.query(
 
-        `SELECT
-          product_id,
-          product_name,
-          brand,
-          category,
-          price,
-          stock_quantity,
-          minimum_stock,
-          last_updated
-         FROM products
-         WHERE product_id = ?`,
+          `SELECT
+            product_id,
+            product_name,
+            brand,
+            category,
+            price,
+            stock_quantity,
+            minimum_stock,
+            last_updated
+           FROM products
+           WHERE product_id = ?`,
 
-        [productId]
+          [productId]
 
-      );
+        );
 
 
       if (rows.length === 0) {
@@ -682,7 +738,6 @@ app.get(
         "Get product error:",
         error
       );
-
 
       return res.status(500).json({
 
@@ -717,19 +772,20 @@ app.get(
       } = req.params;
 
 
-      const [rows] = await db.query(
+      const [rows] =
+        await db.query(
 
-        `SELECT
-          product_id,
-          product_name,
-          stock_quantity,
-          price
-         FROM products
-         WHERE product_id = ?`,
+          `SELECT
+            product_id,
+            product_name,
+            stock_quantity,
+            price
+           FROM products
+           WHERE product_id = ?`,
 
-        [productId]
+          [productId]
 
-      );
+        );
 
 
       if (rows.length === 0) {
@@ -762,13 +818,12 @@ app.get(
         error
       );
 
-
       return res.status(500).json({
 
         success: false,
 
         message:
-          "Failed to check stock",
+          "Failed to check product stock",
 
         error:
           error.message
@@ -836,10 +891,6 @@ app.post(
       }
 
 
-      // ------------------------------------------------
-      // CHECK PRODUCT
-      // ------------------------------------------------
-
       const [products] =
         await db.query(
 
@@ -874,10 +925,6 @@ app.post(
         products[0];
 
 
-      // ------------------------------------------------
-      // CHECK STOCK
-      // ------------------------------------------------
-
       if (
         qty >
         Number(product.stock_quantity)
@@ -895,10 +942,6 @@ app.post(
       }
 
 
-      // ------------------------------------------------
-      // CHECK EXISTING CART ITEM
-      // ------------------------------------------------
-
       const [existing] =
         await db.query(
 
@@ -915,20 +958,21 @@ app.post(
         );
 
 
-      // ------------------------------------------------
-      // UPDATE EXISTING ITEM
-      // ------------------------------------------------
-
-      if (existing.length > 0) {
+      if (
+        existing.length > 0
+      ) {
 
         const newQuantity =
-          Number(existing[0].quantity) +
-          qty;
+          Number(
+            existing[0].quantity
+          ) + qty;
 
 
         if (
           newQuantity >
-          Number(product.stock_quantity)
+          Number(
+            product.stock_quantity
+          )
         ) {
 
           return res.status(400).json({
@@ -975,10 +1019,6 @@ app.post(
       }
 
 
-      // ------------------------------------------------
-      // INSERT NEW CART ITEM
-      // ------------------------------------------------
-
       const [result] =
         await db.query(
 
@@ -1020,7 +1060,6 @@ app.post(
         "Add to cart error:",
         error
       );
-
 
       return res.status(500).json({
 
@@ -1084,7 +1123,9 @@ app.get(
 
           (sum, item) =>
             sum +
-            Number(item.item_total),
+            Number(
+              item.item_total
+            ),
 
           0
 
@@ -1109,7 +1150,6 @@ app.get(
         "Get cart error:",
         error
       );
-
 
       return res.status(500).json({
 
@@ -1142,6 +1182,7 @@ app.put(
       const {
         cartId
       } = req.params;
+
 
       const {
         quantity
@@ -1177,7 +1218,8 @@ app.put(
             p.stock_quantity
            FROM cart c
            INNER JOIN products p
-             ON c.product_id = p.product_id
+             ON c.product_id =
+                p.product_id
            WHERE c.cart_id = ?`,
 
           [cartId]
@@ -1250,7 +1292,6 @@ app.put(
         "Update cart error:",
         error
       );
-
 
       return res.status(500).json({
 
@@ -1328,7 +1369,6 @@ app.delete(
         error
       );
 
-
       return res.status(500).json({
 
         success: false,
@@ -1395,7 +1435,9 @@ app.post(
 
 
       if (
-        !Number.isInteger(itemQuantity) ||
+        !Number.isInteger(
+          itemQuantity
+        ) ||
         itemQuantity <= 0
       ) {
 
@@ -1410,10 +1452,6 @@ app.post(
 
       }
 
-
-      // ------------------------------------------------
-      // GET CONNECTION
-      // ------------------------------------------------
 
       connection =
         await db.getConnection();
@@ -1463,13 +1501,10 @@ app.post(
         products[0];
 
 
-      // ------------------------------------------------
-      // CHECK STOCK
-      // ------------------------------------------------
-
       if (
-        Number(product.stock_quantity) <
-        itemQuantity
+        Number(
+          product.stock_quantity
+        ) < itemQuantity
       ) {
 
         await connection.rollback();
@@ -1486,10 +1521,6 @@ app.post(
       }
 
 
-      // ------------------------------------------------
-      // PRICE
-      // ------------------------------------------------
-
       const unitPrice =
         Number(product.price);
 
@@ -1501,7 +1532,6 @@ app.post(
             unitPrice *
             itemQuantity *
             0.18
-
           ).toFixed(2)
 
         );
@@ -1515,12 +1545,10 @@ app.post(
         Number(
 
           (
-
             unitPrice *
             itemQuantity +
             GST -
             discount
-
           ).toFixed(2)
 
         );
@@ -1581,7 +1609,7 @@ app.post(
 
 
       // ------------------------------------------------
-      // REMOVE FROM CART
+      // REMOVE CART ITEM
       // ------------------------------------------------
 
       await connection.query(
@@ -1597,10 +1625,6 @@ app.post(
 
       );
 
-
-      // ------------------------------------------------
-      // COMMIT
-      // ------------------------------------------------
 
       await connection.commit();
 
@@ -1624,10 +1648,10 @@ app.post(
             orderResult.insertId,
 
           customer_id:
-            customer_id,
+            Number(customer_id),
 
           product_id:
-            product_id,
+            Number(product_id),
 
           quantity:
             itemQuantity,
@@ -1704,15 +1728,20 @@ app.post(
 
 
 // ==================================================
-// PAYMENT - RECORD PAYMENT
+// PAYMENT
 // ==================================================
 
 app.post(
   "/api/payment",
   async (req, res) => {
 
-    console.log("=================================");
-    console.log("PAYMENT REQUEST RECEIVED");
+    console.log(
+      "================================="
+    );
+
+    console.log(
+      "PAYMENT REQUEST RECEIVED"
+    );
 
     try {
 
@@ -1722,26 +1751,6 @@ app.post(
         payment_method
       } = req.body;
 
-
-      console.log(
-        "Order ID:",
-        order_id
-      );
-
-      console.log(
-        "Customer ID:",
-        customer_id
-      );
-
-      console.log(
-        "Payment Method:",
-        payment_method
-      );
-
-
-      // ------------------------------------------------
-      // VALIDATE REQUEST
-      // ------------------------------------------------
 
       if (
         !order_id ||
@@ -1760,10 +1769,6 @@ app.post(
 
       }
 
-
-      // ------------------------------------------------
-      // GET ORDER
-      // ------------------------------------------------
 
       const [orders] =
         await db.query(
@@ -1803,15 +1808,15 @@ app.post(
         orders[0];
 
 
-      // ------------------------------------------------
-      // GET PAYMENT AMOUNT
-      // ------------------------------------------------
-
       const amount =
-        Number(order.total_amount);
+        Number(
+          order.total_amount
+        );
 
 
-      if (!Number.isFinite(amount)) {
+      if (
+        !Number.isFinite(amount)
+      ) {
 
         return res.status(400).json({
 
@@ -1824,10 +1829,6 @@ app.post(
 
       }
 
-
-      // ------------------------------------------------
-      // CHECK EXISTING PAYMENT
-      // ------------------------------------------------
 
       const [existingPayments] =
         await db.query(
@@ -1848,7 +1849,9 @@ app.post(
         );
 
 
-      if (existingPayments.length > 0) {
+      if (
+        existingPayments.length > 0
+      ) {
 
         return res.status(400).json({
 
@@ -1867,10 +1870,6 @@ app.post(
 
       }
 
-
-      // ------------------------------------------------
-      // INSERT PAYMENT
-      // ------------------------------------------------
 
       const [paymentResult] =
         await db.query(
@@ -1895,16 +1894,6 @@ app.post(
 
         );
 
-
-      console.log(
-        "Payment recorded successfully:",
-        paymentResult.insertId
-      );
-
-
-      // ------------------------------------------------
-      // RESPONSE
-      // ------------------------------------------------
 
       return res.status(201).json({
 
@@ -1937,14 +1926,12 @@ app.post(
 
       });
 
-
     } catch (error) {
 
       console.error(
         "PAYMENT ERROR:",
         error
       );
-
 
       return res.status(500).json({
 
@@ -1998,7 +1985,8 @@ app.get(
             o.delivery_status
            FROM orders o
            INNER JOIN products p
-             ON o.product_id = p.product_id
+             ON o.product_id =
+                p.product_id
            WHERE o.customer_id = ?
            ORDER BY o.order_date DESC`,
 
@@ -2022,7 +2010,6 @@ app.get(
         "Get customer orders error:",
         error
       );
-
 
       return res.status(500).json({
 
@@ -2076,7 +2063,8 @@ app.get(
             o.delivery_status
            FROM orders o
            INNER JOIN products p
-             ON o.product_id = p.product_id
+             ON o.product_id =
+                p.product_id
            WHERE o.order_id = ?`,
 
           [orderId]
@@ -2114,7 +2102,6 @@ app.get(
         error
       );
 
-
       return res.status(500).json({
 
         success: false,
@@ -2149,20 +2136,11 @@ app.put(
         orderId
       } = req.params;
 
+
       const {
         customer_id
       } = req.body;
 
-
-      console.log("=================================");
-      console.log("CUSTOMER CANCEL ORDER");
-      console.log("Order ID:", orderId);
-      console.log("Customer ID:", customer_id);
-
-
-      // ------------------------------------------------
-      // VALIDATE CUSTOMER ID
-      // ------------------------------------------------
 
       if (!customer_id) {
 
@@ -2178,19 +2156,12 @@ app.put(
       }
 
 
-      // ------------------------------------------------
-      // GET CONNECTION
-      // ------------------------------------------------
-
       connection =
         await db.getConnection();
 
+
       await connection.beginTransaction();
 
-
-      // ------------------------------------------------
-      // GET ORDER AND LOCK IT
-      // ------------------------------------------------
 
       const [orders] =
         await connection.query(
@@ -2214,10 +2185,6 @@ app.put(
         );
 
 
-      // ------------------------------------------------
-      // ORDER NOT FOUND
-      // ------------------------------------------------
-
       if (orders.length === 0) {
 
         await connection.rollback();
@@ -2237,10 +2204,6 @@ app.put(
       const order =
         orders[0];
 
-
-      // ------------------------------------------------
-      // CHECK CURRENT STATUS
-      // ------------------------------------------------
 
       if (
         order.delivery_status ===
@@ -2280,9 +2243,7 @@ app.put(
       }
 
 
-      // ------------------------------------------------
-      // RESTORE STOCK
-      // ------------------------------------------------
+      // Restore stock
 
       await connection.query(
 
@@ -2299,14 +2260,13 @@ app.put(
       );
 
 
-      // ------------------------------------------------
-      // UPDATE ORDER STATUS
-      // ------------------------------------------------
+      // Cancel order
 
       await connection.query(
 
         `UPDATE orders
-         SET delivery_status = 'Cancelled'
+         SET delivery_status =
+           'Cancelled'
          WHERE order_id = ?
          AND customer_id = ?`,
 
@@ -2318,16 +2278,7 @@ app.put(
       );
 
 
-      // ------------------------------------------------
-      // COMMIT
-      // ------------------------------------------------
-
       await connection.commit();
-
-
-      console.log(
-        "Order cancelled successfully"
-      );
 
 
       return res.json({
@@ -2412,10 +2363,6 @@ app.get(
   "/api/admin/orders",
   async (req, res) => {
 
-    console.log(
-      "ADMIN - GET ALL ORDERS"
-    );
-
     try {
 
       const [rows] =
@@ -2439,9 +2386,11 @@ app.get(
             o.delivery_status
            FROM orders o
            INNER JOIN customer c
-             ON o.customer_id = c.customer_id
+             ON o.customer_id =
+                c.customer_id
            INNER JOIN products p
-             ON o.product_id = p.product_id
+             ON o.product_id =
+                p.product_id
            ORDER BY o.order_date DESC`
 
         );
@@ -2463,7 +2412,6 @@ app.get(
         error
       );
 
-
       return res.status(500).json({
 
         success: false,
@@ -2483,7 +2431,12 @@ app.get(
 
 
 // ==================================================
-// ADMIN - UPDATE ORDER STATUS
+// ADMIN - MANUAL STATUS UPDATE
+// ==================================================
+//
+// This remains available for the admin if needed.
+// Automatic status updates also work independently.
+//
 // ==================================================
 
 const updateOrderStatus =
@@ -2500,29 +2453,6 @@ const updateOrderStatus =
         delivery_status
       } = req.body;
 
-
-      console.log(
-        "================================="
-      );
-
-      console.log(
-        "ADMIN UPDATE ORDER STATUS"
-      );
-
-      console.log(
-        "Order ID:",
-        orderId
-      );
-
-      console.log(
-        "New status:",
-        delivery_status
-      );
-
-
-      // ------------------------------------------------
-      // VALIDATE STATUS
-      // ------------------------------------------------
 
       if (!delivery_status) {
 
@@ -2578,10 +2508,6 @@ const updateOrderStatus =
       }
 
 
-      // ------------------------------------------------
-      // CHECK ORDER
-      // ------------------------------------------------
-
       const [orders] =
         await db.query(
 
@@ -2610,10 +2536,6 @@ const updateOrderStatus =
       }
 
 
-      // ------------------------------------------------
-      // UPDATE STATUS
-      // ------------------------------------------------
-
       await db.query(
 
         `UPDATE orders
@@ -2625,11 +2547,6 @@ const updateOrderStatus =
           orderId
         ]
 
-      );
-
-
-      console.log(
-        "Order status updated successfully"
       );
 
 
@@ -2655,7 +2572,6 @@ const updateOrderStatus =
         error
       );
 
-
       return res.status(500).json({
 
         success: false,
@@ -2673,19 +2589,11 @@ const updateOrderStatus =
   };
 
 
-// ==================================================
-// ADMIN UPDATE STATUS - PUT
-// ==================================================
-
 app.put(
   "/api/admin/orders/:orderId/status",
   updateOrderStatus
 );
 
-
-// ==================================================
-// ADMIN UPDATE STATUS - POST
-// ==================================================
 
 app.post(
   "/api/admin/orders/:orderId/status",
