@@ -1,129 +1,294 @@
-const express = require("express");
-const router = express.Router();
-const db = require("../db");
+import express from "express";
+import db from "../db.js";
 
-// Add payment + update stock
-router.post("/", (req, res) => {
+const router = express.Router();
+
+// =====================================================
+// RECORD PAYMENT
+// =====================================================
+router.post("/", async (req, res) => {
+  let connection;
+
+  try {
     const {
+      order_id,
+      customer_id,
+      payment_method
+    } = req.body;
+
+    // -------------------------------------------------
+    // 1. Check required fields
+    // -------------------------------------------------
+    if (!order_id || !customer_id || !payment_method) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "order_id, customer_id and payment_method are required"
+      });
+    }
+
+    // -------------------------------------------------
+    // 2. Get database connection
+    // -------------------------------------------------
+    connection = await db.getConnection();
+
+    // Start transaction
+    await connection.beginTransaction();
+
+    // -------------------------------------------------
+    // 3. Get order details
+    // -------------------------------------------------
+    const [orders] = await connection.query(
+      `SELECT
+        order_id,
+        customer_id,
+        total_amount,
+        delivery_status
+       FROM orders
+       WHERE order_id = ?
+       AND customer_id = ?
+       FOR UPDATE`,
+      [order_id, customer_id]
+    );
+
+    if (orders.length === 0) {
+      await connection.rollback();
+
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      });
+    }
+
+    const order = orders[0];
+
+    // -------------------------------------------------
+    // 4. Check whether payment already exists
+    // -------------------------------------------------
+    const [existingPayments] = await connection.query(
+      `SELECT
+        payment_id,
+        payment_status
+       FROM payment
+       WHERE order_id = ?
+       LIMIT 1
+       FOR UPDATE`,
+      [order_id]
+    );
+
+    if (existingPayments.length > 0) {
+      await connection.rollback();
+
+      return res.status(409).json({
+        success: false,
+        message: "Payment already recorded for this order",
+        payment_id: existingPayments[0].payment_id,
+        payment_status: existingPayments[0].payment_status
+      });
+    }
+
+    // -------------------------------------------------
+    // 5. Payment status
+    // -------------------------------------------------
+    // Currently simulating successful payment
+    const payment_status = "Paid";
+
+    // -------------------------------------------------
+    // 6. Insert payment
+    // -------------------------------------------------
+    const [result] = await connection.query(
+      `INSERT INTO payment
+      (
         order_id,
         customer_id,
         amount,
         payment_method,
         payment_status
-    } = req.body;
+      )
+      VALUES (?, ?, ?, ?, ?)`,
+      [
+        order_id,
+        customer_id,
+        Number(order.total_amount),
+        payment_method,
+        payment_status
+      ]
+    );
 
-    // 1. Get the order details
-    const orderSql = `
-        SELECT product_name, quantity
-        FROM orders
-        WHERE order_id = ?
-    `;
+    // -------------------------------------------------
+    // 7. AUTOMATICALLY CONFIRM ORDER
+    // -------------------------------------------------
+    // Successful payment:
+    //
+    // Pending → Confirmed
+    //
+    // This is the important part.
+    // -------------------------------------------------
 
-    db.query(orderSql, [order_id], (err, orders) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({
-                message: "Failed to find order",
-                error: err.message
-            });
-        }
+    if (payment_status === "Paid") {
+      const [updateResult] = await connection.query(
+        `UPDATE orders
+         SET delivery_status = 'Confirmed'
+         WHERE order_id = ?
+         AND customer_id = ?`,
+        [order_id, customer_id]
+      );
 
-        if (orders.length === 0) {
-            return res.status(404).json({
-                message: "Order not found"
-            });
-        }
+      // Make sure the order was actually updated
+      if (updateResult.affectedRows === 0) {
+        await connection.rollback();
 
-        const productName = orders[0].product_name;
-        const quantity = Number(orders[0].quantity);
+        return res.status(500).json({
+          success: false,
+          message: "Payment could not confirm the order"
+        });
+      }
+    }
 
-        // 2. Insert payment
-        const paymentSql = `
-            INSERT INTO payment
-            (order_id, customer_id, amount, payment_method, payment_status)
-            VALUES (?, ?, ?, ?, ?)
-        `;
+    // -------------------------------------------------
+    // IMPORTANT:
+    // DO NOT UPDATE STOCK HERE
+    //
+    // Stock is already reduced inside:
+    // POST /api/orders
+    //
+    // Updating stock here would reduce it twice.
+    // -------------------------------------------------
 
-        db.query(
-            paymentSql,
-            [
-                order_id,
-                customer_id,
-                amount,
-                payment_method,
-                payment_status
-            ],
-            (err, result) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({
-                        message: "Payment failed",
-                        error: err.message
-                    });
-                }
+    // -------------------------------------------------
+    // 8. Commit everything
+    // -------------------------------------------------
+    await connection.commit();
 
-                // 3. Update stock only when payment is successful
-                if (payment_status === "Paid") {
+    // -------------------------------------------------
+    // 9. Send successful response
+    // -------------------------------------------------
+    return res.status(201).json({
+      success: true,
+      message: "Payment recorded and order confirmed successfully",
 
-                    const stockSql = `
-                        UPDATE products
-                        SET stock_quantity = stock_quantity - ?
-                        WHERE product_name = ?
-                        AND stock_quantity >= ?
-                    `;
+      payment: {
+        payment_id: result.insertId,
+        order_id: order.order_id,
+        customer_id: order.customer_id,
+        amount: Number(order.total_amount),
+        payment_method,
+        payment_status
+      },
 
-                    db.query(
-                        stockSql,
-                        [quantity, productName, quantity],
-                        (err, stockResult) => {
-                            if (err) {
-                                console.error(err);
-                                return res.status(500).json({
-                                    message: "Payment saved but stock update failed",
-                                    error: err.message
-                                });
-                            }
-
-                            if (stockResult.affectedRows === 0) {
-                                return res.status(400).json({
-                                    message: "Insufficient stock or product not found"
-                                });
-                            }
-
-                            return res.status(201).json({
-                                message: "Payment recorded and stock updated successfully",
-                                payment_id: result.insertId
-                            });
-                        }
-                    );
-
-                } else {
-                    // Payment not marked Paid, so don't reduce stock
-                    return res.status(201).json({
-                        message: "Payment recorded successfully",
-                        payment_id: result.insertId
-                    });
-                }
-            }
-        );
+      order: {
+        order_id: order.order_id,
+        delivery_status: "Confirmed"
+      }
     });
+
+  } catch (error) {
+
+    // Rollback if something fails
+    if (connection) {
+      await connection.rollback();
+    }
+
+    console.error("Payment error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to record payment",
+      error: error.message
+    });
+
+  } finally {
+
+    // Release connection
+    if (connection) {
+      connection.release();
+    }
+  }
 });
 
 
-// Get payments
-router.get("/", (req, res) => {
-    const sql = "SELECT * FROM payment";
+// =====================================================
+// GET ALL PAYMENTS
+// =====================================================
+router.get("/", async (req, res) => {
+  try {
 
-    db.query(sql, (err, results) => {
-        if (err) {
-            return res.status(500).json({
-                message: "Failed to fetch payments",
-                error: err.message
-            });
-        }
+    const [rows] = await db.query(
+      `SELECT
+        payment_id,
+        order_id,
+        customer_id,
+        amount,
+        payment_date,
+        payment_method,
+        payment_status
+       FROM payment
+       ORDER BY payment_id DESC`
+    );
 
-        res.json(results);
+    return res.json({
+      success: true,
+      payments: rows
     });
+
+  } catch (error) {
+
+    console.error("Get payments error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch payments",
+      error: error.message
+    });
+  }
 });
 
-module.exports = router;
+
+// =====================================================
+// GET PAYMENT BY ORDER ID
+// =====================================================
+router.get("/order/:orderId", async (req, res) => {
+  try {
+
+    const { orderId } = req.params;
+
+    const [rows] = await db.query(
+      `SELECT
+        payment_id,
+        order_id,
+        customer_id,
+        amount,
+        payment_date,
+        payment_method,
+        payment_status
+       FROM payment
+       WHERE order_id = ?`,
+      [orderId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Payment not found for this order"
+      });
+    }
+
+    return res.json({
+      success: true,
+      payment: rows[0]
+    });
+
+  } catch (error) {
+
+    console.error("Get payment error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch payment",
+      error: error.message
+    });
+  }
+});
+
+
+export default router;
