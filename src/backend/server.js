@@ -5,6 +5,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import db from "./db.js";
+import customerRoutes from "./routes/customerRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import inventoryRoutes from "./routes/inventoryRoutes.js";
 
 import jwt from "jsonwebtoken";
 
@@ -35,7 +38,6 @@ app.use(
   "/api/admin/customers",
   customerRoutes
 );
-
 app.use(
   "/api/admin/products",
   productRoutes
