@@ -225,7 +225,7 @@ export const updateStock = async (req, res) => {
       `
       UPDATE products
       SET
-        stock_quantity = ?,
+        stock_quantity = stock_quantity + ?,
         last_updated = CURDATE()
       WHERE product_id = ?
       `,

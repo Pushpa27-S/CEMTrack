@@ -615,106 +615,6 @@ function Stock() {
 
 
       {/* =================================
-          SEARCH
-      ================================= */}
-
-      <div className="search-box">
-
-        <input
-
-          type="text"
-
-          placeholder="🔍 Search Product or Brand..."
-
-          value={search}
-
-          onChange={(e) =>
-            setSearch(
-              e.target.value
-            )
-          }
-
-        />
-
-      </div>
-
-
-      {/* =================================
-          UPDATE STOCK FORM
-      ================================= */}
-
-      {editingProduct && (
-
-        <div className="form">
-
-
-          <input
-
-            type="text"
-
-            value={
-              `${editingProduct.product_name} - ${editingProduct.category}`
-            }
-
-            readOnly
-
-          />
-
-
-          <input
-
-            type="number"
-
-            value={
-              editingProduct.stock_quantity
-            }
-
-            readOnly
-
-          />
-
-
-          <input
-
-            type="number"
-
-            placeholder="Enter New Total Stock"
-
-            value={newStock}
-
-            onChange={(e) =>
-              setNewStock(
-                e.target.value
-              )
-            }
-
-          />
-
-
-          <button
-            onClick={updateStock}
-          >
-
-            Update Stock
-
-          </button>
-
-
-          <button
-            onClick={cancelUpdate}
-          >
-
-            Cancel
-
-          </button>
-
-
-        </div>
-
-      )}
-
-
-      {/* =================================
           BAR CHART
       ================================= */}
 
@@ -790,7 +690,6 @@ function Stock() {
 
             <Legend />
 
-
             <Bar
 
               dataKey="stock"
@@ -807,19 +706,13 @@ function Stock() {
               ]}
 
             />
-
-
           </BarChart>
-
         </ResponsiveContainer>
-
-
       </div>
 
-
-      {/* =================================
+ {/* =================================
           LINE CHART
-      ================================= */}
+      =================================*/}
 
       <div className="chart">
 
@@ -923,6 +816,105 @@ function Stock() {
 
 
       </div>
+      
+      {/* =================================
+          SEARCH
+      ================================= */}
+
+      <div className="search-box">
+
+        <input
+
+          type="text"
+
+          placeholder="🔍 Search Product or Brand..."
+
+          value={search}
+
+          onChange={(e) =>
+            setSearch(
+              e.target.value
+            )
+          }
+
+        />
+
+      </div>
+
+
+      {/* =================================
+          UPDATE STOCK FORM
+      ================================= */}
+
+      {editingProduct && (
+
+        <div className="form">
+
+
+          <input
+
+            type="text"
+
+            value={
+              `${editingProduct.product_name} - ${editingProduct.category}`
+            }
+
+            readOnly
+
+          />
+
+
+          <input
+
+            type="number"
+
+            value={
+              editingProduct.stock_quantity
+            }
+
+            readOnly
+
+          />
+
+
+          <input
+
+            type="number"
+
+            placeholder="Enter New Total Stock"
+
+            value={newStock}
+
+            onChange={(e) =>
+              setNewStock(
+                e.target.value
+              )
+            }
+
+          />
+
+
+          <button
+            onClick={updateStock}
+          >
+
+            Update Stock
+
+          </button>
+
+
+          <button
+            onClick={cancelUpdate}
+          >
+
+            Cancel
+
+          </button>
+
+
+        </div>
+
+      )}
 
 
       {/* =================================
