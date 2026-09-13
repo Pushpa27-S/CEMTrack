@@ -801,31 +801,7 @@ const handleUpdateProduct = async (e) => {
             </select>
 
           </div>
-          {/* EDIT BUTTON */}
-
-<button
-  type="button"
-  className="edit-btn"
-  onClick={handleEditClick}
->
-
-  ✏️ Edit Product
-
-</button>
-
-
-          {/* DELETE */}
-
-          <button
-            type="button"
-            className="top-action-btn delete-action"
-            onClick={handleDelete}
-          >
-
-            🗑️ Delete
-
-          </button>
-
+         
 
         </div>
 
