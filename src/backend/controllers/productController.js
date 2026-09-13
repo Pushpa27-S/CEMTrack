@@ -256,7 +256,7 @@ export const addProduct = async (req, res) => {
         minimum_stock,
         last_updated
       )
-      VALUES (?, ?, ?, ?, ?, ?, CURDATE())
+      VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP())
       `,
       [
         product_name,
@@ -271,6 +271,29 @@ export const addProduct = async (req, res) => {
 
     const productId = result.insertId;
 
+    // Ayesha.S - 2026-09-10 21:00
+    // If Product is Added, insert into stock_in
+    if (productId > 0) {
+      const [resultStock] = await db.query(
+        `
+        INSERT INTO stock_in
+        (
+          product_id,
+          supplier_id,
+          purchase_price,
+          quantity_added,
+          stock_in_date
+        )
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP())
+        `,
+        [
+          productId,
+          201,
+          price,
+          stock_quantity
+        ]
+      );
+    }
 
     // ==================================================
     // SAVE IMAGE
@@ -315,6 +338,8 @@ export const addProduct = async (req, res) => {
         imagePath,
         req.file.buffer
       );
+
+     
 
     }
 
@@ -437,6 +462,14 @@ export const deleteProduct = async (req, res) => {
 
     const { id } = req.params;
 
+    // Ayesha.S - 2026-09-10 21:00
+    const [resultStock] = await db.query(
+      `
+      DELETE FROM stock_in
+      WHERE product_id = ?
+      `,
+      [id]
+    );
 
     const [result] = await db.query(
       `
