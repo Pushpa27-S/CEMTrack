@@ -2314,6 +2314,7 @@ app.post(
 
       });
 
+
     }
 
   }
@@ -2758,7 +2759,7 @@ app.get(
             o.discount,
             o.total_amount,
             o.order_date,
-            o.delivery_status
+            o.delivery_status,
            FROM orders o
            INNER JOIN customer c
              ON o.customer_id =
@@ -2965,12 +2966,6 @@ const updateOrderStatus =
 
 
 app.put(
-  "/api/admin/orders/:orderId/status",
-  updateOrderStatus
-);
-
-
-app.post(
   "/api/admin/orders/:orderId/status",
   updateOrderStatus
 );

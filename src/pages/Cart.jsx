@@ -10,9 +10,6 @@ function Cart() {
   // Payment popup
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
 
-  // Selected product
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
   // Payment mode
   const [paymentMode, setPaymentMode] = useState("Cash");
 
@@ -65,13 +62,6 @@ function Cart() {
     );
 
     updateCart(updatedCart);
-
-    if (
-      selectedProduct &&
-      selectedProduct.id === id
-    ) {
-      setSelectedProduct(null);
-    }
   };
 
   // ===============================
@@ -81,7 +71,12 @@ function Cart() {
   const increaseQuantity = (id) => {
     const updatedCart = cart.map((item) => {
       if (item.id === id) {
-        if (item.quantity >= item.stock) {
+        const availableStock =
+          Number(item.stock) ||
+          Number(item.stock_quantity) ||
+          0;
+
+        if (item.quantity >= availableStock) {
           alert(
             "You cannot add more than available stock."
           );
@@ -91,7 +86,7 @@ function Cart() {
 
         return {
           ...item,
-          quantity: item.quantity + 1,
+          quantity: Number(item.quantity) + 1,
         };
       }
 
@@ -99,18 +94,6 @@ function Cart() {
     });
 
     updateCart(updatedCart);
-
-    // Update selected product also
-    if (
-      selectedProduct &&
-      selectedProduct.id === id
-    ) {
-      const updatedProduct = updatedCart.find(
-        (item) => item.id === id
-      );
-
-      setSelectedProduct(updatedProduct);
-    }
   };
 
   // ===============================
@@ -124,7 +107,7 @@ function Cart() {
           ...item,
           quantity: Math.max(
             1,
-            item.quantity - 1
+            Number(item.quantity) - 1
           ),
         };
       }
@@ -133,39 +116,23 @@ function Cart() {
     });
 
     updateCart(updatedCart);
-
-    if (
-      selectedProduct &&
-      selectedProduct.id === id
-    ) {
-      const updatedProduct = updatedCart.find(
-        (item) => item.id === id
-      );
-
-      setSelectedProduct(updatedProduct);
-    }
   };
 
   // ===============================
-  // SELECT PRODUCT TO ORDER
+  // CART TOTAL
   // ===============================
 
-  const selectProduct = (product) => {
-    setSelectedProduct(product);
-  };
+  const cartSubtotal = cart.reduce(
+    (total, item) =>
+      total +
+      Number(item.price) *
+        Number(item.quantity || 1),
+    0
+  );
 
-  // ===============================
-  // SELECTED PRODUCT TOTAL
-  // ===============================
+  const cartGST = cartSubtotal * 0.18;
 
-  const selectedSubtotal = selectedProduct
-  ? Number(selectedProduct.price) *
-    Number(selectedProduct.quantity)
-  : 0;
-
-const selectedGST = selectedSubtotal * 0.18;
-
-const selectedTotal = selectedSubtotal + selectedGST;
+  const cartTotal = cartSubtotal + cartGST;
 
   // ===============================
   // OPEN PAYMENT
@@ -174,14 +141,6 @@ const selectedTotal = selectedSubtotal + selectedGST;
   const handlePlaceOrder = () => {
     if (cart.length === 0) {
       alert("Your cart is empty.");
-      return;
-    }
-
-    if (!selectedProduct) {
-      alert(
-        "Please select one product to order."
-      );
-
       return;
     }
 
@@ -203,12 +162,10 @@ const selectedTotal = selectedSubtotal + selectedGST;
   // ===============================
 
   const validatePayment = () => {
-    // CASH
     if (paymentMode === "Cash") {
       return true;
     }
 
-    // UPI
     if (paymentMode === "UPI") {
       if (upiId.trim() === "") {
         alert("Please enter your UPI ID.");
@@ -218,7 +175,6 @@ const selectedTotal = selectedSubtotal + selectedGST;
       return true;
     }
 
-    // CARD
     if (paymentMode === "Card") {
       if (
         cardNumber.trim() === "" ||
@@ -234,19 +190,24 @@ const selectedTotal = selectedSubtotal + selectedGST;
       }
 
       if (cardNumber.length < 12) {
-        alert("Please enter a valid card number.");
+        alert(
+          "Please enter a valid card number."
+        );
+
         return false;
       }
 
       if (cvv.length < 3) {
-        alert("Please enter a valid CVV.");
+        alert(
+          "Please enter a valid CVV."
+        );
+
         return false;
       }
 
       return true;
     }
 
-    // NET BANKING
     if (paymentMode === "Net Banking") {
       if (bank === "") {
         alert("Please select your bank.");
@@ -263,119 +224,223 @@ const selectedTotal = selectedSubtotal + selectedGST;
   // CONFIRM PAYMENT + ORDER
   // ===============================
 
- const confirmPayment = async () => {
-  if (!selectedProduct) {
-    alert("Please select a product.");
-    return;
-  }
-
-  if (!validatePayment()) {
-    return;
-  }
-
-  const customerId = 101;
-  const productId =
-    selectedProduct.product_id || selectedProduct.id;
-  const quantity =
-    selectedProduct.quantity || 1;
-
-  try {
-    // Create order
-    const orderResponse = await fetch(
-      "http://localhost:5000/api/orders",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          customer_id: customerId,
-          product_id: productId,
-          quantity: quantity,
-        }),
-      }
-    );
-
-    const orderData = await orderResponse.json();
-
-    if (!orderResponse.ok || !orderData.success) {
-      alert(
-        orderData.message ||
-        "Failed to create order."
-      );
+  const confirmPayment = async () => {
+    if (cart.length === 0) {
+      alert("Your cart is empty.");
       return;
     }
 
-    const orderId = orderData.order.order_id;
-
-    // Record payment
-    console.log("SENDING PAYMENT REQUEST");
-    const paymentResponse = await fetch(
-      "http://localhost:5000/api/payment",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          order_id: orderId,
-          customer_id: customerId,
-          payment_method: paymentMode,
-        }),
-      }
-    );
-
-    console.log("PAYMENT RESPONSE RECEIVED");
-    console.log("PAYMENT STATUS:",
-      paymentResponse.status);
-    
-
-    const paymentData =
-      await paymentResponse.json();
-
-    if (
-      !paymentResponse.ok ||
-      !paymentData.success
-    ) {
-      alert(
-        paymentData.message ||
-        "Payment failed."
-      );
+    if (!validatePayment()) {
       return;
     }
 
-    // Remove purchased product from cart
-    const updatedCart = cart.filter(
-      (item) =>
-        item.id !== selectedProduct.id
+    // GET LOGGED-IN CUSTOMER
+    const customer = JSON.parse(
+      localStorage.getItem("customer") || "null"
     );
 
-    updateCart(updatedCart);
+    const token =
+      localStorage.getItem("token");
 
-    setShowPaymentPopup(false);
-    setSelectedProduct(null);
+    if (!customer?.customer_id) {
+      alert(
+        "Customer information not found. Please login again."
+      );
 
-    alert(
-      "Payment successful!\n\n" +
-      "Order ID: " +
-      orderId +
-      "\nAmount Paid: ₹" +
-      selectedTotal
-    );
+      return;
+    }
 
-    navigate("/my-orders");
+    if (!token) {
+      alert(
+        "Login session expired. Please login again."
+      );
 
-  } catch (error) {
-    console.error(
-      "Order/Payment Error:",
-      error
-    );
+      return;
+    }
 
-    alert(
-      "Cannot connect to backend server."
-    );
-  }
-};
+    // IMPORTANT:
+    // Use the actual logged-in customer's ID.
+    // Do NOT use 101.
+    const customerId =
+      Number(customer.customer_id);
+
+    try {
+      const createdOrders = [];
+
+      // CREATE AN ORDER FOR EACH PRODUCT
+      // IN THE CART
+      for (const item of cart) {
+        const productId =
+          item.product_id || item.id;
+
+        const quantity =
+          Number(item.quantity) || 1;
+
+        if (!productId) {
+          alert(
+            "Invalid product found in cart."
+          );
+
+          return;
+        }
+
+        // ===============================
+        // CREATE ORDER
+        // ===============================
+
+        const orderResponse =
+          await fetch(
+            "http://localhost:5000/api/orders",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                Authorization:
+                  `Bearer ${token}`,
+              },
+
+              body: JSON.stringify({
+                customer_id:
+                  customerId,
+
+                product_id:
+                  productId,
+
+                quantity:
+                  quantity,
+              }),
+            }
+          );
+
+        const orderData =
+          await orderResponse.json();
+
+        if (
+          !orderResponse.ok ||
+          !orderData.success
+        ) {
+          alert(
+            orderData.message ||
+              "Failed to create order."
+          );
+
+          return;
+        }
+
+        const orderId =
+          orderData.order.order_id;
+
+        // ===============================
+        // RECORD PAYMENT
+        // ===============================
+
+        console.log(
+          "SENDING PAYMENT REQUEST"
+        );
+
+        const paymentResponse =
+          await fetch(
+            "http://localhost:5000/api/payment",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                Authorization:
+                  `Bearer ${token}`,
+              },
+
+              body: JSON.stringify({
+                order_id:
+                  orderId,
+
+                customer_id:
+                  customerId,
+
+                payment_method:
+                  paymentMode,
+              }),
+            }
+          );
+
+        console.log(
+          "PAYMENT RESPONSE RECEIVED"
+        );
+
+        console.log(
+          "PAYMENT STATUS:",
+          paymentResponse.status
+        );
+
+        const paymentData =
+          await paymentResponse.json();
+
+        if (
+          !paymentResponse.ok ||
+          !paymentData.success
+        ) {
+          alert(
+            paymentData.message ||
+              "Payment failed."
+          );
+
+          return;
+        }
+
+        createdOrders.push(orderId);
+      }
+
+      // ===============================
+      // SUCCESS
+      // ===============================
+
+      localStorage.removeItem("cart");
+
+      setCart([]);
+
+      setShowPaymentPopup(false);
+
+      setUpiId("");
+      setCardNumber("");
+      setCardName("");
+      setExpiry("");
+      setCvv("");
+      setBank("");
+
+      alert(
+        "Payment successful!\n\n" +
+          "Customer ID: " +
+          customerId +
+          "\n" +
+          "Order ID(s): " +
+          createdOrders.join(", ") +
+          "\n" +
+          "Amount Paid: ₹" +
+          cartTotal.toFixed(2)
+      );
+
+      navigate("/my-orders");
+
+    } catch (error) {
+      console.error(
+        "Order/Payment Error:",
+        error
+      );
+
+      alert(
+        "Cannot connect to backend server."
+      );
+    }
+  };
+
+  // ===============================
+  // RETURN
+  // ===============================
 
   return (
     <div className="customer-home">
@@ -388,7 +453,9 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
           <h2>CEMTrack</h2>
 
-          <span>Shopping Cart</span>
+          <span>
+            Shopping Cart
+          </span>
 
         </div>
 
@@ -419,7 +486,6 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
       </header>
 
-
       {/* ================= CART ================= */}
 
       <section className="customer-actions">
@@ -443,8 +509,11 @@ const selectedTotal = selectedSubtotal + selectedGST;
               to="/customer-products"
               className="cart-top-btn"
               style={{
-                display: "inline-block",
-                marginTop: "15px",
+                display:
+                  "inline-block",
+
+                marginTop:
+                  "15px",
               }}
             >
               Browse Products
@@ -464,76 +533,47 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
                 <div
                   className="customer-feature-card"
-                  key={product.id}
-                  style={{
-                    border:
-                      selectedProduct?.id ===
-                      product.id
-                        ? "3px solid #ea580c"
-                        : "1px solid #ddd",
-
-                    cursor: "pointer",
-                  }}
-                  onClick={() =>
-                    selectProduct(product)
+                  key={
+                    product.id ||
+                    product.product_id
                   }
                 >
-
-                  {/* SELECT */}
-
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent:
-                        "space-between",
-                      alignItems: "center",
-                      marginBottom: "10px",
-                    }}
-                  >
-
-                    <label>
-
-                      <input
-                        type="radio"
-                        name="selectedProduct"
-                        checked={
-                          selectedProduct?.id ===
-                          product.id
-                        }
-                        onChange={() =>
-                          selectProduct(product)
-                        }
-                      />
-
-                      {" "}
-                      Select to Order
-
-                    </label>
-
-                  </div>
-
 
                   {/* IMAGE */}
 
                   <img
                     src={product.image}
-                    alt={product.brand}
+                    alt={
+                      product.brand ||
+                      product.product_name ||
+                      "Product"
+                    }
                     style={{
                       width: "90px",
                       height: "90px",
-                      objectFit: "contain",
-                      borderRadius: "10px",
+                      objectFit:
+                        "contain",
+                      borderRadius:
+                        "10px",
                     }}
                   />
-
 
                   {/* DETAILS */}
 
                   <div>
 
                     <h3>
-                      {product.brand}
+                      {product.brand ||
+                        product.product_name}
                     </h3>
+
+                    <p>
+                      <strong>
+                        Product:
+                      </strong>{" "}
+                      {product.product_name ||
+                        product.brand}
+                    </p>
 
                     <p>
                       <strong>
@@ -546,29 +586,40 @@ const selectedTotal = selectedSubtotal + selectedGST;
                       <strong>
                         Price:
                       </strong>{" "}
-                      ₹{product.price} / Bag
+                      ₹
+                      {Number(
+                        product.price
+                      ).toFixed(2)}
+                      {" / Bag"}
                     </p>
 
                     <p>
                       <strong>
                         Available Stock:
                       </strong>{" "}
-                      {product.stock} Bags
+                      {Number(
+                        product.stock ??
+                        product.stock_quantity ??
+                        0
+                      )}
+                      {" Bags"}
                     </p>
-
 
                     {/* QUANTITY */}
 
                     <div
                       style={{
-                        display: "flex",
-                        alignItems: "center",
+                        display:
+                          "flex",
+
+                        alignItems:
+                          "center",
+
                         gap: "12px",
-                        marginTop: "10px",
+
+                        marginTop:
+                          "10px",
                       }}
-                      onClick={(e) =>
-                        e.stopPropagation()
-                      }
                     >
 
                       <strong>
@@ -587,7 +638,10 @@ const selectedTotal = selectedSubtotal + selectedGST;
                       </button>
 
                       <span>
-                        {product.quantity}
+                        {
+                          product.quantity ||
+                          1
+                        }
                       </span>
 
                       <button
@@ -603,7 +657,6 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
                     </div>
 
-
                     {/* PRODUCT TOTAL */}
 
                     <p>
@@ -613,33 +666,51 @@ const selectedTotal = selectedSubtotal + selectedGST;
                       </strong>{" "}
 
                       ₹
-                      {Number(product.price) *
-                        Number(product.quantity)}
+                      {(
+                        Number(
+                          product.price
+                        ) *
+                        Number(
+                          product.quantity ||
+                            1
+                        )
+                      ).toFixed(2)}
 
                     </p>
-
 
                     {/* REMOVE */}
 
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-
+                      onClick={() =>
                         removeFromCart(
                           product.id
-                        );
-                      }}
+                        )
+                      }
                       style={{
-                        marginTop: "12px",
-                        padding: "8px 14px",
-                        border: "none",
-                        borderRadius: "6px",
+                        marginTop:
+                          "12px",
+
+                        padding:
+                          "8px 14px",
+
+                        border:
+                          "none",
+
+                        borderRadius:
+                          "6px",
+
                         background:
                           "#dc3545",
-                        color: "white",
-                        cursor: "pointer",
-                        fontWeight: "600",
+
+                        color:
+                          "white",
+
+                        cursor:
+                          "pointer",
+
+                        fontWeight:
+                          "600",
                       }}
                     >
                       🗑️ Remove
@@ -653,58 +724,66 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
             </div>
 
+            {/* ================= CART SUMMARY ================= */}
 
-            {/* ================= SELECTED PRODUCT ================= */}
+            <div
+              className="info-box"
+              style={{
+                marginTop:
+                  "25px",
+              }}
+            >
 
-            {selectedProduct && (
+              <h2>
+                Cart Summary
+              </h2>
 
-              <div
-                className="info-box"
-                style={{
-                  marginTop: "25px",
-                }}
-              >
+              <p>
+                <strong>
+                  Number of Products:
+                </strong>{" "}
+                {cart.length}
+              </p>
 
-                <h2>
-                  Selected Product
-                </h2>
+              <p>
+                <strong>
+                  Subtotal:
+                </strong>{" "}
+                ₹
+                {cartSubtotal.toFixed(2)}
+              </p>
 
-                <p>
+              <p>
+                <strong>
+                  GST (18%):
+                </strong>{" "}
+                ₹
+                {cartGST.toFixed(2)}
+              </p>
 
-                  <strong>
-                    {selectedProduct.brand}
-                  </strong>
+              <h2>
+                Amount to Pay: ₹
+                {cartTotal.toFixed(2)}
+              </h2>
 
-                  {" - "}
-
-                  {selectedProduct.quantity}
-                  {" Bags"}
-
-                </p>
-
-                <h2>
-                  Amount to Pay: ₹
-                  {selectedTotal}
-                </h2>
-
-              </div>
-
-            )}
-
+            </div>
 
             {/* ================= PLACE ORDER ================= */}
 
             <div
               className="info-box"
               style={{
-                marginTop: "25px",
+                marginTop:
+                  "25px",
               }}
             >
 
               <button
                 type="button"
                 className="cart-top-btn"
-                onClick={handlePlaceOrder}
+                onClick={
+                  handlePlaceOrder
+                }
               >
                 💳 Proceed to Payment
               </button>
@@ -716,13 +795,11 @@ const selectedTotal = selectedSubtotal + selectedGST;
         )}
 
       </section>
-
-
       {/* =====================================================
           PAYMENT POPUP
       ===================================================== */}
 
-      {showPaymentPopup && selectedProduct && (
+      {showPaymentPopup && (
 
         <div
           className="product-modal-overlay"
@@ -737,8 +814,11 @@ const selectedTotal = selectedSubtotal + selectedGST;
               e.stopPropagation()
             }
             style={{
-              maxWidth: "520px",
-              width: "95%",
+              maxWidth:
+                "520px",
+
+              width:
+                "95%",
             }}
           >
 
@@ -748,12 +828,13 @@ const selectedTotal = selectedSubtotal + selectedGST;
               type="button"
               className="modal-close"
               onClick={() =>
-                setShowPaymentPopup(false)
+                setShowPaymentPopup(
+                  false
+                )
               }
             >
               ×
             </button>
-
 
             <h2>
               💳 Payment
@@ -761,26 +842,32 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
             <p>
               <strong>
-                {selectedProduct.brand}
+                {cart.length} product
+                {cart.length > 1
+                  ? "s"
+                  : ""}
               </strong>
             </p>
 
             <h3
               style={{
-                color: "#ea580c",
+                color:
+                  "#ea580c",
               }}
             >
               Amount to Pay: ₹
-              {selectedTotal}
+              {cartTotal.toFixed(2)}
             </h3>
-
 
             {/* ================= PAYMENT MODE ================= */}
 
             <div
               style={{
-                textAlign: "left",
-                marginTop: "20px",
+                textAlign:
+                  "left",
+
+                marginTop:
+                  "20px",
               }}
             >
 
@@ -791,17 +878,27 @@ const selectedTotal = selectedSubtotal + selectedGST;
               </label>
 
               <select
-                value={paymentMode}
+                value={
+                  paymentMode
+                }
                 onChange={(e) =>
                   setPaymentMode(
                     e.target.value
                   )
                 }
                 style={{
-                  width: "100%",
-                  padding: "11px",
-                  marginTop: "8px",
-                  borderRadius: "8px",
+                  width:
+                    "100%",
+
+                  padding:
+                    "11px",
+
+                  marginTop:
+                    "8px",
+
+                  borderRadius:
+                    "8px",
+
                   border:
                     "1px solid #ccc",
                 }}
@@ -827,17 +924,20 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
             </div>
 
-
             {/* =================================================
                 UPI
             ================================================= */}
 
-            {paymentMode === "UPI" && (
+            {paymentMode ===
+              "UPI" && (
 
               <div
                 style={{
-                  marginTop: "18px",
-                  textAlign: "left",
+                  marginTop:
+                    "18px",
+
+                  textAlign:
+                    "left",
                 }}
               >
 
@@ -845,16 +945,19 @@ const selectedTotal = selectedSubtotal + selectedGST;
                   📱 Choose UPI App
                 </h3>
 
-
-                {/* UPI APPS */}
-
                 <div
                   style={{
-                    display: "grid",
+                    display:
+                      "grid",
+
                     gridTemplateColumns:
                       "repeat(2, 1fr)",
-                    gap: "10px",
-                    marginTop: "10px",
+
+                    gap:
+                      "10px",
+
+                    marginTop:
+                      "10px",
                   }}
                 >
 
@@ -866,94 +969,137 @@ const selectedTotal = selectedSubtotal + selectedGST;
                       )
                     }
                     style={{
-                      padding: "13px",
-                      borderRadius: "8px",
+                      padding:
+                        "13px",
+
+                      borderRadius:
+                        "8px",
+
                       border:
                         upiApp ===
                         "Google Pay"
                           ? "2px solid #ea580c"
                           : "1px solid #ddd",
+
                       background:
                         upiApp ===
                         "Google Pay"
                           ? "#fff7ed"
                           : "white",
-                      cursor: "pointer",
-                      fontWeight: "600",
+
+                      cursor:
+                        "pointer",
+
+                      fontWeight:
+                        "600",
                     }}
                   >
                     🟢 Google Pay
                   </button>
 
-
                   <button
                     type="button"
                     onClick={() =>
-                      setUpiApp("PhonePe")
+                      setUpiApp(
+                        "PhonePe"
+                      )
                     }
                     style={{
-                      padding: "13px",
-                      borderRadius: "8px",
+                      padding:
+                        "13px",
+
+                      borderRadius:
+                        "8px",
+
                       border:
-                        upiApp === "PhonePe"
+                        upiApp ===
+                        "PhonePe"
                           ? "2px solid #ea580c"
                           : "1px solid #ddd",
+
                       background:
-                        upiApp === "PhonePe"
+                        upiApp ===
+                        "PhonePe"
                           ? "#fff7ed"
                           : "white",
-                      cursor: "pointer",
-                      fontWeight: "600",
+
+                      cursor:
+                        "pointer",
+
+                      fontWeight:
+                        "600",
                     }}
                   >
                     🟣 PhonePe
                   </button>
 
-
                   <button
                     type="button"
                     onClick={() =>
-                      setUpiApp("Paytm")
+                      setUpiApp(
+                        "Paytm"
+                      )
                     }
                     style={{
-                      padding: "13px",
-                      borderRadius: "8px",
+                      padding:
+                        "13px",
+
+                      borderRadius:
+                        "8px",
+
                       border:
-                        upiApp === "Paytm"
+                        upiApp ===
+                        "Paytm"
                           ? "2px solid #ea580c"
                           : "1px solid #ddd",
+
                       background:
-                        upiApp === "Paytm"
+                        upiApp ===
+                        "Paytm"
                           ? "#fff7ed"
                           : "white",
-                      cursor: "pointer",
-                      fontWeight: "600",
+
+                      cursor:
+                        "pointer",
+
+                      fontWeight:
+                        "600",
                     }}
                   >
                     🔵 Paytm
                   </button>
 
-
                   <button
                     type="button"
                     onClick={() =>
-                      setUpiApp("Other UPI")
+                      setUpiApp(
+                        "Other UPI"
+                      )
                     }
                     style={{
-                      padding: "13px",
-                      borderRadius: "8px",
+                      padding:
+                        "13px",
+
+                      borderRadius:
+                        "8px",
+
                       border:
                         upiApp ===
                         "Other UPI"
                           ? "2px solid #ea580c"
                           : "1px solid #ddd",
+
                       background:
                         upiApp ===
                         "Other UPI"
                           ? "#fff7ed"
                           : "white",
-                      cursor: "pointer",
-                      fontWeight: "600",
+
+                      cursor:
+                        "pointer",
+
+                      fontWeight:
+                        "600",
                     }}
                   >
                     📲 Other UPI
@@ -961,22 +1107,33 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
                 </div>
 
-
-                {/* UPI ID */}
-
                 <input
                   type="text"
                   placeholder="Enter UPI ID (example@upi)"
-                  value={upiId}
+                  value={
+                    upiId
+                  }
                   onChange={(e) =>
-                    setUpiId(e.target.value)
+                    setUpiId(
+                      e.target.value
+                    )
                   }
                   style={{
-                    width: "100%",
-                    boxSizing: "border-box",
-                    padding: "12px",
-                    marginTop: "15px",
-                    borderRadius: "8px",
+                    width:
+                      "100%",
+
+                    boxSizing:
+                      "border-box",
+
+                    padding:
+                      "12px",
+
+                    marginTop:
+                      "15px",
+
+                    borderRadius:
+                      "8px",
+
                     border:
                       "1px solid #ccc",
                   }}
@@ -986,17 +1143,20 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
             )}
 
-
             {/* =================================================
                 CARD
             ================================================= */}
 
-            {paymentMode === "Card" && (
+            {paymentMode ===
+              "Card" && (
 
               <div
                 style={{
-                  marginTop: "18px",
-                  textAlign: "left",
+                  marginTop:
+                    "18px",
+
+                  textAlign:
+                    "left",
                 }}
               >
 
@@ -1007,7 +1167,9 @@ const selectedTotal = selectedSubtotal + selectedGST;
                 <input
                   type="text"
                   placeholder="Card Number"
-                  value={cardNumber}
+                  value={
+                    cardNumber
+                  }
                   maxLength="16"
                   onChange={(e) =>
                     setCardNumber(
@@ -1018,11 +1180,21 @@ const selectedTotal = selectedSubtotal + selectedGST;
                     )
                   }
                   style={{
-                    width: "100%",
-                    boxSizing: "border-box",
-                    padding: "12px",
-                    marginTop: "10px",
-                    borderRadius: "8px",
+                    width:
+                      "100%",
+
+                    boxSizing:
+                      "border-box",
+
+                    padding:
+                      "12px",
+
+                    marginTop:
+                      "10px",
+
+                    borderRadius:
+                      "8px",
+
                     border:
                       "1px solid #ccc",
                   }}
@@ -1031,18 +1203,30 @@ const selectedTotal = selectedSubtotal + selectedGST;
                 <input
                   type="text"
                   placeholder="Card Holder Name"
-                  value={cardName}
+                  value={
+                    cardName
+                  }
                   onChange={(e) =>
                     setCardName(
                       e.target.value
                     )
                   }
                   style={{
-                    width: "100%",
-                    boxSizing: "border-box",
-                    padding: "12px",
-                    marginTop: "10px",
-                    borderRadius: "8px",
+                    width:
+                      "100%",
+
+                    boxSizing:
+                      "border-box",
+
+                    padding:
+                      "12px",
+
+                    marginTop:
+                      "10px",
+
+                    borderRadius:
+                      "8px",
+
                     border:
                       "1px solid #ccc",
                   }}
@@ -1050,16 +1234,23 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
                 <div
                   style={{
-                    display: "flex",
-                    gap: "10px",
-                    marginTop: "10px",
+                    display:
+                      "flex",
+
+                    gap:
+                      "10px",
+
+                    marginTop:
+                      "10px",
                   }}
                 >
 
                   <input
                     type="text"
                     placeholder="MM/YY"
-                    value={expiry}
+                    value={
+                      expiry
+                    }
                     maxLength="5"
                     onChange={(e) =>
                       setExpiry(
@@ -1067,9 +1258,15 @@ const selectedTotal = selectedSubtotal + selectedGST;
                       )
                     }
                     style={{
-                      width: "50%",
-                      padding: "12px",
-                      borderRadius: "8px",
+                      width:
+                        "50%",
+
+                      padding:
+                        "12px",
+
+                      borderRadius:
+                        "8px",
+
                       border:
                         "1px solid #ccc",
                     }}
@@ -1078,7 +1275,9 @@ const selectedTotal = selectedSubtotal + selectedGST;
                   <input
                     type="password"
                     placeholder="CVV"
-                    value={cvv}
+                    value={
+                      cvv
+                    }
                     maxLength="3"
                     onChange={(e) =>
                       setCvv(
@@ -1089,9 +1288,15 @@ const selectedTotal = selectedSubtotal + selectedGST;
                       )
                     }
                     style={{
-                      width: "50%",
-                      padding: "12px",
-                      borderRadius: "8px",
+                      width:
+                        "50%",
+
+                      padding:
+                        "12px",
+
+                      borderRadius:
+                        "8px",
+
                       border:
                         "1px solid #ccc",
                     }}
@@ -1103,7 +1308,6 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
             )}
 
-
             {/* =================================================
                 NET BANKING
             ================================================= */}
@@ -1113,8 +1317,11 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
               <div
                 style={{
-                  marginTop: "18px",
-                  textAlign: "left",
+                  marginTop:
+                    "18px",
+
+                  textAlign:
+                    "left",
                 }}
               >
 
@@ -1123,15 +1330,27 @@ const selectedTotal = selectedSubtotal + selectedGST;
                 </h3>
 
                 <select
-                  value={bank}
+                  value={
+                    bank
+                  }
                   onChange={(e) =>
-                    setBank(e.target.value)
+                    setBank(
+                      e.target.value
+                    )
                   }
                   style={{
-                    width: "100%",
-                    padding: "12px",
-                    marginTop: "10px",
-                    borderRadius: "8px",
+                    width:
+                      "100%",
+
+                    padding:
+                      "12px",
+
+                    marginTop:
+                      "10px",
+
+                    borderRadius:
+                      "8px",
+
                     border:
                       "1px solid #ccc",
                   }}
@@ -1171,37 +1390,60 @@ const selectedTotal = selectedSubtotal + selectedGST;
 
             )}
 
-
             {/* ================= CONFIRM ================= */}
 
             <button
               type="button"
               className="cart-top-btn"
-              onClick={confirmPayment}
+              onClick={
+                confirmPayment
+              }
               style={{
-                width: "100%",
-                marginTop: "25px",
+                width:
+                  "100%",
+
+                marginTop:
+                  "25px",
               }}
             >
-              ✅ Pay ₹{selectedTotal}
+              ✅ Pay ₹
+              {cartTotal.toFixed(2)}
             </button>
-
 
             <button
               type="button"
               onClick={() =>
-                setShowPaymentPopup(false)
+                setShowPaymentPopup(
+                  false
+                )
               }
               style={{
-                width: "100%",
-                marginTop: "10px",
-                padding: "11px",
-                border: "none",
-                borderRadius: "8px",
-                background: "#6c757d",
-                color: "white",
-                cursor: "pointer",
-                fontWeight: "600",
+                width:
+                  "100%",
+
+                marginTop:
+                  "10px",
+
+                padding:
+                  "11px",
+
+                border:
+                  "none",
+
+                borderRadius:
+                  "8px",
+
+                background:
+                  "#6c757d",
+
+                color:
+                  "white",
+
+                cursor:
+                  "pointer",
+
+                fontWeight:
+                  "600",
               }}
             >
               Cancel
