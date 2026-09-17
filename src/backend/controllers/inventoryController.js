@@ -136,7 +136,6 @@ export const addStock = async (req, res) => {
         supplier_id,
         quantity_added,
         purchase_price,
-        stock_in_date
       )
       VALUES (?, ?, ?, ?, ?)
       `,
@@ -145,7 +144,6 @@ export const addStock = async (req, res) => {
         supplier_id,
         quantity_added,
         purchase_price,
-        stock_in_date
       ]
     );
 
@@ -204,7 +202,7 @@ It directly changes the stock_quantity
 of a product.
 */
 
-export const updateStock = async (req, res) => {
+/*export const updateStock = async (req, res) => {
   try {
 
     const { product_id } = req.params;
@@ -258,8 +256,146 @@ export const updateStock = async (req, res) => {
     });
 
   }
-};
+};*/
 
+export const updateStock = async (req, res) => {
+
+  const connection = await db.getConnection();
+
+  try {
+
+    const { product_id } = req.params;
+
+    const { stock_quantity } = req.body;
+
+
+    if (
+      stock_quantity === undefined ||
+      stock_quantity === null ||
+      stock_quantity < 0
+    ) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Valid stock quantity is required"
+      });
+
+    }
+
+
+    await connection.beginTransaction();
+
+
+    /*
+    ========================================
+    UPDATE PRODUCT CURRENT STOCK
+    ========================================
+    */
+
+    const [result] = await connection.query(
+
+      `
+      UPDATE products
+      SET
+        stock_quantity = stock_quantity + ?,
+        last_updated = CURDATE()
+      WHERE product_id = ?
+      `,
+
+      [
+        stock_quantity,
+        product_id
+      ]
+
+    );
+
+
+    if (result.affectedRows === 0) {
+
+      await connection.rollback();
+
+      return res.status(404).json({
+        success: false,
+        message: "Product not found"
+      });
+
+    }
+
+
+    /*
+    ========================================
+    UPDATE QUANTITY ADDED IN STOCK_IN
+    ========================================
+
+    This reflects the newly added stock
+    in the latest stock_in record
+    for this product.
+    */
+
+    await connection.query(
+
+      `
+      UPDATE stock_in
+      SET quantity_added = quantity_added + ?,
+      stock_in_date = CURRENT_TIMESTAMP()
+      WHERE product_id = ?
+      ORDER BY stock_in_id DESC
+      LIMIT 1
+      `,
+
+      [
+        stock_quantity,
+        product_id
+      ]
+
+    );
+
+
+    await connection.commit();
+
+
+    res.status(200).json({
+
+      success: true,
+
+      message:
+        "Stock and quantity added updated successfully"
+
+    });
+
+
+  } catch (error) {
+
+
+    await connection.rollback();
+
+
+    console.error(
+      "Update stock error:",
+      error
+    );
+
+
+    res.status(500).json({
+
+      success: false,
+
+      message:
+        "Failed to update stock",
+
+      error:
+        error.message
+
+    });
+
+
+  } finally {
+
+    connection.release();
+
+  }
+
+};
 
 /*
 ========================================
