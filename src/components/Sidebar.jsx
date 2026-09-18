@@ -2,108 +2,107 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 
 function Sidebar() {
+  const navigate = useNavigate();
 
-const navigate = useNavigate();
+  const handleLogout = () => {
+    const confirmLogout = window.confirm(
+      "Are you sure you want to logout?"
+    );
 
-const handleLogout = () => {
+    if (confirmLogout) {
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("role");
 
-const confirmLogout = window.confirm(
-  "Are you sure you want to logout?"
-);
+      navigate("/adminlogin", { replace: true });
+    }
+  };
 
-if (confirmLogout) {
+  const handleAddProduct = () => {
+    navigate("/products", {
+      state: { openAddProduct: true }
+    });
+  };
 
-  localStorage.removeItem("isLoggedIn");
-  localStorage.removeItem("role");
+  return (
+    <div className="sidebar">
 
-  navigate("/adminlogin", { replace: true });
+      <h2>CEMTrack</h2>
 
-}
+      <ul>
 
-};
+        {/* Dashboard */}
+        <li>
+          <Link to="/dashboard">
+            Dashboard
+          </Link>
+        </li>
 
-const handleAddProduct = () => {
+        {/* Products */}
+        <li>
+          <Link to="/products">
+            Products
+          </Link>
+        </li>
 
-navigate("/products", {
-  state: { openAddProduct: true }
-});
+        {/* Customers */}
+        <li>
+          <Link to="/customers">
+            Customers
+          </Link>
+        </li>
 
-};
+        {/* Orders */}
+        <li>
+          <Link to="/adminorders">
+            Orders
+          </Link>
+        </li>
 
-return (
+        {/* Billing */}
+        <li>
+          <Link to="/billing">
+            Billing
+          </Link>
+        </li>
 
-<div className="sidebar">
+        {/* Reports */}
+        <li>
+          <Link to="/reports">
+            Reports
+          </Link>
+        </li>
 
-  <h2>CEMTrack</h2>
+        {/* Stock */}
+        <li>
+          <Link to="/stock">
+            Stock
+          </Link>
+        </li>
 
-  <ul>
+        {/* Add Product */}
+        <li>
+          <button
+            className="sidebar-link-button"
+            onClick={handleAddProduct}
+          >
+            Add Product
+          </button>
+        </li>
 
-    <li>
-      <Link to="/dashboard">
-        Dashboard
-      </Link>
-    </li>
+        {/* Logout */}
+        <li>
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </li>
 
-    <li>
-      <Link to="/products">
-        Products
-      </Link>
-    </li>
+      </ul>
 
-    <li>
-      <Link to="/customers">
-        Customers
-      </Link>
-    </li>
-
-    <li>
-      <Link to="/billing">
-        Billing
-      </Link>
-    </li>
-
-    <li>
-      <Link to="/reports">
-        Reports
-      </Link>
-    </li>
-
-    <li>
-      <Link to="/stock">
-        Stock
-      </Link>
-    </li>
-
-    {/* Logout */}
-
-    <li>
-      <button
-        className="logout-btn"
-        onClick={handleLogout}
-      >
-        Logout
-      </button>
-    </li>
-
-    {/* Add Product */}
-
-    <li className="add-product-item">
-
-      <button
-        className="add-product-sidebar-btn"
-        onClick={handleAddProduct}
-      >
-        + Add Product
-      </button>
-
-    </li>
-
-  </ul>
-
-</div>
-
-);
-
+    </div>
+  );
 }
 
 export default Sidebar;

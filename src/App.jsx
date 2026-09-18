@@ -27,149 +27,146 @@ import Cart from "./pages/Cart";
 import MyOrders from "./pages/MyOrders";
 import MyProfile from "./pages/MyProfile";
 
-
 import "./App.css";
 
 function App() {
-return (
-<Routes>
+  return (
+    <Routes>
 
-  {/* ================= PUBLIC PAGES ================= */}
+      {/* ================= PUBLIC PAGES ================= */}
 
-  <Route
-    path="/"
-    element={
-      <>
-        <Navbar />
-        <Home />
-      </>
-    }
-  />
+      <Route
+        path="/"
+        element={
+          <>
+            <Navbar />
+            <Home />
+          </>
+        }
+      />
 
-  <Route
-    path="/about"
-    element={
-      <>
-        <Navbar />
-        <About />
-      </>
-    }
-  />
+      <Route
+        path="/about"
+        element={
+          <>
+            <Navbar />
+            <About />
+          </>
+        }
+      />
 
-  <Route
-    path="/contact"
-    element={
-      <>
-        <Navbar />
-        <Contact />
-      </>
-    }
-  />
-
-
-  {/* ================= AUTHENTICATION ================= */}
-
-  <Route
-    path="/adminlogin"
-    element={<AdminLogin />}
-  />
-
-  <Route
-    path="/adminorders"
-    element={<AdminOrders />}
-  />
-
-  
-
-  <Route
-    path="/register"
-    element={<Register />}
-  />
-
-  <Route
-    path="/forgot-password"
-    element={<ForgotPassword />}
-  />
+      <Route
+        path="/contact"
+        element={
+          <>
+            <Navbar />
+            <Contact />
+          </>
+        }
+      />
 
 
-  {/* ================= CUSTOMER ================= */}
+      {/* ================= AUTHENTICATION ================= */}
 
-  <Route
-    path="/customerlogin"
-    element={<CustomerLogin />}
-  />
+      <Route
+        path="/adminlogin"
+        element={<AdminLogin />}
+      />
 
-  <Route
-    path="/customer-home"
-    element={<CustomerHome />}
-  />
+      <Route
+        path="/register"
+        element={<Register />}
+      />
 
-  <Route
-    path="/customer-products"
-    element={<CustomerProducts />}
-  />
-
-  <Route
-    path="/cart"
-    element={<Cart />}
-  />
-  <Route
-    path="/my-orders"
-    element={<MyOrders />}
-    />
-    <Route
-    path="/my-profile"
-    element={<MyProfile />}
-    />
-  
+      <Route
+        path="/forgot-password"
+        element={<ForgotPassword />}
+      />
 
 
-  {/* ================= ADMIN ================= */}
+      {/* ================= CUSTOMER ================= */}
 
-  <Route element={<AdminLayout />}>
+      <Route
+        path="/customerlogin"
+        element={<CustomerLogin />}
+      />
 
-    
+      <Route
+        path="/customer-home"
+        element={<CustomerHome />}
+      />
 
-    <Route
-      path="/dashboard"
-      element={<Dashboard />}
-    />
+      <Route
+        path="/customer-products"
+        element={<CustomerProducts />}
+      />
 
-    <Route
-      path="/products"
-      element={<Products />}
-    />
+      <Route
+        path="/cart"
+        element={<Cart />}
+      />
 
-    <Route
-      path="/customers"
-      element={<Customers />}
-    />
+      <Route
+        path="/my-orders"
+        element={<MyOrders />}
+      />
 
-    <Route
-      path="/billing"
-      element={<Billing />}
-    />
+      <Route
+        path="/my-profile"
+        element={<MyProfile />}
+      />
 
-    <Route
-      path="/reports"
-      element={<Reports />}
-    />
 
-    <Route
-      path="/stock"
-      element={<Stock />}
-    />
+      {/* ================= ADMIN ================= */}
 
-    <Route
-      path="/search"
-      element={<Search />}
-    />
+      <Route element={<AdminLayout />}>
 
-  </Route>
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
 
-</Routes>
+        <Route
+          path="/products"
+          element={<Products />}
+        />
 
-);
+        <Route
+          path="/customers"
+          element={<Customers />}
+        />
+
+        {/* ORDERS */}
+
+        <Route
+          path="/adminorders"
+          element={<AdminOrders />}
+        />
+
+        <Route
+          path="/billing"
+          element={<Billing />}
+        />
+
+        <Route
+          path="/reports"
+          element={<Reports />}
+        />
+
+        <Route
+          path="/stock"
+          element={<Stock />}
+        />
+
+        <Route
+          path="/search"
+          element={<Search />}
+        />
+
+      </Route>
+
+    </Routes>
+  );
 }
 
 export default App;
