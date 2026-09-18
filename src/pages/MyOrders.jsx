@@ -45,7 +45,6 @@ const productImages = {
   24: "/images/Birlawhite.webp",
 };
 
-
 // ==================================================
 // GET PRODUCT IMAGE
 // ==================================================
@@ -57,6 +56,37 @@ const getProductImage = (productId) => {
   );
 };
 
+// ==================================================
+// GET CURRENT LOGGED-IN CUSTOMER ID
+// ==================================================
+
+const getCurrentCustomerId = () => {
+  // First try customer_id
+  const storedCustomerId = localStorage.getItem("customer_id");
+
+  if (storedCustomerId) {
+    return String(storedCustomerId);
+  }
+
+  // If customer_id is missing, try customer object
+  const storedCustomer = localStorage.getItem("customer");
+
+  if (storedCustomer) {
+    try {
+      const customer = JSON.parse(storedCustomer);
+
+      if (customer?.customer_id) {
+        return String(customer.customer_id);
+      }
+    } catch (error) {
+      console.error("Invalid customer data:", error);
+    }
+  }
+
+  // IMPORTANT:
+  // Do NOT use a default customer ID such as 101.
+  return null;
+};
 
 // ==================================================
 // ORDERS COMPONENT
@@ -68,12 +98,10 @@ function Orders() {
   const [error, setError] = useState("");
 
   // ==================================================
-  // CUSTOMER ID
+  // CURRENT CUSTOMER ID
   // ==================================================
 
-  const customerId =
-    localStorage.getItem("customer_id") || "101";
-
+  const customerId = getCurrentCustomerId();
 
   // ==================================================
   // FETCH ORDERS
@@ -87,8 +115,39 @@ function Orders() {
 
       setError("");
 
+      // Clear previous customer's orders immediately
+      setOrders([]);
+
+      // ----------------------------------------------
+      // CHECK LOGIN CUSTOMER
+      // ----------------------------------------------
+
+      const currentCustomerId = getCurrentCustomerId();
+
+      if (!currentCustomerId) {
+        throw new Error(
+          "Customer login information not found. Please login again."
+        );
+      }
+
+      console.log(
+        "Loading orders for Customer ID:",
+        currentCustomerId
+      );
+
+      // ----------------------------------------------
+      // FETCH ONLY CURRENT CUSTOMER ORDERS
+      // ----------------------------------------------
+
       const response = await fetch(
-        `http://localhost:5000/api/orders/customer/${customerId}`
+        `http://localhost:5000/api/orders/customer/${currentCustomerId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+        }
       );
 
       const data = await response.json();
@@ -99,26 +158,39 @@ function Orders() {
         );
       }
 
+      // ----------------------------------------------
+      // EXTRA FRONTEND SAFETY FILTER
+      // ----------------------------------------------
+      // Even if backend accidentally returns another
+      // customer's order, don't display it.
+
+      const customerOrders = (data.orders || []).filter(
+        (order) =>
+          String(order.customer_id) ===
+          String(currentCustomerId)
+      );
+
       // Hide cancelled orders
-      const activeOrders = (data.orders || []).filter(
+      const activeOrders = customerOrders.filter(
         (order) =>
           order.delivery_status !== "Cancelled"
       );
 
       setOrders(activeOrders);
+
     } catch (err) {
       console.error("Orders error:", err);
 
       setError(
         err.message || "Failed to fetch orders"
       );
+
     } finally {
       if (showLoading) {
         setLoading(false);
       }
     }
   };
-
 
   // ==================================================
   // INITIAL LOAD
@@ -127,7 +199,6 @@ function Orders() {
   useEffect(() => {
     loadOrders(true);
   }, [customerId]);
-
 
   // ==================================================
   // AUTOMATIC STATUS REFRESH
@@ -142,7 +213,6 @@ function Orders() {
       clearInterval(interval);
     };
   }, [customerId]);
-
 
   // ==================================================
   // CANCEL ORDER
@@ -160,6 +230,14 @@ function Orders() {
     try {
       setError("");
 
+      const currentCustomerId = getCurrentCustomerId();
+
+      if (!currentCustomerId) {
+        throw new Error(
+          "Customer login information not found. Please login again."
+        );
+      }
+
       const response = await fetch(
         `http://localhost:5000/api/orders/${order.order_id}/cancel`,
         {
@@ -168,7 +246,7 @@ function Orders() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            customer_id: Number(customerId),
+            customer_id: Number(currentCustomerId),
           }),
         }
       );
@@ -192,6 +270,7 @@ function Orders() {
       alert(
         `Order #${order.order_id} cancelled successfully.`
       );
+
     } catch (err) {
       console.error(
         "Cancel order error:",
@@ -205,7 +284,6 @@ function Orders() {
     }
   };
 
-
   // ==================================================
   // CAN CANCEL ORDER
   // ==================================================
@@ -216,7 +294,6 @@ function Orders() {
       status !== "Cancelled"
     );
   };
-
 
   // ==================================================
   // STATUS CLASS
@@ -247,7 +324,6 @@ function Orders() {
     }
   };
 
-
   // ==================================================
   // LOADING
   // ==================================================
@@ -263,7 +339,6 @@ function Orders() {
     );
   }
 
-
   // ==================================================
   // ERROR
   // ==================================================
@@ -278,7 +353,6 @@ function Orders() {
       </div>
     );
   }
-
 
   // ==================================================
   // NO ORDERS
@@ -302,14 +376,13 @@ function Orders() {
           <h2>No Orders Found</h2>
 
           <p>
-            Orders placed by customers
+            Orders placed by this customer
             will automatically appear here.
           </p>
         </div>
       </div>
     );
   }
-
 
   // ==================================================
   // DISPLAY ORDERS
@@ -327,7 +400,6 @@ function Orders() {
         </div>
       </div>
 
-
       {/* ERROR MESSAGE */}
 
       {error && (
@@ -344,7 +416,6 @@ function Orders() {
           {error}
         </div>
       )}
-
 
       {/* ORDERS CONTAINER */}
 
@@ -381,7 +452,6 @@ function Orders() {
                 </p>
               </div>
 
-
               {/* ORDER STATUS */}
 
               <span
@@ -394,7 +464,6 @@ function Orders() {
 
             </div>
 
-
             {/* ORDER DETAILS */}
 
             <div className="order-products">
@@ -402,7 +471,6 @@ function Orders() {
               <h3>
                 Order Details
               </h3>
-
 
               <div className="order-product">
 
@@ -441,7 +509,6 @@ function Orders() {
 
                 </div>
 
-
                 {/* PRODUCT DETAILS */}
 
                 <div className="order-product-details">
@@ -451,14 +518,12 @@ function Orders() {
                       order.product_name}
                   </h3>
 
-
                   <p>
                     <strong>
                       Product:
                     </strong>{" "}
                     {order.product_name}
                   </p>
-
 
                   <p>
                     <strong>
@@ -467,14 +532,12 @@ function Orders() {
                     {order.category}
                   </p>
 
-
                   <p>
                     <strong>
                       Price:
                     </strong>{" "}
                     ₹{order.unit_price} / Bag
                   </p>
-
 
                   <p>
                     <strong>
@@ -483,14 +546,12 @@ function Orders() {
                     {order.quantity} Bags
                   </p>
 
-
                   <p>
                     <strong>
                       GST:
                     </strong>{" "}
                     ₹{order.GST}
                   </p>
-
 
                   <p>
                     <strong>
@@ -504,7 +565,6 @@ function Orders() {
               </div>
 
             </div>
-
 
             {/* TOTAL */}
 
@@ -522,7 +582,6 @@ function Orders() {
 
               </div>
 
-
               <div className="order-status-text">
 
                 Status:{" "}
@@ -534,7 +593,6 @@ function Orders() {
               </div>
 
             </div>
-
 
             {/* CANCEL ORDER */}
 
@@ -594,6 +652,5 @@ function Orders() {
     </div>
   );
 }
-
 
 export default Orders;
