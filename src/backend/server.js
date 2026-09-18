@@ -82,14 +82,6 @@ console.log("=================================");
 // ==================================================
 // AUTOMATIC ORDER STATUS SETTINGS
 // ==================================================
-//
-// Confirmed        -> immediately
-// Processing       -> after 1 minute
-// Shipped          -> after 2 minutes
-// Out for Delivery -> after 3 minutes
-// Delivered        -> after 4 minutes
-//
-// ==================================================
 
 const ORDER_STATUS_TIMINGS = {
   Processing: 1 * 60 * 1000,
@@ -107,9 +99,7 @@ const updateAutomaticOrderStatuses = async () => {
 
   try {
 
-    // ------------------------------------------------
     // CONFIRMED -> PROCESSING
-    // ------------------------------------------------
 
     await db.query(
       `UPDATE orders
@@ -128,9 +118,7 @@ const updateAutomaticOrderStatuses = async () => {
     );
 
 
-    // ------------------------------------------------
     // PROCESSING -> SHIPPED
-    // ------------------------------------------------
 
     await db.query(
       `UPDATE orders
@@ -149,9 +137,7 @@ const updateAutomaticOrderStatuses = async () => {
     );
 
 
-    // ------------------------------------------------
     // SHIPPED -> OUT FOR DELIVERY
-    // ------------------------------------------------
 
     await db.query(
       `UPDATE orders
@@ -170,9 +156,7 @@ const updateAutomaticOrderStatuses = async () => {
     );
 
 
-    // ------------------------------------------------
     // OUT FOR DELIVERY -> DELIVERED
-    // ------------------------------------------------
 
     await db.query(
       `UPDATE orders
@@ -238,23 +222,12 @@ app.get("/", (req, res) => {
 
 app.get("/api/test-db", async (req, res) => {
 
-  console.log("=================================");
-  console.log("DATABASE TEST REQUEST");
-
   try {
-
-    console.log(
-      "Testing MySQL connection..."
-    );
 
     const [rows] =
       await db.query(
         "SELECT 1 AS connected"
       );
-
-    console.log(
-      "MySQL test successful"
-    );
 
     return res.json({
 
@@ -300,14 +273,6 @@ app.post(
   "/api/login",
   async (req, res) => {
 
-    console.log(
-      "================================="
-    );
-
-    console.log(
-      "CUSTOMER LOGIN REQUEST"
-    );
-
     try {
 
       const {
@@ -315,8 +280,6 @@ app.post(
         password
       } = req.body;
 
-
-      // Check required fields
 
       if (!email || !password) {
 
@@ -331,8 +294,6 @@ app.post(
 
       }
 
-
-      // Find customer
 
       const [rows] =
         await db.query(
@@ -349,8 +310,6 @@ app.post(
 
         );
 
-
-      // Customer not found
 
       if (rows.length === 0) {
 
@@ -370,8 +329,6 @@ app.post(
         rows[0];
 
 
-      // Check password
-
       if (
         customer.password !==
         password
@@ -389,8 +346,6 @@ app.post(
       }
 
 
-      // Check JWT secret
-
       if (!process.env.JWT_SECRET) {
 
         return res.status(500).json({
@@ -404,8 +359,6 @@ app.post(
 
       }
 
-
-      // Create JWT token
 
       const token =
         jwt.sign(
@@ -430,8 +383,6 @@ app.post(
         );
 
 
-      // Login successful
-
       return res.json({
 
         success: true,
@@ -439,8 +390,7 @@ app.post(
         message:
           "Login successful",
 
-        token:
-          token,
+        token,
 
         customer: {
 
@@ -491,14 +441,6 @@ app.post(
   "/api/admin/login",
   async (req, res) => {
 
-    console.log(
-      "================================="
-    );
-
-    console.log(
-      "ADMIN LOGIN REQUEST RECEIVED"
-    );
-
     try {
 
       const {
@@ -506,8 +448,6 @@ app.post(
         password
       } = req.body;
 
-
-      // Check required fields
 
       if (!email || !password) {
 
@@ -537,8 +477,6 @@ app.post(
       }
 
 
-      // Find owner
-
       const [rows] =
         await db.query(
 
@@ -554,8 +492,6 @@ app.post(
 
         );
 
-
-      // Owner not found
 
       if (rows.length === 0) {
 
@@ -575,8 +511,6 @@ app.post(
         rows[0];
 
 
-      // Check password
-
       if (
         owner.password !==
         password
@@ -594,8 +528,6 @@ app.post(
       }
 
 
-      // Create JWT token
-
       const token =
         jwt.sign(
 
@@ -612,10 +544,8 @@ app.post(
           process.env.JWT_SECRET,
 
           {
-
             expiresIn:
               "2h"
-
           }
 
         );
@@ -628,8 +558,7 @@ app.post(
         message:
           "Admin login successful",
 
-        token:
-          token,
+        token,
 
         owner: {
 
@@ -950,8 +879,6 @@ app.post(
       }
 
 
-      // Check product
-
       const [products] =
         await db.query(
 
@@ -985,8 +912,6 @@ app.post(
       const product =
         products[0];
 
-
-      // Check stock
 
       if (
         qty >
@@ -1033,9 +958,7 @@ app.post(
 
         if (
           newQuantity >
-          Number(
-            product.stock_quantity
-          )
+          Number(product.stock_quantity)
         ) {
 
           return res.status(400).json({
@@ -1081,8 +1004,6 @@ app.post(
 
       }
 
-
-      // Add new product to cart
 
       const [result] =
         await db.query(
@@ -1184,8 +1105,6 @@ app.get(
         );
 
 
-      // Calculate total
-
       const total =
         rows.reduce(
 
@@ -1277,8 +1196,6 @@ app.put(
       }
 
 
-      // Check cart item and available stock
-
       const [items] =
         await db.query(
 
@@ -1327,8 +1244,6 @@ app.put(
 
       }
 
-
-      // Update quantity
 
       await db.query(
 
@@ -1482,10 +1397,6 @@ app.post(
       );
 
 
-      // ==================================================
-      // VALIDATE REQUIRED FIELDS
-      // ==================================================
-
       if (
         !customer_id ||
         !product_id ||
@@ -1503,10 +1414,6 @@ app.post(
 
       }
 
-
-      // ==================================================
-      // VALIDATE QUANTITY
-      // ==================================================
 
       const itemQuantity =
         Number(quantity);
@@ -1529,20 +1436,12 @@ app.post(
       }
 
 
-      // ==================================================
-      // GET DATABASE CONNECTION
-      // ==================================================
-
       connection =
         await db.getConnection();
 
 
       await connection.beginTransaction();
 
-
-      // ==================================================
-      // LOCK PRODUCT
-      // ==================================================
 
       const [products] =
         await connection.query(
@@ -1560,10 +1459,6 @@ app.post(
 
         );
 
-
-      // ==================================================
-      // PRODUCT NOT FOUND
-      // ==================================================
 
       if (products.length === 0) {
 
@@ -1585,10 +1480,6 @@ app.post(
         products[0];
 
 
-      // ==================================================
-      // CHECK STOCK
-      // ==================================================
-
       if (
         Number(product.stock_quantity) <
         itemQuantity
@@ -1608,17 +1499,9 @@ app.post(
       }
 
 
-      // ==================================================
-      // UNIT PRICE
-      // ==================================================
-
       const unitPrice =
         Number(product.price);
 
-
-      // ==================================================
-      // CALCULATE SUBTOTAL
-      // ==================================================
 
       const subtotal =
         Number(
@@ -1629,10 +1512,6 @@ app.post(
         );
 
 
-      // ==================================================
-      // CALCULATE 18% GST
-      // ==================================================
-
       const GST =
         Number(
           (
@@ -1642,17 +1521,9 @@ app.post(
         );
 
 
-      // ==================================================
-      // FIXED DISCOUNT
-      // ₹20 DISCOUNT ON EVERY NEW ORDER
-      // ==================================================
+      const discount =
+        20;
 
-      const discount = 20;
-
-
-      // ==================================================
-      // CALCULATE FINAL TOTAL
-      // ==================================================
 
       const totalAmount =
         Number(
@@ -1663,10 +1534,6 @@ app.post(
           ).toFixed(2)
         );
 
-
-      // ==================================================
-      // CREATE ORDER
-      // ==================================================
 
       const [orderResult] =
         await connection.query(
@@ -1699,10 +1566,6 @@ app.post(
         );
 
 
-      // ==================================================
-      // REDUCE STOCK
-      // ==================================================
-
       await connection.query(
 
         `UPDATE products
@@ -1718,10 +1581,6 @@ app.post(
       );
 
 
-      // ==================================================
-      // REMOVE CART ITEM
-      // ==================================================
-
       await connection.query(
 
         `DELETE FROM cart
@@ -1736,10 +1595,6 @@ app.post(
       );
 
 
-      // ==================================================
-      // COMMIT TRANSACTION
-      // ==================================================
-
       await connection.commit();
 
 
@@ -1748,10 +1603,6 @@ app.post(
         orderResult.insertId
       );
 
-
-      // ==================================================
-      // SUCCESS RESPONSE
-      // ==================================================
 
       return res.status(201).json({
 
@@ -1798,10 +1649,6 @@ app.post(
 
 
     } catch (error) {
-
-      // ==================================================
-      // ROLLBACK IF ERROR
-      // ==================================================
 
       if (connection) {
 
@@ -1861,14 +1708,6 @@ app.post(
 app.post(
   "/api/payment",
   async (req, res) => {
-
-    console.log(
-      "================================="
-    );
-
-    console.log(
-      "PAYMENT REQUEST RECEIVED"
-    );
 
     try {
 
@@ -2368,8 +2207,6 @@ app.put(
       }
 
 
-      // Restore stock
-
       await connection.query(
 
         `UPDATE products
@@ -2384,8 +2221,6 @@ app.put(
 
       );
 
-
-      // Cancel order
 
       await connection.query(
 
@@ -2472,6 +2307,660 @@ app.put(
         connection.release();
 
       }
+
+    }
+
+  }
+);
+
+
+// ==================================================
+// ==================================================
+// BILLING / BILL HISTORY
+// ==================================================
+// ==================================================
+//
+// IMPORTANT:
+//
+// Bills are NOT stored only in React state.
+//
+// The bill information is taken from:
+//      orders table
+//      payment table
+//
+// Therefore:
+//      Refresh page -> bill still exists
+//      Close browser -> bill still exists
+//      Login again -> bill still exists
+//
+// ==================================================
+
+
+// ==================================================
+// CUSTOMER - GET BILLING HISTORY
+// ==================================================
+
+app.get(
+  "/api/billing/customer/:customerId",
+  async (req, res) => {
+
+    try {
+
+      const {
+        customerId
+      } = req.params;
+
+
+      console.log(
+        "Fetching billing history for customer:",
+        customerId
+      );
+
+
+      const [rows] =
+        await db.query(
+
+          `SELECT
+            o.order_id,
+            o.customer_id,
+
+            c.customer_name,
+            c.email,
+
+            o.product_id,
+
+            p.product_name,
+            p.brand,
+            p.category,
+
+            o.quantity,
+            o.unit_price,
+
+            (
+              o.unit_price * o.quantity
+            ) AS subtotal,
+
+            o.GST,
+            o.discount,
+            o.total_amount,
+
+            o.order_date,
+            o.delivery_status,
+
+            pay.payment_id,
+            pay.payment_method,
+            pay.payment_status,
+            pay.amount AS paid_amount
+
+           FROM orders o
+
+           INNER JOIN customer c
+             ON o.customer_id = c.customer_id
+
+           INNER JOIN products p
+             ON o.product_id = p.product_id
+
+           LEFT JOIN payment pay
+             ON o.order_id = pay.order_id
+             AND o.customer_id = pay.customer_id
+
+           WHERE o.customer_id = ?
+
+           ORDER BY o.order_date DESC`,
+
+          [customerId]
+
+        );
+
+
+      const bills =
+        rows.map((bill) => {
+
+          const subtotal =
+            Number(
+              bill.subtotal || 0
+            );
+
+          const GST =
+            Number(
+              bill.GST || 0
+            );
+
+          const discount =
+            Number(
+              bill.discount || 0
+            );
+
+          const total =
+            Number(
+              bill.total_amount || 0
+            );
+
+
+          return {
+
+            bill_id:
+              bill.order_id,
+
+            order_id:
+              bill.order_id,
+
+            customer_id:
+              bill.customer_id,
+
+            customer_name:
+              bill.customer_name,
+
+            email:
+              bill.email,
+
+            product_id:
+              bill.product_id,
+
+            product_name:
+              bill.product_name,
+
+            brand:
+              bill.brand,
+
+            category:
+              bill.category,
+
+            quantity:
+              Number(bill.quantity),
+
+            unit_price:
+              Number(bill.unit_price),
+
+            subtotal:
+              Number(
+                subtotal.toFixed(2)
+              ),
+
+            GST:
+              Number(
+                GST.toFixed(2)
+              ),
+
+            discount:
+              Number(
+                discount.toFixed(2)
+              ),
+
+            total_amount:
+              Number(
+                total.toFixed(2)
+              ),
+
+            order_date:
+              bill.order_date,
+
+            delivery_status:
+              bill.delivery_status,
+
+            payment_id:
+              bill.payment_id,
+
+            payment_method:
+              bill.payment_method,
+
+            payment_status:
+              bill.payment_status,
+
+            paid_amount:
+              bill.paid_amount !== null
+                ? Number(
+                    Number(
+                      bill.paid_amount
+                    ).toFixed(2)
+                  )
+                : null
+
+          };
+
+        });
+
+
+      return res.json({
+
+        success: true,
+
+        bills:
+
+          bills
+
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Get customer billing history error:",
+        error
+      );
+
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Failed to fetch billing history",
+
+        error:
+          error.message
+
+      });
+
+    }
+
+  }
+);
+
+
+// ==================================================
+// CUSTOMER - GET SINGLE BILL
+// ==================================================
+
+app.get(
+  "/api/billing/:orderId",
+  async (req, res) => {
+
+    try {
+
+      const {
+        orderId
+      } = req.params;
+
+
+      const [rows] =
+        await db.query(
+
+          `SELECT
+            o.order_id,
+            o.customer_id,
+
+            c.customer_name,
+            c.email,
+
+            o.product_id,
+
+            p.product_name,
+            p.brand,
+            p.category,
+
+            o.quantity,
+            o.unit_price,
+
+            (
+              o.unit_price * o.quantity
+            ) AS subtotal,
+
+            o.GST,
+            o.discount,
+            o.total_amount,
+
+            o.order_date,
+            o.delivery_status,
+
+            pay.payment_id,
+            pay.payment_method,
+            pay.payment_status,
+            pay.amount AS paid_amount
+
+           FROM orders o
+
+           INNER JOIN customer c
+             ON o.customer_id = c.customer_id
+
+           INNER JOIN products p
+             ON o.product_id = p.product_id
+
+           LEFT JOIN payment pay
+             ON o.order_id = pay.order_id
+             AND o.customer_id = pay.customer_id
+
+           WHERE o.order_id = ?`,
+
+          [orderId]
+
+        );
+
+
+      if (rows.length === 0) {
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "Bill not found"
+
+        });
+
+      }
+
+
+      const bill =
+        rows[0];
+
+
+      return res.json({
+
+        success: true,
+
+        bill: {
+
+          bill_id:
+            bill.order_id,
+
+          order_id:
+            bill.order_id,
+
+          customer_id:
+            bill.customer_id,
+
+          customer_name:
+            bill.customer_name,
+
+          email:
+            bill.email,
+
+          product_id:
+            bill.product_id,
+
+          product_name:
+            bill.product_name,
+
+          brand:
+            bill.brand,
+
+          category:
+            bill.category,
+
+          quantity:
+            Number(
+              bill.quantity
+            ),
+
+          unit_price:
+            Number(
+              bill.unit_price
+            ),
+
+          subtotal:
+            Number(
+              Number(
+                bill.subtotal || 0
+              ).toFixed(2)
+            ),
+
+          GST:
+            Number(
+              Number(
+                bill.GST || 0
+              ).toFixed(2)
+            ),
+
+          discount:
+            Number(
+              Number(
+                bill.discount || 0
+              ).toFixed(2)
+            ),
+
+          total_amount:
+            Number(
+              Number(
+                bill.total_amount || 0
+              ).toFixed(2)
+            ),
+
+          order_date:
+            bill.order_date,
+
+          delivery_status:
+            bill.delivery_status,
+
+          payment_id:
+            bill.payment_id,
+
+          payment_method:
+            bill.payment_method,
+
+          payment_status:
+            bill.payment_status,
+
+          paid_amount:
+            bill.paid_amount !== null
+              ? Number(
+                  Number(
+                    bill.paid_amount
+                  ).toFixed(2)
+                )
+              : null
+
+        }
+
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Get single bill error:",
+        error
+      );
+
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Failed to fetch bill",
+
+        error:
+          error.message
+
+      });
+
+    }
+
+  }
+);
+
+
+// ==================================================
+// ADMIN - GET ALL BILLING HISTORY
+// ==================================================
+
+app.get(
+  "/api/admin/billing",
+  async (req, res) => {
+
+    try {
+
+      const [rows] =
+        await db.query(
+
+          `SELECT
+            o.order_id,
+            o.customer_id,
+
+            c.customer_name,
+            c.email,
+
+            o.product_id,
+
+            p.product_name,
+            p.brand,
+            p.category,
+
+            o.quantity,
+            o.unit_price,
+
+            (
+              o.unit_price * o.quantity
+            ) AS subtotal,
+
+            o.GST,
+            o.discount,
+            o.total_amount,
+
+            o.order_date,
+            o.delivery_status,
+
+            pay.payment_id,
+            pay.payment_method,
+            pay.payment_status,
+            pay.amount AS paid_amount
+
+           FROM orders o
+
+           INNER JOIN customer c
+             ON o.customer_id = c.customer_id
+
+           INNER JOIN products p
+             ON o.product_id = p.product_id
+
+           LEFT JOIN payment pay
+             ON o.order_id = pay.order_id
+             AND o.customer_id = pay.customer_id
+
+           ORDER BY o.order_date DESC`
+
+        );
+
+
+      const bills =
+        rows.map((bill) => {
+
+          return {
+
+            bill_id:
+              bill.order_id,
+
+            order_id:
+              bill.order_id,
+
+            customer_id:
+              bill.customer_id,
+
+            customer_name:
+              bill.customer_name,
+
+            email:
+              bill.email,
+
+            product_id:
+              bill.product_id,
+
+            product_name:
+              bill.product_name,
+
+            brand:
+              bill.brand,
+
+            category:
+              bill.category,
+
+            quantity:
+              Number(
+                bill.quantity
+              ),
+
+            unit_price:
+              Number(
+                bill.unit_price
+              ),
+
+            subtotal:
+              Number(
+                Number(
+                  bill.subtotal || 0
+                ).toFixed(2)
+              ),
+
+            GST:
+              Number(
+                Number(
+                  bill.GST || 0
+                ).toFixed(2)
+              ),
+
+            discount:
+              Number(
+                Number(
+                  bill.discount || 0
+                ).toFixed(2)
+              ),
+
+            total_amount:
+              Number(
+                Number(
+                  bill.total_amount || 0
+                ).toFixed(2)
+              ),
+
+            order_date:
+              bill.order_date,
+
+            delivery_status:
+              bill.delivery_status,
+
+            payment_id:
+              bill.payment_id,
+
+            payment_method:
+              bill.payment_method,
+
+            payment_status:
+              bill.payment_status,
+
+            paid_amount:
+              bill.paid_amount !== null
+                ? Number(
+                    Number(
+                      bill.paid_amount
+                    ).toFixed(2)
+                  )
+                : null
+
+          };
+
+        });
+
+
+      return res.json({
+
+        success: true,
+
+        bills:
+          bills
+
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Get admin billing history error:",
+        error
+      );
+
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Failed to fetch billing history",
+
+        error:
+          error.message
+
+      });
 
     }
 
