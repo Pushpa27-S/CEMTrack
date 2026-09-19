@@ -279,9 +279,6 @@ function Billing() {
             ${bill.email || "-"}
             <br />
 
-            <strong>Phone:</strong>
-            ${bill.phone || "-"}
-
           </div>
 
 
@@ -470,7 +467,6 @@ function Billing() {
                 <th style={styles.th}>Invoice</th>
                 <th style={styles.th}>Date</th>
                 <th style={styles.th}>Customer</th>
-                <th style={styles.th}>Phone</th>
                 <th style={styles.th}>Cement</th>
                 <th style={styles.th}>Quantity</th>
                 <th style={styles.th}>Price</th>
@@ -512,10 +508,6 @@ function Billing() {
 
                     <td style={styles.td}>
                       {bill.customer_name || "-"}
-                    </td>
-
-                    <td style={styles.td}>
-                      {bill.phone || "-"}
                     </td>
 
                     <td style={styles.td}>
