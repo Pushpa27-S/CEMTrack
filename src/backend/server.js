@@ -80,122 +80,15 @@ console.log("=================================");
 
 
 // ==================================================
-// AUTOMATIC ORDER STATUS SETTINGS
+// ORDER STATUS
 // ==================================================
-
-const ORDER_STATUS_TIMINGS = {
-  Processing: 1 * 60 * 1000,
-  Shipped: 2 * 60 * 1000,
-  "Out for Delivery": 3 * 60 * 1000,
-  Delivered: 4 * 60 * 1000
-};
-
-
+//
+// New orders are created as Confirmed.
+//
+// Further status changes are handled manually
+// by Admin Orders.
+//
 // ==================================================
-// AUTOMATIC ORDER STATUS UPDATE
-// ==================================================
-
-const updateAutomaticOrderStatuses = async () => {
-
-  try {
-
-    // CONFIRMED -> PROCESSING
-
-    await db.query(
-      `UPDATE orders
-       SET delivery_status = 'Processing'
-       WHERE delivery_status = 'Confirmed'
-       AND TIMESTAMPDIFF(
-         SECOND,
-         order_date,
-         NOW()
-       ) >= ?`,
-      [
-        Math.floor(
-          ORDER_STATUS_TIMINGS.Processing / 1000
-        )
-      ]
-    );
-
-
-    // PROCESSING -> SHIPPED
-
-    await db.query(
-      `UPDATE orders
-       SET delivery_status = 'Shipped'
-       WHERE delivery_status = 'Processing'
-       AND TIMESTAMPDIFF(
-         SECOND,
-         order_date,
-         NOW()
-       ) >= ?`,
-      [
-        Math.floor(
-          ORDER_STATUS_TIMINGS.Shipped / 1000
-        )
-      ]
-    );
-
-
-    // SHIPPED -> OUT FOR DELIVERY
-
-    await db.query(
-      `UPDATE orders
-       SET delivery_status = 'Out for Delivery'
-       WHERE delivery_status = 'Shipped'
-       AND TIMESTAMPDIFF(
-         SECOND,
-         order_date,
-         NOW()
-       ) >= ?`,
-      [
-        Math.floor(
-          ORDER_STATUS_TIMINGS["Out for Delivery"] / 1000
-        )
-      ]
-    );
-
-
-    // OUT FOR DELIVERY -> DELIVERED
-
-    await db.query(
-      `UPDATE orders
-       SET delivery_status = 'Delivered'
-       WHERE delivery_status = 'Out for Delivery'
-       AND TIMESTAMPDIFF(
-         SECOND,
-         order_date,
-         NOW()
-       ) >= ?`,
-      [
-        Math.floor(
-          ORDER_STATUS_TIMINGS.Delivered / 1000
-        )
-      ]
-    );
-
-  } catch (error) {
-
-    console.error(
-      "Automatic order status update error:",
-      error
-    );
-
-  }
-
-};
-
-
-// ==================================================
-// RUN AUTOMATIC STATUS CHECK
-// ==================================================
-
-setInterval(
-  updateAutomaticOrderStatuses,
-  10 * 1000
-);
-
-updateAutomaticOrderStatuses();
 
 
 // ==================================================
@@ -407,11 +300,10 @@ app.post(
 
       });
 
-
     } catch (error) {
 
       console.error(
-        "CUSTOMER LOGIN ERROR:",
+        "Customer login error:",
         error
       );
 
@@ -420,7 +312,7 @@ app.post(
         success: false,
 
         message:
-          "Server error",
+          "Login failed",
 
         error:
           error.message
@@ -434,11 +326,643 @@ app.post(
 
 
 // ==================================================
-// ADMIN / OWNER LOGIN
+// ADMIN LOGIN
 // ==================================================
 
 app.post(
   "/api/admin/login",
+  async (req, res) => {
+
+    try {
+
+      const {
+        email,
+        password
+      } = req.body;
+
+
+      if (!email || !password) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Email and password are required"
+
+        });
+
+      }
+
+
+      const [rows] =
+        await db.query(
+
+          `SELECT
+            owner_id,
+            owner_name,
+            email,
+            password
+           FROM owner
+           WHERE email = ?`,
+
+          [email]
+
+        );
+
+
+      if (rows.length === 0) {
+
+        return res.status(401).json({
+
+          success: false,
+
+          message:
+            "Invalid owner email or password"
+
+        });
+
+      }
+
+
+      const owner =
+        rows[0];
+
+
+      if (
+        owner.password !==
+        password
+      ) {
+
+        return res.status(401).json({
+
+          success: false,
+
+          message:
+            "Invalid owner email or password"
+
+        });
+
+      }
+
+
+      if (!process.env.JWT_SECRET) {
+
+        return res.status(500).json({
+
+          success: false,
+
+          message:
+            "JWT_SECRET is not configured"
+
+        });
+
+      }
+
+
+      const token =
+        jwt.sign(
+
+          {
+
+            owner_id:
+              owner.owner_id,
+
+            role:
+              "owner"
+
+          },
+
+          process.env.JWT_SECRET,
+
+          {
+            expiresIn:
+              "2h"
+          }
+
+        );
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          "owner login successful",
+
+        token,
+
+        owner: {
+
+          owner_id:
+            owner.owner_id,
+
+          owner_name:
+            owner.owner_name,
+
+          email:
+            owner.email
+
+        }
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "owner login error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "owner login failed",
+
+        error:
+          error.message
+
+      });
+
+    }
+
+  }
+);
+
+
+// ==================================================
+// GET ALL PRODUCTS
+// ==================================================
+
+app.get(
+  "/api/products",
+  async (req, res) => {
+
+    try {
+
+      const [rows] =
+        await db.query(
+
+          `SELECT
+            product_id,
+            product_name,
+            brand,
+            category,
+            price,
+            stock_quantity,
+            description,
+            image
+           FROM products
+           ORDER BY product_id DESC`
+
+        );
+
+
+      return res.json({
+
+        success: true,
+
+        products:
+          rows
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Get products error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Failed to fetch products",
+
+        error:
+          error.message
+
+      });
+
+    }
+
+  }
+);
+
+
+// ==================================================
+// GET SINGLE PRODUCT
+// ==================================================
+
+app.get(
+  "/api/products/:productId",
+  async (req, res) => {
+
+    try {
+
+      const {
+        productId
+      } = req.params;
+
+
+      const [rows] =
+        await db.query(
+
+          `SELECT
+            product_id,
+            product_name,
+            brand,
+            category,
+            price,
+            stock_quantity,
+            description,
+            image
+           FROM products
+           WHERE product_id = ?`,
+
+          [productId]
+
+        );
+
+
+      if (rows.length === 0) {
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "Product not found"
+
+        });
+
+      }
+
+
+      return res.json({
+
+        success: true,
+
+        product:
+          rows[0]
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Get product error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Failed to fetch product",
+
+        error:
+          error.message
+
+      });
+
+    }
+
+  }
+);
+
+
+// ==================================================
+// CHECK PRODUCT STOCK
+// ==================================================
+
+app.get(
+  "/api/products/:productId/stock",
+  async (req, res) => {
+
+    try {
+
+      const {
+        productId
+      } = req.params;
+
+
+      const [rows] =
+        await db.query(
+
+          `SELECT
+            product_id,
+            product_name,
+            stock_quantity,
+            price
+           FROM products
+           WHERE product_id = ?`,
+
+          [productId]
+
+        );
+
+
+      if (rows.length === 0) {
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "Product not found"
+
+        });
+
+      }
+
+
+      return res.json({
+
+        success: true,
+
+        product:
+          rows[0]
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Stock check error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Failed to check product stock",
+
+        error:
+          error.message
+
+      });
+
+    }
+
+  }
+);
+
+
+// CART - ADD PRODUCT
+// ==================================================
+
+app.post(
+  "/api/cart",
+  async (req, res) => {
+
+    try {
+
+      const {
+        customer_id,
+        product_id,
+        quantity
+      } = req.body;
+
+
+      if (
+        !customer_id ||
+        !product_id
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "customer_id and product_id are required"
+
+        });
+
+      }
+
+
+      const qty =
+        Number(quantity) || 1;
+
+
+      if (
+        !Number.isInteger(qty) ||
+        qty < 1
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Quantity must be at least 1"
+
+        });
+
+      }
+
+
+      const [products] =
+        await db.query(
+
+          `SELECT
+            product_id,
+            product_name,
+            price,
+            stock_quantity
+           FROM products
+           WHERE product_id = ?`,
+
+          [product_id]
+
+        );
+
+
+      if (products.length === 0) {
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "Product not found"
+
+        });
+
+      }
+
+
+      const product =
+        products[0];
+
+
+      if (
+        qty >
+        Number(product.stock_quantity)
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            `Only ${product.stock_quantity} bags are available`
+
+        });
+
+      }
+
+
+      const [existing] =
+        await db.query(
+
+          `SELECT *
+           FROM cart
+           WHERE customer_id = ?
+           AND product_id = ?`,
+
+          [
+            customer_id,
+            product_id
+          ]
+
+        );
+
+
+      if (
+        existing.length > 0
+      ) {
+
+        const newQuantity =
+          Number(
+            existing[0].quantity
+          ) + qty;
+
+
+        if (
+          newQuantity >
+          Number(product.stock_quantity)
+        ) {
+
+          return res.status(400).json({
+
+            success: false,
+
+            message:
+              `Only ${product.stock_quantity} bags are available`
+
+          });
+
+        }
+
+
+        await db.query(
+
+          `UPDATE cart
+           SET quantity = ?
+           WHERE cart_id = ?`,
+
+          [
+            newQuantity,
+            existing[0].cart_id
+          ]
+
+        );
+
+
+        return res.json({
+
+          success: true,
+
+          message:
+            "Cart quantity updated",
+
+          cart_id:
+            existing[0].cart_id,
+
+          quantity:
+            newQuantity
+
+        });
+
+      }
+
+
+      const [result] =
+        await db.query(
+
+          `INSERT INTO cart
+          (
+            customer_id,
+            product_id,
+            quantity
+          )
+          VALUES (?, ?, ?)`,
+
+          [
+            customer_id,
+            product_id,
+            qty
+          ]
+
+        );
+
+
+      return res.status(201).json({
+
+        success: true,
+
+        message:
+          "Product added to cart",
+
+        cart_id:
+          result.insertId,
+
+        quantity:
+          qty
+
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Add to cart error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Failed to add product to cart",
+
+        error:
+          error.message
+
+      });
+
+    }
+
+  }
+);
+
+
+// ==================================================
+// CART - VIEW CUSTOMER CART
+// ==================================================
+
+app.get(
+  "/api/cart/:customerId",
   async (req, res) => {
 
     try {
@@ -798,8 +1322,7 @@ app.get(
           rows[0]
 
       });
-
-    } catch (error) {
+          } catch (error) {
 
       console.error(
         "Stock check error:",
@@ -1197,9 +1720,7 @@ app.put(
 
 
       const [items] =
-        await db.query(
-
-          `SELECT
+        await db.query(          `SELECT
             c.cart_id,
             p.stock_quantity
            FROM cart c
@@ -1579,7 +2100,7 @@ app.post(
         ]
 
       );
-s
+
 
       await connection.query(
 
@@ -1595,10 +2116,7 @@ s
       );
 
 
-      await connection.commit();
-
-
-      console.log(
+      await connection.commit();      console.log(
         "Order created:",
         orderResult.insertId
       );
@@ -2397,8 +2915,7 @@ app.get(
            INNER JOIN customer c
              ON o.customer_id = c.customer_id
 
-           INNER JOIN products p
-             ON o.product_id = p.product_id
+           INNER JOIN products p             ON o.product_id = p.product_id
 
            LEFT JOIN payment pay
              ON o.order_id = pay.order_id
@@ -2798,34 +3315,46 @@ app.get(
             p.category,
 
             o.quantity,
-            o.unit_price,
+                        o.unit_price,
 
             (
+
               o.unit_price * o.quantity
+
             ) AS subtotal,
 
             o.GST,
+
             o.discount,
+
             o.total_amount,
 
             o.order_date,
+
             o.delivery_status,
 
             pay.payment_id,
+
             pay.payment_method,
+
             pay.payment_status,
+
             pay.amount AS paid_amount
 
            FROM orders o
 
            INNER JOIN customer c
+
              ON o.customer_id = c.customer_id
 
            INNER JOIN products p
+
              ON o.product_id = p.product_id
 
            LEFT JOIN payment pay
+
              ON o.order_id = pay.order_id
+
              AND o.customer_id = pay.customer_id
 
            ORDER BY o.order_date DESC`
@@ -3198,7 +3727,7 @@ const updateOrderStatus =
 app.put(
   "/api/admin/orders/:orderId/status",
   updateOrderStatus
-);
+  );
 
 
 // ==================================================
