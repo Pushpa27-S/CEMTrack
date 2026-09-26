@@ -1,4 +1,6 @@
+
 import React, { useEffect, useState } from "react";
+import "./AdminOrders.css";
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -21,7 +23,6 @@ function AdminOrders() {
       } else {
         setError(data.message || "Failed to load orders");
       }
-
     } catch (err) {
       console.error("Fetch orders error:", err);
       setError("Cannot connect to backend server");
@@ -29,7 +30,6 @@ function AdminOrders() {
       setLoading(false);
     }
   };
-
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
@@ -54,45 +54,41 @@ function AdminOrders() {
       } else {
         alert(data.message || "Failed to update order status");
       }
-
     } catch (error) {
       console.error("Update status error:", error);
       alert("Cannot connect to backend server");
     }
   };
 
-
   useEffect(() => {
     fetchOrders();
   }, []);
 
-
   if (loading) {
-    return <h2>Loading orders...</h2>;
+    return (
+      <div className="admin-orders-container">
+        <h2>Loading orders...</h2>
+      </div>
+    );
   }
-
 
   if (error) {
-    return <h2>{error}</h2>;
+    return (
+      <div className="admin-orders-container">
+        <h2>{error}</h2>
+      </div>
+    );
   }
 
-
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="admin-orders-container">
 
       <h1>All Orders</h1>
 
       {orders.length === 0 ? (
         <p>No orders found.</p>
       ) : (
-        <table
-          border="1"
-          cellPadding="10"
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-          }}
-        >
+        <table className="admin-orders-table">
 
           <thead>
             <tr>
@@ -109,28 +105,43 @@ function AdminOrders() {
             </tr>
           </thead>
 
-
           <tbody>
 
             {orders.map((order) => (
 
               <tr key={order.order_id}>
 
-                <td>{order.order_id}</td>
+                <td>
+                  {order.order_id}
+                </td>
 
-                <td>{order.customer_id}</td>
+                <td>
+                  {order.customer_id}
+                </td>
 
-                <td>{order.product_name}</td>
+                <td>
+                  {order.product_name}
+                </td>
 
-                <td>{order.brand}</td>
+                <td>
+                  {order.brand}
+                </td>
 
-                <td>{order.quantity}</td>
+                <td>
+                  {order.quantity}
+                </td>
 
-                <td>₹{order.unit_price}</td>
+                <td>
+                  ₹{order.unit_price}
+                </td>
 
-                <td>₹{order.GST}</td>
+                <td>
+                  ₹{order.GST}
+                </td>
 
-                <td>₹{order.total_amount}</td>
+                <td>
+                  ₹{order.total_amount}
+                </td>
 
                 <td>
                   {new Date(
@@ -141,6 +152,7 @@ function AdminOrders() {
                 <td>
 
                   <select
+                    className="order-status-select"
                     value={order.delivery_status}
                     onChange={(e) =>
                       updateOrderStatus(
@@ -183,13 +195,9 @@ function AdminOrders() {
         </table>
       )}
 
-
       <button
+        className="refresh-orders-btn"
         onClick={fetchOrders}
-        style={{
-          marginTop: "20px",
-          padding: "10px 20px",
-        }}
       >
         Refresh Orders
       </button>

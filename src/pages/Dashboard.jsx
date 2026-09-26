@@ -4,57 +4,158 @@ import products from "../data/ProductsData";
 
 function Dashboard() {
 
-  // Total Products
+  // ========================================
+  // DASHBOARD CALCULATIONS
+  // ========================================
+
   const totalProducts = products.length;
 
-  // Total Stock
   const totalStock = products.reduce(
-    (total, product) => total + product.stock,
+    (total, product) =>
+      total + Number(product.stock || 0),
     0
   );
 
-  // Total Brands
   const totalBrands = new Set(
     products.map((product) => product.brand)
   ).size;
 
-  // Total Categories
   const totalCategories = new Set(
     products.map((product) => product.category)
   ).size;
 
+
+  // ========================================
+  // RETURN
+  // ========================================
+
   return (
+
     <div className="dashboard-container">
 
-      <header className="dashboard-header">
-        <h1>Dashboard</h1>
-      </header>
 
-      <div className="cards">
+      {/* ================================
+          HEADER
+          ================================ */}
 
-        <div className="card">
-          <h3>Total Products</h3>
-          <p>{totalProducts}</p>
-        </div>
+      <div className="dashboard-header">
 
-        <div className="card">
-          <h3>Total Brands</h3>
-          <p>{totalBrands}</p>
-        </div>
+        <div>
+          <h1>Dashboard</h1>
 
-        <div className="card">
-          <h3>Total Stock</h3>
-          <p>{totalStock} Bags</p>
-        </div>
-
-        <div className="card">
-          <h3>Categories</h3>
-          <p>{totalCategories}</p>
+          <p>
+            Welcome back! Here's what's happening
+            with your cement inventory today.
+          </p>
         </div>
 
       </div>
 
+
+      {/* ================================
+          STAT CARDS
+          ================================ */}
+
+      <div className="dashboard-cards">
+
+
+        {/* TOTAL PRODUCTS */}
+
+        <div className="dashboard-card">
+
+          <div className="dashboard-card-icon">
+            📦
+          </div>
+
+          <div className="dashboard-card-content">
+
+            <h3>
+              Total Products
+            </h3>
+
+            <p>
+              {totalProducts}
+            </p>
+
+          </div>
+
+        </div>
+
+
+        {/* TOTAL BRANDS */}
+
+        <div className="dashboard-card">
+
+          <div className="dashboard-card-icon">
+            🏷️
+          </div>
+
+          <div className="dashboard-card-content">
+
+            <h3>
+              Total Brands
+            </h3>
+
+            <p>
+              {totalBrands}
+            </p>
+
+          </div>
+
+        </div>
+
+
+        {/* TOTAL STOCK */}
+
+        <div className="dashboard-card">
+
+          <div className="dashboard-card-icon">
+            📊
+          </div>
+
+          <div className="dashboard-card-content">
+
+            <h3>
+              Total Stock
+            </h3>
+
+            <p>
+              {totalStock} Bags
+            </p>
+
+          </div>
+
+        </div>
+
+
+        {/* CATEGORIES */}
+
+        <div className="dashboard-card">
+
+          <div className="dashboard-card-icon">
+            ◫
+          </div>
+
+          <div className="dashboard-card-content">
+
+            <h3>
+              Categories
+            </h3>
+
+            <p>
+              {totalCategories}
+            </p>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+
     </div>
+
   );
 }
 

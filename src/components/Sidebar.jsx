@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 
 function Sidebar() {
@@ -24,84 +24,126 @@ function Sidebar() {
   };
 
   return (
-    <div className="sidebar">
+    <aside className="sidebar">
 
-      <h2>CEMTrack</h2>
+      {/* LOGO */}
+      <div className="sidebar-logo">
+        <h2>
+          CEM<span>Track</span>
+        </h2>
 
-      <ul>
+        <p>Cement Inventory & Management System</p>
+      </div>
 
-        {/* Dashboard */}
-        <li>
-          <Link to="/dashboard">
-            Dashboard
-          </Link>
-        </li>
 
-        {/* Products */}
-        <li>
-          <Link to="/products">
-            Products
-          </Link>
-        </li>
+      {/* MENU */}
+      <nav className="sidebar-menu">
 
-        {/* Customers */}
-        <li>
-          <Link to="/customers">
-            Customers
-          </Link>
-        </li>
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) =>
+            isActive ? "sidebar-item active" : "sidebar-item"
+          }
+        >
+          <span className="sidebar-icon">⌂</span>
+          <span>Dashboard</span>
+        </NavLink>
 
-        {/* Orders */}
-        <li>
-          <Link to="/adminorders">
-            Orders
-          </Link>
-        </li>
 
-        {/* Billing */}
-        <li>
-          <Link to="/billing">
-            Billing
-          </Link>
-        </li>
+        <NavLink
+          to="/products"
+          className={({ isActive }) =>
+            isActive ? "sidebar-item active" : "sidebar-item"
+          }
+        >
+          <span className="sidebar-icon">▣</span>
+          <span>Products</span>
+        </NavLink>
 
-        {/* Reports */}
-        <li>
-          <Link to="/reports">
-            Reports
-          </Link>
-        </li>
 
-        {/* Stock */}
-        <li>
-          <Link to="/stock">
-            Stock
-          </Link>
-        </li>
+        <NavLink
+          to="/customers"
+          className={({ isActive }) =>
+            isActive ? "sidebar-item active" : "sidebar-item"
+          }
+        >
+          <span className="sidebar-icon">♟</span>
+          <span>Customers</span>
+        </NavLink>
 
-        {/* Add Product */}
-        <li>
-          <button
-            className="sidebar-link-button"
-            onClick={handleAddProduct}
-          >
-            Add Product
-          </button>
-        </li>
 
-        {/* Logout */}
-        <li>
-          <button
-            className="logout-btn"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </li>
+        <NavLink
+          to="/adminorders"
+          className={({ isActive }) =>
+            isActive ? "sidebar-item active" : "sidebar-item"
+          }
+        >
+          <span className="sidebar-icon">🛒</span>
+          <span>Orders</span>
+        </NavLink>
 
-      </ul>
 
-    </div>
+        <NavLink
+          to="/billing"
+          className={({ isActive }) =>
+            isActive ? "sidebar-item active" : "sidebar-item"
+          }
+        >
+          <span className="sidebar-icon">▤</span>
+          <span>Billing</span>
+        </NavLink>
+
+
+        <NavLink
+          to="/reports"
+          className={({ isActive }) =>
+            isActive ? "sidebar-item active" : "sidebar-item"
+          }
+        >
+          <span className="sidebar-icon">▥</span>
+          <span>Reports</span>
+        </NavLink>
+
+
+        <NavLink
+          to="/stock"
+          className={({ isActive }) =>
+            isActive ? "sidebar-item active" : "sidebar-item"
+          }
+        >
+          <span className="sidebar-icon">▦</span>
+          <span>Stock</span>
+        </NavLink>
+
+
+        {/* ADD PRODUCT */}
+        <button
+          type="button"
+          className="sidebar-item sidebar-button"
+          onClick={handleAddProduct}
+        >
+          <span className="sidebar-icon">＋</span>
+          <span>Add Product</span>
+        </button>
+
+      </nav>
+
+
+      {/* LOGOUT */}
+      <div className="sidebar-bottom">
+
+        <button
+          type="button"
+          className="sidebar-item logout-button"
+          onClick={handleLogout}
+        >
+          <span className="sidebar-icon">↪</span>
+          <span>Logout</span>
+        </button>
+
+      </div>
+
+    </aside>
   );
 }
 

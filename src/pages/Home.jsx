@@ -1,7 +1,7 @@
 import React from "react";
 import {useNavigate} from "react-router-dom";
 import "./Home.css";
-import homeImage from "../assets/cement.jpeg"; 
+import homeImage from "../assets/cement2.jpeg"; 
 // Change the filename if yours is different
 
 function Home() {

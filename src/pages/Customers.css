@@ -1,171 +1,316 @@
 /* =================================
    ADMIN CUSTOMER MANAGEMENT
+   BLACK + WHITE + ORANGE + RED STATUS
 ================================= */
 
 .customers-container {
-  min-height: 100vh;
-  padding: 30px;
-  box-sizing: border-box;
-  background: #f4f6f9;
-  color: #1f2937;
+    min-height: 100vh;
+    padding: 30px;
+    box-sizing: border-box;
+    background: #ffffff;
+    color: #1f2937;
 }
 
-.customers-container h1 {
-  margin: 0 0 25px;
-  font-size: 28px;
-}
 
 /* =================================
-   STATISTICS CARDS
+   PAGE TITLE
+================================= */
+
+.customers-container h1 {
+    margin: 0 0 25px;
+    font-size: 28px;
+}
+
+
+/* =================================
+   DASHBOARD STATS
 ================================= */
 
 .stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-bottom: 25px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
 }
 
 .stats .card {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    border-top: 4px solid #F28C28;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
 }
 
 .stats .card h3 {
-  margin: 0 0 10px;
-  font-size: 15px;
-  color: #6b7280;
+    margin: 0 0 10px;
+    font-size: 15px;
+    color: #111;
 }
 
 .stats .card p {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-  color: #2563eb;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #111;
 }
+
 
 /* =================================
    SEARCH
 ================================= */
 
 .top-bar {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .search-box {
-  width: 300px;
-  padding: 11px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  box-sizing: border-box;
+    width: 300px;
+    padding: 11px 14px;
+    border: 1px solid #d1d1d1;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    background: #fff;
+    color: #111;
 }
 
 .search-box:focus {
-  border-color: #f97316;
+    border-color: #F28C28;
 }
+
+
+/* =================================
+   ADD CUSTOMER BUTTON
+================================= */
+
+.top-bar > button {
+    border: none;
+    padding: 11px 18px;
+    border-radius: 8px;
+    background: #F28C28;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.top-bar > button:hover {
+    background: #D96F0B;
+}
+
+
+/* =================================
+   ADD / EDIT FORM
+================================= */
+
+.customers-container form {
+    background: #fff;
+    padding: 20px !important;
+    margin-bottom: 20px;
+    border: 1px solid #ddd !important;
+    border-top: 4px solid #F28C28 !important;
+    border-radius: 8px !important;
+}
+
+.customers-container form h2 {
+    color: #111;
+}
+
+.customers-container form input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    margin: 7px 0;
+    border: 1px solid #d1d1d1;
+    border-radius: 7px;
+    background: #fff;
+    color: #111;
+}
+
+.customers-container form input:focus {
+    outline: none;
+    border-color: #F28C28;
+}
+
+.customers-container form button {
+    border: none;
+    padding: 10px 16px;
+    margin-top: 10px;
+    margin-right: 8px;
+    border-radius: 7px;
+    background: #F28C28;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.customers-container form button:hover {
+    background: #D96F0B;
+}
+
+.customers-container form button[type="button"] {
+    background: #111;
+}
+
+.customers-container form button[type="button"]:hover {
+    background: #333;
+}
+
 
 /* =================================
    CUSTOMER TABLE
 ================================= */
 
 .customers-container table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
 }
 
+
+/* =================================
+   ENTIRE TABLE HEADING ROW ORANGE
+================================= */
+
 .customers-container thead {
-  background: #ea580c;
-  color: #ffffff;
+    background: #F28C28;
+    color: #fff;
 }
 
 .customers-container th {
-  padding: 15px 12px;
-  text-align: left;
-  font-size: 14px;
-  white-space: nowrap;
+    padding: 15px 12px;
+    text-align: left;
+    font-size: 14px;
+    white-space: nowrap;
+    background: #F28C28;
+    color: #fff;
 }
 
+
+/* =================================
+   TABLE BODY
+================================= */
+
 .customers-container td {
-  padding: 14px 12px;
-  border-bottom: 1px solid #e5e7eb;
-  font-size: 14px;
-  white-space: nowrap;
-  background: #ffffff;
+    padding: 14px 12px;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 14px;
+    white-space: nowrap;
+    background: #fff;
+    color: #111;
 }
 
 .customers-container tbody tr {
-  height: 55px;
+    height: 55px;
 }
 
 .customers-container tbody tr:hover td {
-  background: #fff7ed;
+    background: #fff7ed;
 }
 
+
 /* =================================
-   STATUS
+   STATUS BADGES
 ================================= */
+
+/* ACTIVE = BLACK */
 
 .active {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 20px;
-  background: #dcfce7;
-  color: #166534;
-  font-size: 12px;
-  font-weight: 600;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #111111;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
 }
+
+
+/* INACTIVE = RED */
 
 .inactive {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 20px;
-  background: #fee2e2;
-  color: #991b1b;
-  font-size: 12px;
-  font-weight: 600;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #DC2626;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
 }
+
 
 /* =================================
-   DELETE BUTTON
+   EDIT BUTTON = ORANGE
 ================================= */
 
-.delete-btn {
-  border: none;
-  padding: 8px 14px;
-  border-radius: 7px;
-  background: #26d0dc;
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.delete-btn:hover {
-  background: #1caeb9;
-}
 .edit-btn {
-  border: none;
-  padding: 8px 14px;
-  border-radius: 7px;
-  background: #2563eb;
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
-  margin-right: 8px;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 7px;
+    background: #F28C28;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 8px;
 }
 
 .edit-btn:hover {
-  background: #1d4ed8;
+    background: #D96F0B;
 }
+
+
+/* =================================
+   DELETE BUTTON = WHITE + BLACK
+================================= */
+/* DELETE BUTTON */
+.customers-container .delete-btn,
+.customers-container button.delete-btn {
+  border: none !important;
+  padding: 8px 14px !important;
+  border-radius: 7px !important;
+  background: #f28c28 !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  margin-left: 0 !important;
+  box-shadow: none !important;
+}
+
+.customers-container .delete-btn:hover,
+.customers-container button.delete-btn:hover {
+  background: #d96f0b !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* =================================
+   SUCCESS MESSAGE
+================================= */
+
+.customers-container > div[style*="d4edda"] {
+    background-color: #fff7ed !important;
+    color: #111 !important;
+    border-left: 4px solid #F28C28;
+}
+
+
+/* =================================
+   ERROR MESSAGE
+================================= */
+
+.customers-container > div[style*="f8d7da"] {
+    background-color: #f5f5f5 !important;
+    color: #111 !important;
+    border-left: 4px solid #111;
+}
+
 
 /* =================================
    RESPONSIVE
@@ -173,30 +318,31 @@
 
 @media (max-width: 1000px) {
 
-  .stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
 
-  .customers-container {
-    overflow-x: auto;
-  }
+    .customers-container {
+        overflow-x: auto;
+    }
 
-  .customers-container table {
-    min-width: 900px;
-  }
+    .customers-container table {
+        min-width: 900px;
+    }
 }
+
 
 @media (max-width: 600px) {
 
-  .customers-container {
-    padding: 20px;
-  }
+    .customers-container {
+        padding: 20px;
+    }
 
-  .stats {
-    grid-template-columns: 1fr;
-  }
+    .stats {
+        grid-template-columns: 1fr;
+    }
 
-  .search-box {
-    width: 100%;
-  }
+    .search-box {
+        width: 100%;
+    }
 }

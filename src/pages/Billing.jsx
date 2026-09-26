@@ -7,9 +7,10 @@ function Billing() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // =========================
-  // FETCH BILLING DATA
-  // =========================
+  // ============================================
+  // FETCH BILLING HISTORY
+  // ============================================
+
   const fetchBills = async () => {
     try {
       setLoading(true);
@@ -18,14 +19,19 @@ function Billing() {
       const response = await fetch(`${API_URL}/api/admin/billing`);
 
       if (!response.ok) {
-        throw new Error("Failed to fetch billing data");
+        throw new Error("Failed to fetch billing history");
       }
 
       const data = await response.json();
-      setBills(data.bills || []);
+
+      if (data.success) {
+        setBills(data.bills || []);
+      } else {
+        setError(data.message || "Failed to load billing history");
+      }
     } catch (err) {
-      console.error("Billing error:", err);
-      setError("Cannot connect to billing backend.");
+      console.error("Billing fetch error:", err);
+      setError("Cannot connect to backend server.");
     } finally {
       setLoading(false);
     }
@@ -35,173 +41,181 @@ function Billing() {
     fetchBills();
   }, []);
 
-  // =========================
-  // DATE
-  // =========================
+  // ============================================
+  // FORMAT DATE
+  // ============================================
+
   const formatDate = (date) => {
     if (!date) return "-";
 
-    const d = new Date(date);
+    return new Date(date).toLocaleDateString();
+  };
 
-    if (isNaN(d.getTime())) {
-      return date;
+  // ============================================
+  // FORMAT MONEY
+  // ============================================
+
+  const formatMoney = (amount) => {
+    if (amount === null || amount === undefined) {
+      return "₹0.00";
     }
 
-    return d.toLocaleDateString("en-IN");
+    return `₹${Number(amount).toFixed(2)}`;
   };
 
-  // =========================
-  // MONEY
-  // =========================
-  const formatMoney = (amount) => {
-    return Number(amount || 0).toLocaleString("en-IN", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
-
-  // =========================
+  // ============================================
   // PRINT BILL
-  // =========================
+  // ============================================
+
   const printBill = (bill) => {
-    const printWindow = window.open(
-      "",
-      "_blank",
-      "width=900,height=700"
-    );
+    const printWindow = window.open("", "_blank", "width=900,height=700");
 
     if (!printWindow) {
       alert("Please allow pop-ups to print the bill.");
       return;
     }
 
-    const invoiceNo =
-      bill.invoice ||
-      `INV${String(bill.order_id).padStart(3, "0")}`;
-
-    printWindow.document.write(`
+    const invoiceHTML = `
       <!DOCTYPE html>
       <html>
       <head>
-
-        <title>${invoiceNo} - CEMTrack Invoice</title>
+        <title>Invoice - ${bill.order_id}</title>
 
         <style>
-
           * {
             box-sizing: border-box;
           }
 
           body {
-            font-family: Arial, sans-serif;
             margin: 0;
             padding: 30px;
-            color: #222;
-            background: white;
+            font-family: Arial, sans-serif;
+            color: #111;
+            background: #fff;
           }
 
           .invoice {
-            max-width: 850px;
+            max-width: 800px;
             margin: auto;
             border: 1px solid #ddd;
-            padding: 35px;
+            padding: 30px;
           }
 
           .header {
-            text-align: center;
-            border-bottom: 2px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #f28c28;
             padding-bottom: 20px;
             margin-bottom: 25px;
           }
 
-          .company {
-            font-size: 32px;
-            font-weight: bold;
+          .company-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111;
           }
 
-          .subtitle {
-            color: #666;
-            margin-top: 5px;
+          .company-subtitle {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #111;
           }
 
           .invoice-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 18px;
+            text-align: right;
+            font-size: 22px;
+            font-weight: 700;
+            color: #f28c28;
           }
 
-          .info {
+          .invoice-number {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #111;
+          }
+
+          .info-section {
             display: flex;
             justify-content: space-between;
             margin-bottom: 25px;
-            line-height: 1.8;
           }
 
-          .customer {
-            background: #f7f7f7;
+          .info-box {
+            width: 48%;
+            background: #fff;
             border: 1px solid #ddd;
             padding: 15px;
-            margin-bottom: 25px;
-            line-height: 1.8;
+          }
+
+          .info-box h3 {
+            margin: 0 0 10px;
+            font-size: 15px;
+            color: #f28c28;
+          }
+
+          .info-box p {
+            margin: 5px 0;
+            font-size: 13px;
+            color: #111;
           }
 
           table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 15px;
           }
 
           th {
-            background: #f56600;
-            color: white;
+            background: #111;
+            color: #fff;
             padding: 12px;
-            border: 1px solid #ddd;
+            text-align: left;
+            font-size: 13px;
           }
 
           td {
             padding: 12px;
-            border: 1px solid #ddd;
-          }
-
-          .right {
-            text-align: right;
-          }
-
-          .center {
-            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px;
+            color: #111;
           }
 
           .summary {
-            width: 350px;
+            width: 300px;
             margin-left: auto;
-            margin-top: 25px;
+            margin-top: 20px;
           }
 
-          .summary div {
+          .summary-row {
             display: flex;
             justify-content: space-between;
-            padding: 8px;
+            padding: 7px 0;
+            font-size: 13px;
+            color: #111;
           }
 
-          .grand-total {
-            border-top: 2px solid #222;
-            font-size: 18px;
-            font-weight: bold;
+          .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            margin-top: 8px;
+            border-top: 2px solid #111;
+            font-size: 16px;
+            font-weight: 700;
+            color: #111;
           }
 
           .footer {
-            text-align: center;
             margin-top: 40px;
+            padding-top: 15px;
             border-top: 1px solid #ddd;
-            padding-top: 20px;
-            color: #666;
+            text-align: center;
+            font-size: 12px;
+            color: #111;
           }
 
           @media print {
-            @page {
-              size: A4;
-              margin: 15mm;
-            }
-
             body {
               padding: 0;
             }
@@ -210,9 +224,7 @@ function Billing() {
               border: none;
             }
           }
-
         </style>
-
       </head>
 
       <body>
@@ -221,68 +233,90 @@ function Billing() {
 
           <div class="header">
 
-            <div class="company">
-              CEMTrack
-            </div>
-
-            <div class="subtitle">
-              Cement Shop Management System
-            </div>
-
-            <div class="invoice-title">
-              TAX INVOICE
-            </div>
-
-          </div>
-
-
-          <div class="info">
-
             <div>
-              <strong>Invoice No:</strong>
-              ${invoiceNo}
-              <br />
+              <div class="company-name">
+                CEMTrack
+              </div>
 
-              <strong>Order ID:</strong>
-              ${bill.order_id || "-"}
-              <br />
-
-              <strong>Date:</strong>
-              ${formatDate(bill.order_date)}
+              <div class="company-subtitle">
+                Cement Inventory & Management System
+              </div>
             </div>
 
             <div>
-              <strong>Payment:</strong>
-              ${bill.payment_method || "-"}
-              <br />
+              <div class="invoice-title">
+                TAX INVOICE
+              </div>
 
-              <strong>Payment Status:</strong>
-              ${bill.payment_status || "-"}
-              <br />
-
-              <strong>Order Status:</strong>
-              ${bill.delivery_status || "-"}
+              <div class="invoice-number">
+                Invoice #${bill.order_id}
+              </div>
             </div>
 
           </div>
 
 
-          <h3>Customer Details</h3>
+          <div class="info-section">
 
-          <div class="customer">
+            <div class="info-box">
 
-            <strong>Name:</strong>
-            ${bill.customer_name || "-"}
-            <br />
+              <h3>
+                Customer Details
+              </h3>
 
-            <strong>Email:</strong>
-            ${bill.email || "-"}
-            <br />
+              <p>
+                <strong>Customer ID:</strong>
+                ${bill.customer_id || "-"}
+              </p>
+
+              <p>
+                <strong>Name:</strong>
+                ${bill.customer_name || "-"}
+              </p>
+
+              <p>
+                <strong>Email:</strong>
+                ${bill.email || "-"}
+              </p>
+
+              <p>
+                <strong>Phone:</strong>
+                ${bill.phone_no || "-"}
+              </p>
+
+            </div>
+
+
+            <div class="info-box">
+
+              <h3>
+                Order Details
+              </h3>
+
+              <p>
+                <strong>Order ID:</strong>
+                ${bill.order_id || "-"}
+              </p>
+
+              <p>
+                <strong>Order Date:</strong>
+                ${formatDate(bill.order_date)}
+              </p>
+
+              <p>
+                <strong>Payment Status:</strong>
+                ${bill.payment_status || "Paid"}
+              </p>
+
+              <p>
+                <strong>Delivery Status:</strong>
+                ${bill.delivery_status || "-"}
+              </p>
+
+            </div>
 
           </div>
 
-
-          <h3>Product Details</h3>
 
           <table>
 
@@ -290,14 +324,15 @@ function Billing() {
 
               <tr>
                 <th>Product</th>
+                <th>Brand</th>
                 <th>Quantity</th>
-                <th>Price</th>
+                <th>Unit Price</th>
                 <th>GST</th>
-                <th>Discount</th>
                 <th>Total</th>
               </tr>
 
             </thead>
+
 
             <tbody>
 
@@ -307,24 +342,24 @@ function Billing() {
                   ${bill.product_name || "-"}
                 </td>
 
-                <td class="center">
+                <td>
+                  ${bill.brand || "-"}
+                </td>
+
+                <td>
                   ${bill.quantity || 0}
                 </td>
 
-                <td class="right">
-                  ₹${formatMoney(bill.unit_price)}
+                <td>
+                  ${formatMoney(bill.unit_price)}
                 </td>
 
-                <td class="right">
-                  ₹${formatMoney(bill.GST)}
+                <td>
+                  ${formatMoney(bill.GST)}
                 </td>
 
-                <td class="right">
-                  ₹${formatMoney(bill.discount)}
-                </td>
-
-                <td class="right">
-                  ₹${formatMoney(bill.total_amount)}
+                <td>
+                  ${formatMoney(bill.total_amount)}
                 </td>
 
               </tr>
@@ -336,31 +371,27 @@ function Billing() {
 
           <div class="summary">
 
-            <div>
-              <span>Price</span>
+            <div class="summary-row">
+              <span>Subtotal</span>
               <span>
-                ₹${formatMoney(bill.unit_price)}
+                ${formatMoney(
+                  Number(bill.total_amount || 0) -
+                  Number(bill.GST || 0)
+                )}
               </span>
             </div>
 
-            <div>
+            <div class="summary-row">
               <span>GST</span>
               <span>
-                ₹${formatMoney(bill.GST)}
+                ${formatMoney(bill.GST)}
               </span>
             </div>
 
-            <div>
-              <span>Discount</span>
+            <div class="total-row">
+              <span>Total Amount</span>
               <span>
-                - ₹${formatMoney(bill.discount)}
-              </span>
-            </div>
-
-            <div class="grand-total">
-              <span>Grand Total</span>
-              <span>
-                ₹${formatMoney(bill.total_amount)}
+                ${formatMoney(bill.total_amount)}
               </span>
             </div>
 
@@ -368,34 +399,29 @@ function Billing() {
 
 
           <div class="footer">
-
-            <strong>
-              Thank you for shopping with CEMTrack!
-            </strong>
-
-            <br />
-
-            This is a computer-generated invoice.
-
+            Thank you for choosing CEMTrack.
           </div>
 
         </div>
 
+        <script>
+          window.onload = function() {
+            window.print();
+          };
+        </script>
+
       </body>
       </html>
-    `);
+    `;
 
+    printWindow.document.write(invoiceHTML);
     printWindow.document.close();
-
-    setTimeout(() => {
-      printWindow.focus();
-      printWindow.print();
-    }, 500);
   };
 
-  // =========================
+  // ============================================
   // LOADING
-  // =========================
+  // ============================================
+
   if (loading) {
     return (
       <div style={styles.loading}>
@@ -404,37 +430,45 @@ function Billing() {
     );
   }
 
-  // =========================
+  // ============================================
   // PAGE
-  // =========================
+  // ============================================
+
   return (
     <div style={styles.page}>
 
-      {/* HEADER */}
+      {/* ========================================
+          HEADER
+      ======================================== */}
 
       <div style={styles.pageHeader}>
 
         <div>
+
           <h1 style={styles.title}>
-            Billing Management
+            Billing
           </h1>
 
           <p style={styles.subtitle}>
-            View and print customer billing history
+            View and manage customer billing history
           </p>
+
         </div>
+
 
         <button
           onClick={fetchBills}
           style={styles.refreshButton}
         >
-          🔄 Refresh
+          Refresh
         </button>
 
       </div>
 
 
-      {/* ERROR */}
+      {/* ========================================
+          ERROR
+      ======================================== */}
 
       {error && (
         <div style={styles.error}>
@@ -443,7 +477,9 @@ function Billing() {
       )}
 
 
-      {/* EMPTY */}
+      {/* ========================================
+          EMPTY
+      ======================================== */}
 
       {!error && bills.length === 0 && (
         <div style={styles.empty}>
@@ -452,7 +488,9 @@ function Billing() {
       )}
 
 
-      {/* TABLE */}
+      {/* ========================================
+          BILLING TABLE
+      ======================================== */}
 
       {bills.length > 0 && (
 
@@ -464,19 +502,57 @@ function Billing() {
 
               <tr>
 
-                <th style={styles.th}>Invoice</th>
-                <th style={styles.th}>Date</th>
-                <th style={styles.th}>Customer</th>
-                <th style={styles.th}>Cement</th>
-                <th style={styles.th}>Quantity</th>
-                <th style={styles.th}>Price</th>
-                <th style={styles.th}>GST</th>
-                <th style={styles.th}>Discount</th>
-                <th style={styles.th}>Total</th>
-                <th style={styles.th}>Payment</th>
-                <th style={styles.th}>Payment Status</th>
-                <th style={styles.th}>Order Status</th>
-                <th style={styles.th}>Action</th>
+                <th style={styles.th}>
+                  Bill ID
+                </th>
+
+                <th style={styles.th}>
+                  Order ID
+                </th>
+
+                <th style={styles.th}>
+                  Customer ID
+                </th>
+
+                <th style={styles.th}>
+                  Customer Name
+                </th>
+
+                <th style={styles.th}>
+                  Product
+                </th>
+
+                <th style={styles.th}>
+                  Brand
+                </th>
+
+                <th style={styles.th}>
+                  Quantity
+                </th>
+
+                <th style={styles.th}>
+                  Unit Price
+                </th>
+
+                <th style={styles.th}>
+                  GST
+                </th>
+
+                <th style={styles.th}>
+                  Total Amount
+                </th>
+
+                <th style={styles.th}>
+                  Order Date
+                </th>
+
+                <th style={styles.th}>
+                  Payment Status
+                </th>
+
+                <th style={styles.th}>
+                  Action
+                </th>
 
               </tr>
 
@@ -485,86 +561,79 @@ function Billing() {
 
             <tbody>
 
-              {bills.map((bill, index) => {
+              {bills.map((bill) => (
 
-                const invoiceNo =
-                  bill.invoice ||
-                  `INV${String(bill.order_id).padStart(3, "0")}`;
+                <tr
+                  key={bill.bill_id || bill.order_id}
+                  style={styles.tr}
+                >
 
-                return (
+                  <td style={styles.td}>
+                    {bill.bill_id || "-"}
+                  </td>
 
-                  <tr
-                    key={`${bill.order_id}-${index}`}
-                    style={styles.tr}
-                  >
+                  <td style={styles.td}>
+                    {bill.order_id || "-"}
+                  </td>
 
-                    <td style={styles.td}>
-                      <strong>{invoiceNo}</strong>
-                    </td>
+                  <td style={styles.td}>
+                    {bill.customer_id || "-"}
+                  </td>
 
-                    <td style={styles.td}>
-                      {formatDate(bill.order_date)}
-                    </td>
+                  <td style={styles.td}>
+                    {bill.customer_name || "-"}
+                  </td>
 
-                    <td style={styles.td}>
-                      {bill.customer_name || "-"}
-                    </td>
+                  <td style={styles.td}>
+                    {bill.product_name || "-"}
+                  </td>
 
-                    <td style={styles.td}>
-                      {bill.product_name || "-"}
-                    </td>
+                  <td style={styles.td}>
+                    {bill.brand || "-"}
+                  </td>
 
-                    <td style={styles.centerTd}>
-                      {bill.quantity || 0}
-                    </td>
+                  <td style={styles.centerTd}>
+                    {bill.quantity || 0}
+                  </td>
 
-                    <td style={styles.rightTd}>
-                      ₹{formatMoney(bill.unit_price)}
-                    </td>
+                  <td style={styles.rightTd}>
+                    {formatMoney(bill.unit_price)}
+                  </td>
 
-                    <td style={styles.rightTd}>
-                      ₹{formatMoney(bill.GST)}
-                    </td>
+                  <td style={styles.rightTd}>
+                    {formatMoney(bill.GST)}
+                  </td>
 
-                    <td style={styles.rightTd}>
-                      ₹{formatMoney(bill.discount)}
-                    </td>
+                  <td style={styles.totalTd}>
+                    {formatMoney(bill.total_amount)}
+                  </td>
 
-                    <td style={styles.totalTd}>
-                      ₹{formatMoney(bill.total_amount)}
-                    </td>
+                  <td style={styles.td}>
+                    {formatDate(bill.order_date)}
+                  </td>
 
-                    <td style={styles.td}>
-                      {bill.payment_method || "-"}
-                    </td>
+                  <td style={styles.centerTd}>
 
-                    <td style={styles.td}>
+                    <span style={styles.paidBadge}>
+                      {bill.payment_status || "Paid"}
+                    </span>
 
-                      <span style={styles.paidBadge}>
-                        {bill.payment_status || "-"}
-                      </span>
+                  </td>
 
-                    </td>
+                  <td style={styles.centerTd}>
 
-                    <td style={styles.td}>
-                      {bill.delivery_status || "-"}
-                    </td>
+                    <button
+                      onClick={() => printBill(bill)}
+                      style={styles.printButton}
+                    >
+                      Print
+                    </button>
 
-                    <td style={styles.td}>
+                  </td>
 
-                      <button
-                        onClick={() => printBill(bill)}
-                        style={styles.printButton}
-                      >
-                        🖨️ Print
-                      </button>
+                </tr>
 
-                    </td>
-
-                  </tr>
-
-                );
-              })}
+              ))}
 
             </tbody>
 
@@ -579,9 +648,11 @@ function Billing() {
 }
 
 
-// =====================================
-// STYLES — MATCH CUSTOMERS PAGE
-// =====================================
+// ==================================================
+// BILLING UI STYLES
+// BLACK + WHITE + ORANGE
+// FONT SIZES / WEIGHTS PRESERVED
+// ==================================================
 
 const styles = {
 
@@ -589,9 +660,10 @@ const styles = {
     padding: "28px 45px",
     width: "100%",
     boxSizing: "border-box",
-    background: "#f8fafc",
+    background: "#fff",
     minHeight: "100vh",
   },
+
 
   pageHeader: {
     display: "flex",
@@ -600,6 +672,7 @@ const styles = {
     marginBottom: "25px",
   },
 
+
   title: {
     margin: 0,
     fontSize: "30px",
@@ -607,14 +680,16 @@ const styles = {
     color: "#111",
   },
 
+
   subtitle: {
     margin: "8px 0 0",
     fontSize: "16px",
-    color: "#666",
+    color: "#111",
   },
 
+
   refreshButton: {
-    background: "#f56600",
+    background: "#f28c28",
     color: "#fff",
     border: "none",
     borderRadius: "5px",
@@ -624,13 +699,16 @@ const styles = {
     cursor: "pointer",
   },
 
+
   tableContainer: {
     width: "100%",
     overflowX: "auto",
     background: "#fff",
     borderRadius: "5px",
     boxShadow: "0 1px 5px rgba(0,0,0,0.08)",
+    border: "1px solid #e5e5e5",
   },
+
 
   table: {
     width: "100%",
@@ -639,8 +717,9 @@ const styles = {
     background: "#fff",
   },
 
+
   th: {
-    background: "#f56600",
+    background: "#111",
     color: "#fff",
     padding: "14px 10px",
     textAlign: "left",
@@ -649,52 +728,63 @@ const styles = {
     whiteSpace: "nowrap",
   },
 
+
   tr: {
     borderBottom: "1px solid #e5e5e5",
   },
+
 
   td: {
     padding: "14px 10px",
     fontSize: "14px",
     color: "#111",
     whiteSpace: "nowrap",
+    background: "#fff",
   },
+
 
   centerTd: {
     padding: "14px 10px",
     textAlign: "center",
     fontSize: "14px",
     whiteSpace: "nowrap",
+    background: "#fff",
   },
+
 
   rightTd: {
     padding: "14px 10px",
     textAlign: "right",
     fontSize: "14px",
     whiteSpace: "nowrap",
+    background: "#fff",
   },
+
 
   totalTd: {
     padding: "14px 10px",
     textAlign: "right",
     fontSize: "14px",
     fontWeight: "700",
-    color: "#16a34a",
+    color: "#111",
     whiteSpace: "nowrap",
+    background: "#fff",
   },
+
 
   paidBadge: {
     display: "inline-block",
-    background: "#d1fae5",
-    color: "#15803d",
+    background: "#f28c28",
+    color: "#fff",
     padding: "6px 13px",
     borderRadius: "20px",
     fontSize: "13px",
     fontWeight: "600",
   },
 
+
   printButton: {
-    background: "#f56600",
+    background: "#f28c28",
     color: "#fff",
     border: "none",
     borderRadius: "5px",
@@ -705,27 +795,37 @@ const styles = {
     whiteSpace: "nowrap",
   },
 
+
   error: {
-    background: "#fee2e2",
-    color: "#b91c1c",
+    background: "#fff",
+    color: "#111",
     padding: "15px",
     borderRadius: "5px",
     marginBottom: "20px",
+    borderLeft: "4px solid #111",
+    border: "1px solid #ddd",
   },
+
 
   empty: {
     background: "#fff",
     padding: "50px",
     textAlign: "center",
-    color: "#666",
+    color: "#111",
     borderRadius: "5px",
+    border: "1px solid #e5e5e5",
   },
+
 
   loading: {
     padding: "50px",
     textAlign: "center",
     fontSize: "18px",
+    color: "#111",
+    background: "#fff",
+    minHeight: "100vh",
   },
+
 };
 
 export default Billing;

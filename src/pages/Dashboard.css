@@ -1,53 +1,300 @@
+/* =========================================================
+   CEMTrack — DASHBOARD
+   BLACK + WHITE + ORANGE
+   ========================================================= */
+
+
+/* =========================
+   MAIN DASHBOARD
+   ========================= */
+
 .dashboard-container {
-  padding: 20px;
-  margin-left: 0;
+  width: 100%;
+
+  min-height: 100vh;
+
+  box-sizing: border-box;
+
+  padding: 30px 32px;
+
+  background: #f7f7f7;
+
+  color: #111111;
+
+  overflow-x: hidden;
 }
 
+
+/* =========================
+   HEADER
+   ========================= */
+
 .dashboard-header {
-  margin-bottom: 30px;
+  width: 100%;
+
+  margin-bottom: 28px;
+
+  box-sizing: border-box;
 }
 
 .dashboard-header h1 {
-  font-size: 36px;
-  color: #2c3e50;
+  margin: 0;
+
+  color: #111111;
+
+  font-size: 30px;
+
+  font-weight: 700;
+
+  line-height: 1.2;
 }
 
-/* Cards in one horizontal row */
-.cards {
+.dashboard-header p {
+  margin: 7px 0 0;
+
+  color: #777777;
+
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   DASHBOARD CARDS
+   ========================================================= */
+
+.dashboard-cards {
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  display: grid;
+
+  /*
+    THIS KEEPS ALL 4 CARDS IN ONE ROW
+  */
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 18px;
+
+  align-items: stretch;
+}
+
+
+/* =========================
+   INDIVIDUAL CARD
+   ========================= */
+
+.dashboard-card {
+
+  min-width: 0;
+
+  min-height: 145px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e5e5;
+
+  border-top: 4px solid #ff6b00;
+
+  border-radius: 10px;
+
+  padding: 22px;
+
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
+
   align-items: center;
-  gap: 25px;
-  flex-wrap: nowrap;   /* Prevent cards from moving to next line */
-  overflow-x: auto;    /* Scroll if screen is small */
+
+  gap: 16px;
+
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.07);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.card {
-  min-width: 220px;
-  height: 150px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+
+/* =========================
+   CARD HOVER
+   ========================= */
+
+.dashboard-card:hover {
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 7px 18px rgba(0, 0, 0, 0.10);
+}
+
+
+/* =========================
+   CARD ICON
+   ========================= */
+
+.dashboard-card-icon {
+
+  width: 48px;
+  height: 48px;
+
+  min-width: 48px;
+
+  border-radius: 10px;
+
   display: flex;
-  flex-direction: column;
+
+  align-items: center;
+
   justify-content: center;
-  align-items: center;
-  transition: 0.3s ease;
-}
 
-.card:hover {
-  transform: translateY(-5px);
-}
+  background: #fff1e6;
 
-.card h3 {
+  color: #ff6b00;
+
   font-size: 22px;
-  color: #2c3e50;
-  margin-bottom: 10px;
 }
 
-.card p {
-  font-size: 28px;
-  font-weight: bold;
-  color: #27ae60;
+
+/* =========================
+   CARD CONTENT
+   ========================= */
+
+.dashboard-card-content {
+
+  min-width: 0;
+}
+
+
+.dashboard-card-content h3 {
+
+  margin: 0 0 8px;
+
+  color: #666666;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+
+.dashboard-card-content p {
+
+  margin: 0;
+
+  color: #111111;
+
+  font-size: 25px;
+
+  font-weight: 700;
+
+  line-height: 1.2;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   IMPORTANT — PREVENT OLD .CARD CSS FROM BREAKING LAYOUT
+   ========================================================= */
+
+.dashboard-container .card {
+
+  width: auto;
+
+  margin: 0;
+
+  padding: 0;
+
+  border: none;
+
+  box-shadow: none;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+  .dashboard-container {
+
+    padding: 25px;
+  }
+
+  .dashboard-cards {
+
+    gap: 14px;
+  }
+
+  .dashboard-card {
+
+    padding: 18px;
+
+    gap: 11px;
+  }
+
+  .dashboard-card-icon {
+
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    font-size: 19px;
+  }
+
+  .dashboard-card-content h3 {
+
+    font-size: 13px;
+  }
+
+  .dashboard-card-content p {
+
+    font-size: 21px;
+  }
+}
+
+
+/* =========================================================
+   SMALL LAPTOP / TABLET
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+  .dashboard-cards {
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+  .dashboard-container {
+
+    padding: 20px 15px;
+  }
+
+  .dashboard-header h1 {
+
+    font-size: 25px;
+  }
+
+  .dashboard-cards {
+
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,10 +1,11 @@
 /* =========================================
    REPORTS PAGE
+   BLACK + WHITE + ORANGE
 ========================================= */
 
 .reports-container {
     padding: 30px;
-    background: #f4f6f9;
+    background: #ffffff;
     min-height: 100vh;
     box-sizing: border-box;
 }
@@ -20,12 +21,12 @@
 
 .reports-header h1 {
     margin: 0;
-    color: #2c3e50;
+    color: #111111;
     font-size: 30px;
 }
 
 .reports-header p {
-    color: #666;
+    color: #111111;
     margin-top: 8px;
 }
 
@@ -42,23 +43,25 @@
 }
 
 .card {
-    background: white;
+    background: #ffffff;
     padding: 22px;
     border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    border-top: 4px solid #f28c28;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     text-align: center;
 }
 
 .card h3 {
     margin: 0 0 10px;
-    color: #2c3e50;
+    color: #111111;
 }
 
 .card p {
     margin: 0;
     font-size: 22px;
     font-weight: bold;
-    color: #3498db;
+    color: #111111;
 }
 
 
@@ -87,20 +90,20 @@
 }
 
 .download-btn {
-    background: #27ae60;
+    background: #f28c28;
 }
 
 .download-btn:hover {
-    background: #1e8449;
+    background: #d96f0b;
     transform: translateY(-2px);
 }
 
 .print-btn {
-    background: #3498db;
+    background: #111111;
 }
 
 .print-btn:hover {
-    background: #2980b9;
+    background: #333333;
     transform: translateY(-2px);
 }
 
@@ -110,9 +113,10 @@
 ========================================= */
 
 .print-bill {
-    background: white;
+    background: #ffffff;
     padding: 30px;
     border-radius: 12px;
+    border: 1px solid #e5e5e5;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
@@ -128,17 +132,17 @@
 
 .print-header h1 {
     margin: 0;
-    color: #2c3e50;
+    color: #111111;
 }
 
 .print-header h2 {
     margin: 8px 0;
-    color: #333;
+    color: #111111;
 }
 
 .print-header p {
     margin: 0;
-    color: #666;
+    color: #111111;
 }
 
 
@@ -154,7 +158,8 @@
 }
 
 .bill-summary div {
-    border: 1px solid #ddd;
+    border: 1px solid #dddddd;
+    border-top: 3px solid #f28c28;
     padding: 12px;
     border-radius: 8px;
     display: flex;
@@ -163,12 +168,12 @@
 }
 
 .bill-summary strong {
-    color: #555;
+    color: #111111;
 }
 
 .bill-summary span {
     font-weight: bold;
-    color: #222;
+    color: #111111;
 }
 
 
@@ -179,26 +184,30 @@
 .reports-table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background: #ffffff;
 }
 
 .reports-table th {
-    background: #3498db;
-    color: white;
+    background: #111111;
+    color: #ffffff;
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #111111;
     text-align: center;
 }
 
 .reports-table td {
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #dddddd;
     text-align: center;
-    color: #333;
+    color: #111111;
 }
 
 .reports-table tbody tr:nth-child(even) {
-    background: #f8f9fa;
+    background: #ffffff;
+}
+
+.reports-table tbody tr:hover {
+    background: #fff7ed;
 }
 
 
@@ -210,12 +219,12 @@
     text-align: center;
     margin-top: 25px;
     padding-top: 15px;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #dddddd;
 }
 
 .bill-footer p {
     margin: 5px;
-    color: #555;
+    color: #111111;
 }
 
 
@@ -372,7 +381,8 @@
     }
 
     .reports-table th {
-        background: #ddd !important;
+        background: #000 !important;
+        color: #fff !important;
     }
 
 

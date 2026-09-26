@@ -1,0 +1,117 @@
+/* =================================
+   CEMTrack — ADMIN ORDERS
+   BLACK + WHITE + ORANGE
+================================= */
+
+.admin-orders-container {
+  padding: 20px;
+  background: #ffffff;
+  color: #111111;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.admin-orders-container h1 {
+  margin: 0 0 20px;
+  color: #111111;
+}
+
+
+/* =================================
+   ORDERS TABLE
+================================= */
+
+.admin-orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.admin-orders-table th {
+  padding: 10px;
+  text-align: left;
+  background: #111111;
+  color: #ffffff;
+  border: 1px solid #111111;
+}
+
+.admin-orders-table td {
+  padding: 10px;
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #e5e5e5;
+}
+
+.admin-orders-table tbody tr:hover td {
+  background: #fff7ed;
+}
+
+
+/* =================================
+   ORDER STATUS
+================================= */
+
+.order-status-select {
+  padding: 7px 10px;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111111;
+  cursor: pointer;
+}
+
+.order-status-select:focus {
+  outline: none;
+  border-color: #f28c28;
+}
+
+
+/* =================================
+   REFRESH BUTTON
+================================= */
+
+.refresh-orders-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 7px;
+  background: #f28c28;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.refresh-orders-btn:hover {
+  background: #d96f0b;
+}
+
+
+/* =================================
+   LOADING / ERROR / EMPTY
+================================= */
+
+.admin-orders-container h2 {
+  color: #111111;
+}
+
+.admin-orders-container > p {
+  color: #555555;
+}
+
+
+/* =================================
+   RESPONSIVE
+================================= */
+
+@media (max-width: 1100px) {
+
+  .admin-orders-container {
+    overflow-x: auto;
+  }
+
+  .admin-orders-table {
+    min-width: 1100px;
+  }
+}
