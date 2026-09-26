@@ -387,6 +387,8 @@ export const addProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
 
+  const connection = await db.getConnection();
+
   try {
 
     const { id } = req.params;
@@ -396,11 +398,30 @@ export const updateProduct = async (req, res) => {
       brand,
       category,
       price,
-      minimum_stock
+      minimum_stock,
+      stock_quantity,
+      old_stock_quantity
     } = req.body;
 
 
-    const [result] = await db.query(
+    // ==================================================
+    // CALCULATE NEWLY ADDED STOCK
+    // ==================================================
+
+    const newStock = Number(stock_quantity);
+    const oldStock = Number(old_stock_quantity);
+
+    const quantityAdded = newStock - oldStock;
+
+
+    await connection.beginTransaction();
+
+
+    // ==================================================
+    // UPDATE PRODUCT
+    // ==================================================
+
+    const [result] = await connection.query(
       `
       UPDATE products
       SET
@@ -409,7 +430,8 @@ export const updateProduct = async (req, res) => {
         category = ?,
         price = ?,
         minimum_stock = ?,
-        last_updated = CURDATE()
+        stock_quantity = ?,
+        last_updated = CURRENT_TIMESTAMP()
       WHERE product_id = ?
       `,
       [
@@ -418,6 +440,7 @@ export const updateProduct = async (req, res) => {
         category,
         price,
         minimum_stock,
+        newStock,
         id
       ]
     );
@@ -425,12 +448,49 @@ export const updateProduct = async (req, res) => {
 
     if (result.affectedRows === 0) {
 
+      await connection.rollback();
+
       return res.status(404).json({
         success: false,
         message: "Product not found"
       });
 
     }
+
+// ==================================================
+// UPDATE EXISTING STOCK-IN ROW
+// ==================================================
+
+const [stockRows] = await connection.query(
+  `
+  SELECT stock_in_id
+  FROM stock_in
+  WHERE product_id = ?
+  ORDER BY stock_in_id DESC
+  LIMIT 1
+  `,
+  [id]
+);
+
+if (stockRows.length > 0) {
+
+  await connection.query(
+    `
+    UPDATE stock_in
+    SET
+      quantity_added = ?,
+      stock_in_date = CURRENT_TIMESTAMP()
+    WHERE stock_in_id = ?
+    `,
+    [
+      newStock,
+      stockRows[0].stock_in_id
+    ]
+  );
+
+}
+    
+    await connection.commit();
 
 
     res.json({
@@ -440,12 +500,19 @@ export const updateProduct = async (req, res) => {
 
   } catch (error) {
 
+    await connection.rollback();
+
     console.error("Update product error:", error);
 
     res.status(500).json({
       success: false,
-      message: "Failed to update product"
+      message: "Failed to update product",
+      error: error.message
     });
+
+  } finally {
+
+    connection.release();
 
   }
 
@@ -488,6 +555,8 @@ export const deleteProduct = async (req, res) => {
       });
 
     }
+
+
 
 
     // Delete associated image
