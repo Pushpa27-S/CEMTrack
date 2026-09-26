@@ -31,14 +31,7 @@ function Stock() {
 
   const [search, setSearch] = useState("");
 
-  const [editingProduct, setEditingProduct] =
-    useState(null);
-
-  const [newStock, setNewStock] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
 
   // ========================================
@@ -155,12 +148,12 @@ function Stock() {
 
     const stock =
       Number(
-        product.stock_quantity
+        product.stock_quantity || 0
       );
 
     const minimumStock =
       Number(
-        product.minimum_stock
+        product.minimum_stock || 0
       );
 
 
@@ -181,6 +174,28 @@ function Stock() {
     return "HighStock";
 
   };
+
+
+  // ========================================
+  // STOCK ALERTS
+  // ========================================
+
+  const stockAlerts =
+    products.filter((item) => {
+
+      const stock =
+        Number(
+          item.stock_quantity || 0
+        );
+
+      const minimumStock =
+        Number(
+          item.minimum_stock || 0
+        );
+
+      return stock <= minimumStock;
+
+    });
 
 
   // ========================================
@@ -239,140 +254,6 @@ function Stock() {
         `${item.brand} - ${item.category}`
 
     }));
-
-
-  // ========================================
-  // CLICK UPDATE BUTTON
-  // ========================================
-
-  const editProduct = (product) => {
-
-    setEditingProduct(product);
-
-    setNewStock("");
-
-  };
-
-
-  // ========================================
-  // CANCEL UPDATE
-  // ========================================
-
-  const cancelUpdate = () => {
-
-    setEditingProduct(null);
-
-    setNewStock("");
-
-  };
-
-
-  // ========================================
-  // UPDATE STOCK IN DATABASE
-  // ========================================
-
-  const updateStock = async () => {
-
-    if (!editingProduct) {
-
-      alert(
-        "Please select a product first."
-      );
-
-      return;
-
-    }
-
-
-    if (
-      newStock === "" ||
-      Number(newStock) < 0
-    ) {
-
-      alert(
-        "Please enter a valid stock quantity."
-      );
-
-      return;
-
-    }
-
-
-    try {
-
-      const response =
-        await fetch(
-
-          `${STOCK_API_URL}/${editingProduct.product_id}`,
-
-          {
-
-            method: "PUT",
-
-            headers: {
-
-              "Content-Type":
-                "application/json"
-
-            },
-
-            body: JSON.stringify({
-
-              stock_quantity:
-                Number(newStock)
-
-            })
-
-          }
-
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-
-          data.message ||
-          "Failed to update stock"
-
-        );
-
-      }
-
-
-      alert(
-        "Stock updated successfully!"
-      );
-
-
-      // Reload latest database stock
-
-      await fetchStock();
-
-
-      // Clear form
-
-      setEditingProduct(null);
-
-      setNewStock("");
-
-
-    } catch (error) {
-
-      console.error(
-        "Update stock error:",
-        error
-      );
-
-      alert(error.message);
-
-    }
-
-  };
 
 
   // ========================================
@@ -615,6 +496,114 @@ function Stock() {
 
 
       {/* =================================
+          STOCK ALERTS
+      ================================= */}
+
+      <div className="stock-alerts">
+
+        <h2>
+          🔔 Stock Alerts
+        </h2>
+
+
+        {stockAlerts.length === 0 ? (
+
+          <div className="no-stock-alert">
+
+            ✅ All products have sufficient stock.
+
+          </div>
+
+        ) : (
+
+          stockAlerts.map((item) => {
+
+            const stock =
+              Number(
+                item.stock_quantity || 0
+              );
+
+            const minimumStock =
+              Number(
+                item.minimum_stock || 0
+              );
+
+
+            // ==============================
+            // OUT OF STOCK
+            // ==============================
+
+            if (stock === 0) {
+
+              return (
+
+                <div
+                  className="stock-alert out-alert"
+                  key={item.product_id}
+                >
+
+                  <strong>
+                    🔴 Out of Stock
+                  </strong>
+
+                  <span>
+
+                    {item.product_name}
+                    {" "}
+                    is out of stock.
+
+                  </span>
+
+                </div>
+
+              );
+
+            }
+
+
+            // ==============================
+            // LOW STOCK
+            // ==============================
+
+            return (
+
+              <div
+                className="stock-alert low-alert"
+                key={item.product_id}
+              >
+
+                <strong>
+                  ⚠️ Low Stock Alert
+                </strong>
+
+                <span>
+
+                  {item.product_name}
+                  {" "}
+                  is in low stock.
+                  Only{" "}
+                  {stock}
+                  {" "}
+                  bags remaining.
+                  Minimum stock is{" "}
+                  {minimumStock}
+                  {" "}
+                  bags.
+
+                </span>
+
+              </div>
+
+            );
+
+          })
+
+        )}
+
+      </div>
+
+
+      {/* =================================
           BAR CHART
       ================================= */}
 
@@ -690,6 +679,7 @@ function Stock() {
 
             <Legend />
 
+
             <Bar
 
               dataKey="stock"
@@ -706,13 +696,17 @@ function Stock() {
               ]}
 
             />
+
           </BarChart>
+
         </ResponsiveContainer>
+
       </div>
 
- {/* =================================
+
+      {/* =================================
           LINE CHART
-      =================================*/}
+      ================================= */}
 
       <div className="chart">
 
@@ -809,14 +803,14 @@ function Stock() {
 
             />
 
-
           </LineChart>
 
         </ResponsiveContainer>
 
 
       </div>
-      
+
+
       {/* =================================
           SEARCH
       ================================= */}
@@ -840,81 +834,6 @@ function Stock() {
         />
 
       </div>
-
-
-      {/* =================================
-          UPDATE STOCK FORM
-      ================================= */}
-
-      {editingProduct && (
-
-        <div className="form">
-
-
-          <input
-
-            type="text"
-
-            value={
-              `${editingProduct.product_name} - ${editingProduct.category}`
-            }
-
-            readOnly
-
-          />
-
-
-          <input
-
-            type="number"
-
-            value={
-              editingProduct.stock_quantity
-            }
-
-            readOnly
-
-          />
-
-
-          <input
-
-            type="number"
-
-            placeholder="Enter New Total Stock"
-
-            value={newStock}
-
-            onChange={(e) =>
-              setNewStock(
-                e.target.value
-              )
-            }
-
-          />
-
-
-          <button
-            onClick={updateStock}
-          >
-
-            Update Stock
-
-          </button>
-
-
-          <button
-            onClick={cancelUpdate}
-          >
-
-            Cancel
-
-          </button>
-
-
-        </div>
-
-      )}
 
 
       {/* =================================
@@ -954,10 +873,6 @@ function Stock() {
 
             <th>
               Status
-            </th>
-
-            <th>
-              Actions
             </th>
 
           </tr>
@@ -1035,25 +950,6 @@ function Stock() {
                   </td>
 
 
-                  <td>
-
-                    <button
-
-                      className="edit-btn"
-
-                      onClick={() =>
-                        editProduct(item)
-                      }
-
-                    >
-
-                      Update
-
-                    </button>
-
-                  </td>
-
-
                 </tr>
 
               )
@@ -1064,7 +960,7 @@ function Stock() {
             <tr>
 
               <td
-                colSpan="8"
+                colSpan="7"
               >
 
                 No Products Found
@@ -1087,5 +983,6 @@ function Stock() {
   );
 
 }
+
 
 export default Stock;

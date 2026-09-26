@@ -341,39 +341,7 @@ border:1px solid #F9A8D4;
 
 }
 
-/*==========================================
-            UPDATE BUTTON
-==========================================*/
 
-.edit-btn{
-
-background:#DBEAFE;
-
-color:#2563EB;
-
-border:none;
-
-padding:10px 18px;
-
-border-radius:8px;
-
-cursor:pointer;
-
-font-weight:600;
-
-margin-right:8px;
-
-transition:.3s;
-
-}
-
-.edit-btn:hover{
-
-background:#BFDBFE;
-
-transform:scale(1.05);
-
-}
 
 /*==========================================
             DELETE BUTTON
@@ -470,4 +438,43 @@ transform:translateY(0);
 /* Keep chart text readable */
 .chart svg {
   overflow: visible;
+}
+/* =================================
+        STOCK ALERTS
+================================= */
+
+.stock-alerts {
+  margin: 25px 0;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.stock-alerts h2 {
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+.stock-alert {
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.low-alert {
+  background: #fff3cd;
+  border-left: 5px solid #f0ad00;
+}
+
+.out-alert {
+  background: #f8d7da;
+  border-left: 5px solid #dc3545;
+}
+
+.no-stock-alert {
+  padding: 15px;
+  background: #e8f5e9;
+  border-radius: 8px;
 }
