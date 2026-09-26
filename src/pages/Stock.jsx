@@ -57,7 +57,6 @@ function Stock() {
       const data =
         await response.json();
 
-
       if (!response.ok) {
 
         throw new Error(
@@ -67,11 +66,9 @@ function Stock() {
 
       }
 
-
       setProducts(
         data.products || []
       );
-
 
     } catch (error) {
 
@@ -111,7 +108,6 @@ function Stock() {
   const totalProducts =
     products.length;
 
-
   const totalStock =
     products.reduce(
       (sum, item) =>
@@ -122,14 +118,12 @@ function Stock() {
       0
     );
 
-
   const highStock =
     products.filter(
       (item) =>
         Number(item.stock_quantity) >
         Number(item.minimum_stock)
     ).length;
-
 
   const lowStock =
     products.filter(
@@ -138,7 +132,6 @@ function Stock() {
         Number(item.stock_quantity) <=
         Number(item.minimum_stock)
     ).length;
-
 
   const outStock =
     products.filter(
@@ -163,20 +156,17 @@ function Stock() {
         product.minimum_stock
       );
 
-
     if (stock === 0) {
 
       return "OutofStock";
 
     }
 
-
     if (stock <= minimumStock) {
 
       return "LowStock";
 
     }
-
 
     return "HighStock";
 
@@ -193,29 +183,23 @@ function Stock() {
       const searchText =
         search.toLowerCase();
 
-
       const productName =
         (
           item.product_name || ""
         ).toLowerCase();
-
 
       const brand =
         (
           item.brand || ""
         ).toLowerCase();
 
-
       return (
-
         productName.includes(
           searchText
         ) ||
-
         brand.includes(
           searchText
         )
-
       );
 
     });
@@ -283,7 +267,6 @@ function Stock() {
 
     }
 
-
     if (
       newStock === "" ||
       Number(newStock) < 0
@@ -297,7 +280,6 @@ function Stock() {
 
     }
 
-
     try {
 
       const response =
@@ -306,14 +288,11 @@ function Stock() {
           `${STOCK_API_URL}/${editingProduct.product_id}`,
 
           {
-
             method: "PUT",
 
             headers: {
-
               "Content-Type":
                 "application/json"
-
             },
 
             body: JSON.stringify({
@@ -327,10 +306,8 @@ function Stock() {
 
         );
 
-
       const data =
         await response.json();
-
 
       if (!response.ok) {
 
@@ -343,23 +320,15 @@ function Stock() {
 
       }
 
-
       alert(
         "Stock updated successfully!"
       );
 
-
-      // Reload latest database stock
-
       await fetchStock();
-
-
-      // Clear form
 
       setEditingProduct(null);
 
       setNewStock("");
-
 
     } catch (error) {
 
@@ -392,7 +361,6 @@ function Stock() {
 
       const item =
         payload[0].payload;
-
 
       return (
 
@@ -431,7 +399,6 @@ function Stock() {
 
           </p>
 
-
           <p
             style={{
               margin: "5px 0"
@@ -440,14 +407,11 @@ function Stock() {
 
             <strong>
               Brand:
-            </strong>
-
-            {" "}
+            </strong>{" "}
 
             {item.brand}
 
           </p>
-
 
           <p
             style={{
@@ -457,14 +421,11 @@ function Stock() {
 
             <strong>
               Category:
-            </strong>
-
-            {" "}
+            </strong>{" "}
 
             {item.category}
 
           </p>
-
 
           <p
             style={{
@@ -474,15 +435,9 @@ function Stock() {
 
             <strong>
               Stock:
-            </strong>
+            </strong>{" "}
 
-            {" "}
-
-            {item.stock_quantity}
-
-            {" "}
-
-            Bags
+            {item.stock_quantity} Bags
 
           </p>
 
@@ -491,7 +446,6 @@ function Stock() {
       );
 
     }
-
 
     return null;
 
@@ -534,7 +488,7 @@ function Stock() {
 
       <h1 className="title">
 
-        🏗️ CemTrack Stock Management
+        CemTrack Stock Management
 
       </h1>
 
@@ -544,7 +498,6 @@ function Stock() {
       ================================= */}
 
       <div className="cards">
-
 
         <div className="card">
 
@@ -610,7 +563,6 @@ function Stock() {
 
         </div>
 
-
       </div>
 
 
@@ -620,11 +572,9 @@ function Stock() {
 
       <div className="chart">
 
-
         <h3>
           Stock Quantity
         </h3>
-
 
         <ResponsiveContainer
           width="100%"
@@ -632,54 +582,32 @@ function Stock() {
         >
 
           <BarChart
-
             data={chartData}
-
             margin={{
-
               top: 20,
-
               right: 30,
-
               left: 20,
-
               bottom: 130
-
             }}
-
           >
-
 
             <CartesianGrid
               strokeDasharray="3 3"
             />
 
-
             <XAxis
-
               dataKey="displayName"
-
               angle={-45}
-
               textAnchor="end"
-
               interval={0}
-
               height={140}
-
               tick={{
-
                 fontSize: 12,
-
                 fontWeight: 600
-
               }}
-
             />
 
-
             <YAxis />
-
 
             <Tooltip
               content={
@@ -687,40 +615,36 @@ function Stock() {
               }
             />
 
-
             <Legend />
 
             <Bar
-
               dataKey="stock"
-
               name="Stock"
-
-              fill="#86efe4"
-
+              fill="#F28C28"
               radius={[
                 8,
                 8,
                 0,
                 0
               ]}
-
             />
+
           </BarChart>
+
         </ResponsiveContainer>
+
       </div>
 
- {/* =================================
+
+      {/* =================================
           LINE CHART
-      =================================*/}
+      ================================= */}
 
       <div className="chart">
-
 
         <h3>
           Current Stock Overview
         </h3>
-
 
         <ResponsiveContainer
           width="100%"
@@ -728,54 +652,32 @@ function Stock() {
         >
 
           <LineChart
-
             data={chartData}
-
             margin={{
-
               top: 20,
-
               right: 30,
-
               left: 20,
-
               bottom: 130
-
             }}
-
           >
-
 
             <CartesianGrid
               strokeDasharray="3 3"
             />
 
-
             <XAxis
-
               dataKey="displayName"
-
               angle={-45}
-
               textAnchor="end"
-
               interval={0}
-
               height={140}
-
               tick={{
-
                 fontSize: 12,
-
                 fontWeight: 600
-
               }}
-
             />
 
-
             <YAxis />
-
 
             <Tooltip
               content={
@@ -783,40 +685,29 @@ function Stock() {
               }
             />
 
-
             <Legend />
 
-
             <Line
-
               type="monotone"
-
               dataKey="stock"
-
               name="Stock"
-
-              stroke="#22a7c5"
-
+              stroke="#F28C28"
               strokeWidth={3}
-
               dot={{
                 r: 5
               }}
-
               activeDot={{
                 r: 8
               }}
-
             />
-
 
           </LineChart>
 
         </ResponsiveContainer>
 
-
       </div>
-      
+
+
       {/* =================================
           SEARCH
       ================================= */}
@@ -824,19 +715,14 @@ function Stock() {
       <div className="search-box">
 
         <input
-
           type="text"
-
-          placeholder="🔍 Search Product or Brand..."
-
+          placeholder="Search Product or Brand..."
           value={search}
-
           onChange={(e) =>
             setSearch(
               e.target.value
             )
           }
-
         />
 
       </div>
@@ -850,49 +736,32 @@ function Stock() {
 
         <div className="form">
 
-
           <input
-
             type="text"
-
             value={
               `${editingProduct.product_name} - ${editingProduct.category}`
             }
-
             readOnly
-
           />
 
-
           <input
-
             type="number"
-
             value={
               editingProduct.stock_quantity
             }
-
             readOnly
-
           />
 
-
           <input
-
             type="number"
-
             placeholder="Enter New Total Stock"
-
             value={newStock}
-
             onChange={(e) =>
               setNewStock(
                 e.target.value
               )
             }
-
           />
-
 
           <button
             onClick={updateStock}
@@ -902,7 +771,6 @@ function Stock() {
 
           </button>
 
-
           <button
             onClick={cancelUpdate}
           >
@@ -910,7 +778,6 @@ function Stock() {
             Cancel
 
           </button>
-
 
         </div>
 
@@ -922,7 +789,6 @@ function Stock() {
       ================================= */}
 
       <table className="stock-table">
-
 
         <thead>
 
@@ -967,7 +833,6 @@ function Stock() {
 
         <tbody>
 
-
           {filteredProducts.length > 0 ? (
 
             filteredProducts.map(
@@ -979,36 +844,29 @@ function Stock() {
                   }
                 >
 
-
                   <td>
                     {item.product_id}
                   </td>
-
 
                   <td>
                     {item.product_name}
                   </td>
 
-
                   <td>
                     {item.brand}
                   </td>
-
 
                   <td>
                     {item.category}
                   </td>
 
-
                   <td>
                     {item.stock_quantity}
                   </td>
 
-
                   <td>
                     {item.minimum_stock}
                   </td>
-
 
                   <td>
 
@@ -1034,17 +892,13 @@ function Stock() {
 
                   </td>
 
-
                   <td>
 
                     <button
-
                       className="edit-btn"
-
                       onClick={() =>
                         editProduct(item)
                       }
-
                     >
 
                       Update
@@ -1052,7 +906,6 @@ function Stock() {
                     </button>
 
                   </td>
-
 
                 </tr>
 
@@ -1075,12 +928,9 @@ function Stock() {
 
           )}
 
-
         </tbody>
 
-
       </table>
-
 
     </div>
 

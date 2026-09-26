@@ -10,7 +10,7 @@
 }
 
 body{
-    background:#F8FAFC;
+    background:#FFFFFF;
 }
 
 /*==========================================
@@ -20,7 +20,7 @@ body{
 .stock-page{
     padding:30px;
     min-height:100vh;
-    background:#F8FAFC;
+    background:#FFFFFF;
 }
 
 /*==========================================
@@ -29,7 +29,7 @@ body{
 
 .title{
     font-size:35px;
-    color:#334155;
+    color:#111111;
     text-align:center;
     margin-bottom:30px;
     font-weight:bold;
@@ -53,7 +53,7 @@ margin-bottom:30px;
 
 .card{
 
-background:white;
+background:#FFFFFF;
 
 border-radius:15px;
 
@@ -61,7 +61,7 @@ padding:25px;
 
 box-shadow:0 10px 25px rgba(0,0,0,.08);
 
-border-top:6px solid #38BDF8;
+border-top:6px solid #F28C28;
 
 transition:.4s;
 
@@ -75,7 +75,7 @@ transform:translateY(-8px);
 
 .card h3{
 
-color:#64748B;
+color:#111111;
 
 margin-bottom:10px;
 
@@ -87,7 +87,7 @@ font-size:18px;
 
 font-size:35px;
 
-color:#0F172A;
+color:#111111;
 
 }
 
@@ -109,7 +109,7 @@ padding:15px;
 
 border-radius:10px;
 
-border:2px solid #BAE6FD;
+border:2px solid #D9D9D9;
 
 outline:none;
 
@@ -117,13 +117,17 @@ font-size:16px;
 
 transition:.3s;
 
+background:#FFFFFF;
+
+color:#111111;
+
 }
 
 .search-box input:focus{
 
-border-color:#38BDF8;
+border-color:#F28C28;
 
-box-shadow:0 0 10px rgba(56,189,248,.2);
+box-shadow:0 0 10px rgba(242,140,40,.2);
 
 }
 
@@ -149,7 +153,7 @@ flex:1;
 
 padding:15px;
 
-border:2px solid #CBD5E1;
+border:2px solid #D9D9D9;
 
 border-radius:10px;
 
@@ -157,11 +161,15 @@ font-size:16px;
 
 outline:none;
 
+background:#FFFFFF;
+
+color:#111111;
+
 }
 
 .form input:focus{
 
-border-color:#38BDF8;
+border-color:#F28C28;
 
 }
 
@@ -169,9 +177,9 @@ border-color:#38BDF8;
 
 padding:15px 25px;
 
-background:#38BDF8;
+background:#F28C28;
 
-color:white;
+color:#FFFFFF;
 
 border:none;
 
@@ -187,7 +195,7 @@ transition:.3s;
 
 .form button:hover{
 
-background:#0EA5E9;
+background:#D96F0B;
 
 }
 
@@ -209,13 +217,19 @@ margin-bottom:30px;
 
 .chart{
 
-background:white;
+background:#FFFFFF;
 
 padding:20px;
 
 border-radius:15px;
 
 box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+width:100%;
+
+overflow:visible;
+
+padding-bottom:40px;
 
 }
 
@@ -225,57 +239,99 @@ text-align:center;
 
 margin-bottom:20px;
 
-color:#334155;
+color:#111111;
 
 font-size:22px;
 
 }
+
+.chart svg{
+
+overflow:visible;
+
+}
+
 /*==========================================
             STOCK TABLE
 ==========================================*/
 
 .stock-table{
-    width:100%;
-    border-collapse:collapse;
-    background:#FFFFFF;
-    border-radius:15px;
-    overflow:hidden;
-    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+width:100%;
+
+border-collapse:collapse;
+
+background:#FFFFFF;
+
+border-radius:15px;
+
+overflow:hidden;
+
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+
 }
 
 .stock-table thead{
-    background:#38BDF8;
+
+background:#F28C28;
+
 }
 
 .stock-table th{
-    color:#FFFFFF;
-    padding:18px;
-    text-align:center;
-    font-size:16px;
-    letter-spacing:1px;
+
+color:#FFFFFF;
+
+background:#F28C28;
+
+padding:18px;
+
+text-align:center;
+
+font-size:16px;
+
+letter-spacing:1px;
+
 }
 
 .stock-table td{
-    padding:16px;
-    text-align:center;
-    color:#334155;
-    border-bottom:1px solid #E2E8F0;
+
+padding:16px;
+
+text-align:center;
+
+color:#111111;
+
+border-bottom:1px solid #E5E5E5;
+
+background:#FFFFFF;
+
 }
 
 .stock-table tr:nth-child(even){
-    background:#F8FAFC;
+
+background:#FFFFFF;
+
 }
 
-.stock-table tr:hover{
-    background:#F0F9FF;
-    transition:.3s;
+.stock-table tr:nth-child(even) td{
+
+background:#FFFFFF;
+
+}
+
+.stock-table tr:hover td{
+
+background:#FFF7ED;
+
+transition:.3s;
+
 }
 
 /*==========================================
             STATUS BADGES
 ==========================================*/
 
-/* High Stock */
+/* High Stock - BLACK */
 
 .HighStock{
 
@@ -283,9 +339,9 @@ display:inline-block;
 
 padding:8px 18px;
 
-background:#D1FAE5;
+background:#111111;
 
-color:#047857;
+color:#FFFFFF;
 
 border-radius:30px;
 
@@ -293,11 +349,11 @@ font-size:14px;
 
 font-weight:600;
 
-border:1px solid #6EE7B7;
+border:1px solid #111111;
 
 }
 
-/* Low Stock */
+/* Low Stock - RED ONLY */
 
 .LowStock{
 
@@ -305,9 +361,9 @@ display:inline-block;
 
 padding:8px 18px;
 
-background:#FEF3C7;
+background:#DC2626;
 
-color:#B45309;
+color:#FFFFFF;
 
 border-radius:30px;
 
@@ -315,11 +371,11 @@ font-size:14px;
 
 font-weight:600;
 
-border:1px solid #FCD34D;
+border:1px solid #DC2626;
 
 }
 
-/* Out of Stock */
+/* Out of Stock - RED ONLY */
 
 .OutofStock{
 
@@ -327,9 +383,9 @@ display:inline-block;
 
 padding:8px 18px;
 
-background:#FCE7F3;
+background:#DC2626;
 
-color:#BE185D;
+color:#FFFFFF;
 
 border-radius:30px;
 
@@ -337,7 +393,7 @@ font-size:14px;
 
 font-weight:600;
 
-border:1px solid #F9A8D4;
+border:1px solid #DC2626;
 
 }
 
@@ -347,9 +403,9 @@ border:1px solid #F9A8D4;
 
 .edit-btn{
 
-background:#DBEAFE;
+background:#F28C28;
 
-color:#2563EB;
+color:#FFFFFF;
 
 border:none;
 
@@ -369,7 +425,7 @@ transition:.3s;
 
 .edit-btn:hover{
 
-background:#BFDBFE;
+background:#D96F0B;
 
 transform:scale(1.05);
 
@@ -381,9 +437,9 @@ transform:scale(1.05);
 
 .delete-btn{
 
-background:#FEE2E2;
+background:#111111;
 
-color:#DC2626;
+color:#FFFFFF;
 
 border:none;
 
@@ -401,7 +457,7 @@ transition:.3s;
 
 .delete-btn:hover{
 
-background:#FECACA;
+background:#333333;
 
 transform:scale(1.05);
 
@@ -436,38 +492,49 @@ opacity:1;
 transform:translateY(0);
 
 }
+
 }
+
+/*==========================================
+            STOCK LIST
+==========================================*/
+
 .stock-list{
-    margin-top:15px;
-    padding:10px;
-    border:1px solid #ddd;
-    border-radius:8px;
-    background:#f8f9fa;
+
+margin-top:15px;
+
+padding:10px;
+
+border:1px solid #DDDDDD;
+
+border-radius:8px;
+
+background:#FFFFFF;
+
 }
 
 .stock-list h4{
-    color:#2c3e50;
-    margin-bottom:10px;
+
+color:#111111;
+
+margin-bottom:10px;
+
 }
 
 .stock-list ul{
-    list-style-type:square;
-    padding-left:20px;
+
+list-style-type:square;
+
+padding-left:20px;
+
 }
 
 .stock-list li{
-    margin:6px 0;
-    font-size:15px;
-    color:#333;
-}
-/* Fix chart label visibility */
-.chart {
-  width: 100%;
-  overflow: visible;
-  padding-bottom: 40px;
-}
 
-/* Keep chart text readable */
-.chart svg {
-  overflow: visible;
+margin:6px 0;
+
+font-size:15px;
+
+color:#111111;
+
 }
