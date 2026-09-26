@@ -31,14 +31,7 @@ function Stock() {
 
   const [search, setSearch] = useState("");
 
-  const [editingProduct, setEditingProduct] =
-    useState(null);
-
-  const [newStock, setNewStock] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
 
   // ========================================
@@ -148,12 +141,12 @@ function Stock() {
 
     const stock =
       Number(
-        product.stock_quantity
+        product.stock_quantity || 0
       );
 
     const minimumStock =
       Number(
-        product.minimum_stock
+        product.minimum_stock || 0
       );
 
     if (stock === 0) {
@@ -171,6 +164,28 @@ function Stock() {
     return "HighStock";
 
   };
+
+
+  // ========================================
+  // STOCK ALERTS
+  // ========================================
+
+  const stockAlerts =
+    products.filter((item) => {
+
+      const stock =
+        Number(
+          item.stock_quantity || 0
+        );
+
+      const minimumStock =
+        Number(
+          item.minimum_stock || 0
+        );
+
+      return stock <= minimumStock;
+
+    });
 
 
   // ========================================
@@ -567,6 +582,114 @@ function Stock() {
 
 
       {/* =================================
+          STOCK ALERTS
+      ================================= */}
+
+      <div className="stock-alerts">
+
+        <h2>
+          🔔 Stock Alerts
+        </h2>
+
+
+        {stockAlerts.length === 0 ? (
+
+          <div className="no-stock-alert">
+
+            ✅ All products have sufficient stock.
+
+          </div>
+
+        ) : (
+
+          stockAlerts.map((item) => {
+
+            const stock =
+              Number(
+                item.stock_quantity || 0
+              );
+
+            const minimumStock =
+              Number(
+                item.minimum_stock || 0
+              );
+
+
+            // ==============================
+            // OUT OF STOCK
+            // ==============================
+
+            if (stock === 0) {
+
+              return (
+
+                <div
+                  className="stock-alert out-alert"
+                  key={item.product_id}
+                >
+
+                  <strong>
+                    🔴 Out of Stock
+                  </strong>
+
+                  <span>
+
+                    {item.product_name}
+                    {" "}
+                    is out of stock.
+
+                  </span>
+
+                </div>
+
+              );
+
+            }
+
+
+            // ==============================
+            // LOW STOCK
+            // ==============================
+
+            return (
+
+              <div
+                className="stock-alert low-alert"
+                key={item.product_id}
+              >
+
+                <strong>
+                  ⚠️ Low Stock Alert
+                </strong>
+
+                <span>
+
+                  {item.product_name}
+                  {" "}
+                  is in low stock.
+                  Only{" "}
+                  {stock}
+                  {" "}
+                  bags remaining.
+                  Minimum stock is{" "}
+                  {minimumStock}
+                  {" "}
+                  bags.
+
+                </span>
+
+              </div>
+
+            );
+
+          })
+
+        )}
+
+      </div>
+
+
+      {/* =================================
           BAR CHART
       ================================= */}
 
@@ -616,6 +739,7 @@ function Stock() {
             />
 
             <Legend />
+
 
             <Bar
               dataKey="stock"
@@ -728,7 +852,7 @@ function Stock() {
       </div>
 
 
-      {/* =================================
+      {/* ================================
           UPDATE STOCK FORM
       ================================= */}
 
@@ -822,10 +946,6 @@ function Stock() {
               Status
             </th>
 
-            <th>
-              Actions
-            </th>
-
           </tr>
 
         </thead>
@@ -892,6 +1012,7 @@ function Stock() {
 
                   </td>
 
+
                   <td>
 
                     <button
@@ -917,7 +1038,7 @@ function Stock() {
             <tr>
 
               <td
-                colSpan="8"
+                colSpan="7"
               >
 
                 No Products Found
@@ -937,5 +1058,6 @@ function Stock() {
   );
 
 }
+
 
 export default Stock;
