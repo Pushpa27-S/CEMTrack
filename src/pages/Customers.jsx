@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./Customers.css";
 
 const API_URL = "http://localhost:5000/api/admin/customers";
@@ -17,6 +17,7 @@ function Customers() {
   const [error, setError] = useState("");
 
   const [message, setMessage] = useState("");
+  
 
   // Add customer form
   const [showAddForm, setShowAddForm] = useState(false);
@@ -31,6 +32,7 @@ function Customers() {
 
   // Edit customer
   const [showEditForm, setShowEditForm] = useState(false);
+  const editFormRef=useRef(null);
 
   const [editCustomer, setEditCustomer] = useState({
     id: "",
@@ -152,7 +154,14 @@ function Customers() {
 
     setMessage("");
     setError("");
+    setTimeout(()=>{
+      editFormRef.current?.scrollIntoView({
+        behavior:"smooth",
+        block:"start",
+      });
+    },100);
   };
+
 
   // ==============================
   // EDIT CUSTOMER
@@ -502,6 +511,7 @@ const filteredCustomers = customers.filter((customer) => {
 
       {showEditForm && (
         <form
+          ref={editFormRef}
           onSubmit={updateCustomer}
           style={{
             padding: "20px",
