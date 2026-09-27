@@ -472,7 +472,7 @@ const [stockRows] = await connection.query(
   [id]
 );
 
-if (stockRows.length > 0) {
+if (stockRows.length > 0 && quantityAdded > 0) {
 
   await connection.query(
     `
@@ -483,7 +483,7 @@ if (stockRows.length > 0) {
     WHERE stock_in_id = ?
     `,
     [
-      newStock,
+      quantityAdded,
       stockRows[0].stock_in_id
     ]
   );
