@@ -1,540 +1,453 @@
-/*==========================================
-        CEMTRACK STOCK DASHBOARD
-==========================================*/
+/* ========================================
+   STOCK PAGE
+======================================== */
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
+.stock-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 30px;
+  background: #ffffff;
+  font-family: Poppins, Arial, sans-serif;
+  box-sizing: border-box;
 }
 
-body{
-    background:#FFFFFF;
+
+/* ========================================
+   PAGE TITLE
+======================================== */
+
+.title {
+  margin: 0 0 25px;
+  text-align: center;
+  color: #111111;
+  font-size: 30px;
+  font-weight: 700;
 }
 
-/*==========================================
-            MAIN CONTAINER
-==========================================*/
 
-.stock-page{
-    padding:30px;
-    min-height:100vh;
-    background:#FFFFFF;
+/* ========================================
+   STOCK SUMMARY CARDS
+======================================== */
+
+.cards {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
 }
 
-/*==========================================
-                TITLE
-==========================================*/
-
-.title{
-    font-size:35px;
-    color:#111111;
-    text-align:center;
-    margin-bottom:30px;
-    font-weight:bold;
+.card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid #eeeeee;
+  border-top: 4px solid #ff6b00;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  min-height: 145px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/*==========================================
-            DASHBOARD CARDS
-==========================================*/
-
-.cards{
-
-display:grid;
-
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-
-gap:20px;
-
-margin-bottom:30px;
-
+.card h3 {
+  margin: 0 0 10px;
+  color: #111111;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
-.card{
-
-background:#FFFFFF;
-
-border-radius:15px;
-
-padding:25px;
-
-box-shadow:0 10px 25px rgba(0,0,0,.08);
-
-border-top:6px solid #F28C28;
-
-transition:.4s;
-
+.card p {
+  margin: 0;
+  color: #111111;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
-.card:hover{
 
-transform:translateY(-8px);
+/* ========================================
+   STOCK STATUS STYLES
+======================================== */
 
+.HighStock {
+  background: #f8e2c5;
+  color: #9a4f22;
+  border: 1px solid #e8b57f;
+  box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.08);
 }
 
-.card h3{
-
-color:#111111;
-
-margin-bottom:10px;
-
-font-size:18px;
-
+.LowStock {
+  background: #fde8e8;
+  color: #c62828;
+  border: 1px solid #efb0b0;
+  box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.08);
 }
 
-.card h2{
-
-font-size:35px;
-
-color:#111111;
-
+.OutofStock {
+  background: #fde8e8;
+  color: #c62828;
+  border: 1px solid #efb0b0;
+  box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.08);
 }
 
-/*==========================================
-            SEARCH
-==========================================*/
 
-.search-box{
+/* ========================================
+   STOCK ALERTS
+======================================== */
 
-margin-bottom:25px;
-
+.stock-list {
+  width: 100%;
+  margin: 20px 0 25px;
 }
 
-.search-box input{
-
-width:100%;
-
-padding:15px;
-
-border-radius:10px;
-
-border:2px solid #D9D9D9;
-
-outline:none;
-
-font-size:16px;
-
-transition:.3s;
-
-background:#FFFFFF;
-
-color:#111111;
-
+.stock-list h2 {
+  margin: 0 0 8px;
+  color: #111111;
+  font-size: 24px;
+  font-weight: 700;
 }
 
-.search-box input:focus{
-
-border-color:#F28C28;
-
-box-shadow:0 0 10px rgba(242,140,40,.2);
-
+.stock-list p {
+  margin: 5px 0;
+  color: #333333;
+  font-size: 16px;
 }
 
-/*==========================================
-            FORM
-==========================================*/
 
-.form{
+/* ========================================
+   SEARCH
+======================================== */
 
-display:flex;
-
-gap:15px;
-
-flex-wrap:wrap;
-
-margin-bottom:30px;
-
+.stock-page .search-box {
+  width: 100%;
+  margin: 20px 0;
 }
 
-.form input{
+.stock-page .search-box input {
+  width: 100%;
+  max-width: 420px;
 
-flex:1;
+  padding: 11px 14px;
 
-padding:15px;
+  border: 1px solid #ffb36b;
+  border-radius: 8px;
 
-border:2px solid #D9D9D9;
+  outline: none;
 
-border-radius:10px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #222222;
 
-font-size:16px;
+  background: #fffaf5;
 
-outline:none;
+  box-sizing: border-box;
 
-background:#FFFFFF;
+  box-shadow:
+    0 0 0 3px rgba(255, 107, 0, 0.08);
 
-color:#111111;
-
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.form input:focus{
-
-border-color:#F28C28;
-
+.stock-page .search-box input::placeholder {
+  color: #777777;
 }
 
-.form button{
+.stock-page .search-box input:hover {
+  background: #fff8f1;
 
-padding:15px 25px;
+  border-color: #ff8a33;
 
-background:#F28C28;
-
-color:#FFFFFF;
-
-border:none;
-
-border-radius:10px;
-
-cursor:pointer;
-
-font-size:16px;
-
-transition:.3s;
-
+  box-shadow:
+    0 0 0 3px rgba(255, 107, 0, 0.12);
 }
 
-.form button:hover{
+.stock-page .search-box input:focus {
+  background: #ffffff;
 
-background:#D96F0B;
+  border-color: #ff6b00;
 
+  box-shadow:
+    0 0 0 4px rgba(255, 107, 0, 0.18);
 }
 
-/*==========================================
-            CHART SECTION
-==========================================*/
 
-.charts{
+/* ========================================
+   UPDATE STOCK FORM
+======================================== */
 
-display:grid;
-
-grid-template-columns:repeat(auto-fit,minmax(450px,1fr));
-
-gap:20px;
-
-margin-bottom:30px;
-
+.form {
+  width: 100%;
+  margin: 20px 0;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
 }
 
-.chart{
-
-background:#FFFFFF;
-
-padding:20px;
-
-border-radius:15px;
-
-box-shadow:0 10px 25px rgba(0,0,0,.08);
-
-width:100%;
-
-overflow:visible;
-
-padding-bottom:40px;
-
+.form h3 {
+  margin: 0 0 15px;
+  color: #222222;
+  font-size: 20px;
+  font-weight: 600;
 }
 
-.chart h3{
-
-text-align:center;
-
-margin-bottom:20px;
-
-color:#111111;
-
-font-size:22px;
-
+.form input {
+  padding: 10px 12px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
 }
 
-.chart svg{
-
-overflow:visible;
-
+.form input:focus {
+  border-color: #e8b57f;
+  box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.08);
 }
 
-/*==========================================
-            STOCK TABLE
-==========================================*/
 
-.stock-table{
+/* ========================================
+   UPDATE BUTTON
+   Same light-orange style as Orders/Billing
+======================================== */
 
-width:100%;
-
-border-collapse:collapse;
-
-background:#FFFFFF;
-
-border-radius:15px;
-
-overflow:hidden;
-
-box-shadow:0 10px 25px rgba(0,0,0,.08);
-
+.edit-btn {
+  background: #f8e2c5;
+  color: #9a4f22;
+  border: 1px solid #e8b57f;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.08);
+  transition: 0.2s ease;
 }
 
-.stock-table thead{
-
-background:#F28C28;
-
+.edit-btn:hover {
+  background: #f3d3aa;
+  border-color: #e2a665;
+  box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.12);
 }
 
-.stock-table th{
 
-color:#FFFFFF;
+/* ========================================
+   DELETE BUTTON
+======================================== */
 
-background:#F28C28;
-
-padding:18px;
-
-text-align:center;
-
-font-size:16px;
-
-letter-spacing:1px;
-
+.delete-btn {
+  background: #fde8e8;
+  color: #c62828;
+  border: 1px solid #efb0b0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.stock-table td{
-
-padding:16px;
-
-text-align:center;
-
-color:#111111;
-
-border-bottom:1px solid #E5E5E5;
-
-background:#FFFFFF;
-
+.delete-btn:hover {
+  background: #f8d4d4;
+  border-color: #e59a9a;
 }
 
-.stock-table tr:nth-child(even){
 
-background:#FFFFFF;
+/* ========================================
+   CHART CONTAINER
+======================================== */
 
+.chart {
+  width: 100%;
+  margin: 25px 0;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
 }
 
-.stock-table tr:nth-child(even) td{
-
-background:#FFFFFF;
-
+.chart h2 {
+  margin: 0 0 15px;
+  text-align: center;
+  color: #222222;
+  font-size: 20px;
+  font-weight: 600;
 }
 
-.stock-table tr:hover td{
 
-background:#FFF7ED;
+/* ========================================
+   SOFT ORANGE BAR CHART
+   Muted orange + subtle glow
+======================================== */
 
-transition:.3s;
-
+.chart .recharts-bar-rectangle path {
+  fill: #e8a15a !important;
+  filter: drop-shadow(0 0 3px rgba(232, 161, 90, 0.28));
+  transition: 0.2s ease;
 }
 
-/*==========================================
-            STATUS BADGES
-==========================================*/
-
-/* High Stock - BLACK */
-
-.HighStock{
-
-display:inline-block;
-
-padding:8px 18px;
-
-background:#111111;
-
-color:#FFFFFF;
-
-border-radius:30px;
-
-font-size:14px;
-
-font-weight:600;
-
-border:1px solid #111111;
-
+.chart .recharts-bar-rectangle:hover path {
+  fill: #e3a052 !important;
+  filter: drop-shadow(0 0 5px rgba(232, 161, 90, 0.38));
 }
 
-/* Low Stock - RED ONLY */
 
-.LowStock{
+/* Recharts grid */
 
-display:inline-block;
-
-padding:8px 18px;
-
-background:#DC2626;
-
-color:#FFFFFF;
-
-border-radius:30px;
-
-font-size:14px;
-
-font-weight:600;
-
-border:1px solid #DC2626;
-
+.chart .recharts-cartesian-grid line {
+  stroke: #eeeeee;
 }
 
-/* Out of Stock - RED ONLY */
-
-.OutofStock{
-
-display:inline-block;
-
-padding:8px 18px;
-
-background:#DC2626;
-
-color:#FFFFFF;
-
-border-radius:30px;
-
-font-size:14px;
-
-font-weight:600;
-
-border:1px solid #DC2626;
-
+.chart .recharts-text {
+  fill: #555555;
+  font-family: Poppins, Arial, sans-serif;
+  font-size: 12px;
 }
 
-/*==========================================
-            UPDATE BUTTON
-==========================================*/
 
-.edit-btn{
+/* ========================================
+   STOCK TABLE
+======================================== */
 
-background:#F28C28;
-
-color:#FFFFFF;
-
-border:none;
-
-padding:10px 18px;
-
-border-radius:8px;
-
-cursor:pointer;
-
-font-weight:600;
-
-margin-right:8px;
-
-transition:.3s;
-
+.stock-table {
+  width: 100%;
+  margin-top: 25px;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
 }
 
-.edit-btn:hover{
-
-background:#D96F0B;
-
-transform:scale(1.05);
-
+.stock-table th {
+  padding: 13px 14px;
+  background: #ff6b00;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid #222222;
 }
 
-/*==========================================
-            DELETE BUTTON
-==========================================*/
-
-.delete-btn{
-
-background:#111111;
-
-color:#FFFFFF;
-
-border:none;
-
-padding:10px 18px;
-
-border-radius:8px;
-
-cursor:pointer;
-
-font-weight:600;
-
-transition:.3s;
-
+.stock-table td {
+  padding: 13px 14px;
+  color: #333333;
+  font-size: 14px;
+  border-bottom: 1px solid #eeeeee;
 }
 
-.delete-btn:hover{
-
-background:#333333;
-
-transform:scale(1.05);
-
+.stock-table tbody tr {
+  transition: background 0.2s ease;
 }
 
-/*==========================================
-            CARD ANIMATION
-==========================================*/
-
-.card,
-.chart,
-.stock-table{
-
-animation:fadeIn .6s ease;
-
+.stock-table tbody tr:hover {
+  background: #fafafa;
 }
 
-@keyframes fadeIn{
 
-0%{
+/* ========================================
+   STATUS BADGES IN TABLE
+======================================== */
 
-opacity:0;
-
-transform:translateY(20px);
-
+.stock-table .HighStock,
+.stock-table .LowStock,
+.stock-table .OutofStock {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-100%{
 
-opacity:1;
+/* ========================================
+   LOADING / EMPTY STATES
+======================================== */
 
-transform:translateY(0);
-
+.stock-page p {
+  line-height: 1.5;
 }
 
+
+/* ========================================
+   ANIMATION
+======================================== */
+
+@keyframes stockFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/*==========================================
-            STOCK LIST
-==========================================*/
-
-.stock-list{
-
-margin-top:15px;
-
-padding:10px;
-
-border:1px solid #DDDDDD;
-
-border-radius:8px;
-
-background:#FFFFFF;
-
+.stock-page {
+  animation: stockFadeIn 0.25s ease;
 }
 
-.stock-list h4{
 
-color:#111111;
+/* ========================================
+   RESPONSIVE
+======================================== */
 
-margin-bottom:10px;
-
+@media (max-width: 1100px) {
+  .cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
-.stock-list ul{
+@media (max-width: 750px) {
+  .stock-page {
+    padding: 20px;
+  }
 
-list-style-type:square;
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
-padding-left:20px;
+  .title {
+    font-size: 28px;
+  }
 
+  .card h3 {
+    font-size: 18px;
+  }
+
+  .card p {
+    font-size: 22px;
+  }
+
+  .stock-table {
+    display: block;
+    overflow-x: auto;
+  }
 }
 
-.stock-list li{
+@media (max-width: 500px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
 
-margin:6px 0;
-
-font-size:15px;
-
-color:#111111;
-
+  .title {
+    font-size: 25px;
+  }
 }
