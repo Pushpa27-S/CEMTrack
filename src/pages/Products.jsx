@@ -779,6 +779,7 @@ const [editMinimumStock, setEditMinimumStock] =
 
             <select
               id="category"
+              className={category !=="All"?"category-selected":""}
               value={category}
               onChange={(e) =>
                 setCategory(e.target.value)
@@ -1042,7 +1043,7 @@ const [editMinimumStock, setEditMinimumStock] =
                 onClick={handleEditClick}
               >
 
-                ✏️ Edit Product
+                Edit Product
 
               </button>
 
@@ -1055,7 +1056,7 @@ const [editMinimumStock, setEditMinimumStock] =
                 onClick={handleDelete}
               >
 
-                🗑️ Delete Product
+                 Delete Product
 
               </button>
 
@@ -1092,7 +1093,7 @@ const [editMinimumStock, setEditMinimumStock] =
 
 
               <h2>
-                Edit Product
+              Edit Product
               </h2>
 
 
@@ -1195,7 +1196,7 @@ const [editMinimumStock, setEditMinimumStock] =
                   className="save-product-btn"
                 >
 
-                  ✏️ Update Product
+                  Update Product
 
                 </button>
 
