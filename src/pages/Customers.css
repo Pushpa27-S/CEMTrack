@@ -1,348 +1,493 @@
-/* =================================
-   ADMIN CUSTOMER MANAGEMENT
-   BLACK + WHITE + ORANGE + RED STATUS
-================================= */
+/* =========================================================
+   CUSTOMERS PAGE
+   CEMTrack - Black / White / Orange Theme
+   ========================================================= */
 
 .customers-container {
+    width: 100%;
     min-height: 100vh;
-    padding: 30px;
     box-sizing: border-box;
-    background: #ffffff;
-    color: #1f2937;
+    padding: 30px 32px;
+    background: #f7f7f7;
+    color: #111111;
+    overflow-x: hidden;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+
+.customers-container > h1 {
+    margin: 0 0 28px;
+    color: #111111;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.2;
 }
 
 
-/* =================================
-   PAGE TITLE
-================================= */
-
-.customers-container h1 {
-    margin: 0 0 25px;
-    font-size: 28px;
-}
-
-
-/* =================================
-   DASHBOARD STATS
-================================= */
+/* =========================
+   FOUR STATISTICS - ONE LINE
+   ========================= */
 
 .stats {
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-bottom: 25px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 28px;
 }
 
-.stats .card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
+.card {
+    min-width: 0;
+    min-height: 145px;
+    box-sizing: border-box;
+
+    background: #ffffff;
     border: 1px solid #e5e5e5;
-    border-top: 4px solid #F28C28;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+    border-top: 4px solid #ff6b00;
+    border-radius: 10px;
+
+    padding: 22px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+
+    transition: transform 0.2s ease,
+                box-shadow 0.2s ease;
 }
 
-.stats .card h3 {
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.10);
+}
+
+.card h3 {
     margin: 0 0 10px;
-    font-size: 15px;
-    color: #111;
-}
-
-.stats .card p {
-    margin: 0;
-    font-size: 28px;
+    color: #111111;
+    font-size: 22px;
     font-weight: 700;
-    color: #111;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.card p {
+    margin: 0;
+    color: #111111;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 
-/* =================================
-   SEARCH
-================================= */
+/* =========================
+   TOP BAR
+   ========================= */
 
 .top-bar {
-    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 25px !important;
 }
 
-.search-box {
-    width: 300px;
-    padding: 11px 14px;
-    border: 1px solid #d1d1d1;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
+
+/* =========================
+   SEARCH
+   ========================= */
+
+.customers-container .search-box {
+    width: 340px;
+    max-width: 100%;
+    height: 42px;
+
     box-sizing: border-box;
-    background: #fff;
-    color: #111;
+
+    padding: 0 14px;
+
+    background: #fffaf5;
+
+    border: 1px solid #ffb36b;
+    border-radius: 8px;
+
+    color: #222222;
+    font-size: 14px;
+
+    outline: none;
+
+    box-shadow:
+        0 0 0 3px rgba(255, 107, 0, 0.08);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
-.search-box:focus {
-    border-color: #F28C28;
+.customers-container .search-box::placeholder {
+    color: #777777;
+}
+
+.customers-container .search-box:hover {
+    background: #fff8f1;
+
+    border-color: #ff8a33;
+
+    box-shadow:
+        0 0 0 3px rgba(255, 107, 0, 0.12);
+}
+
+.customers-container .search-box:focus {
+    background: #ffffff;
+
+    border-color: #ff6b00;
+
+    box-shadow:
+        0 0 0 4px rgba(255, 107, 0, 0.18);
 }
 
 
-/* =================================
+/* =========================
    ADD CUSTOMER BUTTON
-================================= */
+   ========================= */
 
 .top-bar > button {
-    border: none;
-    padding: 11px 18px;
+    height: 42px;
+
+    padding: 0 18px;
+
+    border: 1px solid #ff6b00;
     border-radius: 8px;
-    background: #F28C28;
-    color: #fff;
+
+    background: #ff6b00;
+    color: #ffffff;
+
     font-size: 14px;
     font-weight: 600;
+
     cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .top-bar > button:hover {
-    background: #D96F0B;
+    background: #e85f00;
+
+    box-shadow:
+        0 0 0 2px rgba(255, 107, 0, 0.12);
 }
 
 
-/* =================================
-   ADD / EDIT FORM
-================================= */
+/* =========================
+   CUSTOMER TABLE
+   ========================= */
+
+.customers-container > table {
+    width: 100%;
+
+    border-collapse: collapse;
+    border-spacing: 0;
+
+    background: #ffffff;
+
+    border-radius: 10px;
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.06);
+
+    table-layout: auto;
+}
+
+
+/* TABLE HEADER */
+
+.customers-container > table thead {
+    width: 100%;
+}
+
+.customers-container > table thead tr {
+    width: 100%;
+}
+
+.customers-container > table thead th {
+    background: #ff6b00;
+    color: #ffffff;
+
+    padding: 14px 12px;
+
+    text-align: left;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* TABLE BODY */
+
+.customers-container > table tbody tr {
+    background: #ffffff;
+}
+
+.customers-container > table tbody tr:hover {
+    background: #fafafa;
+}
+
+.customers-container > table tbody td {
+    padding: 14px 12px;
+
+    color: #222222;
+
+    font-size: 14px;
+
+    border-bottom: 1px solid #eeeeee;
+
+    white-space: nowrap;
+
+    vertical-align: middle;
+}
+
+
+/* =========================
+   STATUS
+   ========================= */
+
+.active {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 62px;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    background: #eeeeee;
+    color: #222222;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    line-height: 1;
+
+    box-shadow:
+        0 0 0 2px rgba(0, 0, 0, 0.10);
+}
+
+
+.inactive {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 62px;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    background: #fde8d7;
+    color: #c62828;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    line-height: 1;
+
+    box-shadow:
+        0 0 0 2px rgba(255, 107, 0, 0.10);
+}
+
+
+/* =========================
+   ACTION BUTTONS
+   ========================= */
+
+.customers-container > table td:last-child {
+    white-space: nowrap;
+}
+
+
+/* =========================
+   EDIT + DELETE BUTTONS
+   FORCE LIGHT ORANGE
+   ========================= */
+
+.customers-container > table .edit-btn,
+.customers-container > table .delete-btn {
+    background: #fde8d7 !important;
+    color: #c65d00 !important;
+    border: 1px solid #f3c39c !important;
+
+    border-radius: 6px !important;
+    padding: 7px 12px !important;
+
+    font-size: 12px !important;
+    font-weight: 600 !important;
+
+    cursor: pointer;
+
+    margin-right: 8px;
+
+    box-shadow:
+        0 0 0 2px rgba(255, 107, 0, 0.08) !important;
+}
+
+.customers-container > table .edit-btn:hover,
+.customers-container > table .delete-btn:hover {
+    background: #f9d9bd !important;
+    color: #c65d00 !important;
+}
+
+
+/* =========================
+   ADD / EDIT FORMS
+   ========================= */
 
 .customers-container form {
-    background: #fff;
-    padding: 20px !important;
+    width: 100%;
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+
+    padding: 20px;
+
     margin-bottom: 20px;
-    border: 1px solid #ddd !important;
-    border-top: 4px solid #F28C28 !important;
-    border-radius: 8px !important;
 }
 
 .customers-container form h2 {
-    color: #111;
+    margin: 0 0 20px;
+
+    color: #111111;
+
+    font-size: 22px;
+    font-weight: 700;
 }
 
 .customers-container form input {
     width: 100%;
     box-sizing: border-box;
-    padding: 11px 12px;
-    margin: 7px 0;
-    border: 1px solid #d1d1d1;
+
+    padding: 10px 12px;
+
+    margin-bottom: 12px;
+
+    background: #ffffff;
+
+    border: 1px solid #d5d5d5;
     border-radius: 7px;
-    background: #fff;
-    color: #111;
+
+    color: #222222;
+
+    font-size: 14px;
+
+    outline: none;
 }
 
 .customers-container form input:focus {
-    outline: none;
-    border-color: #F28C28;
+    border-color: #ff6b00;
+
+    box-shadow:
+        0 0 0 2px rgba(255, 107, 0, 0.12);
 }
 
 .customers-container form button {
-    border: none;
-    padding: 10px 16px;
-    margin-top: 10px;
-    margin-right: 8px;
+    background: #ff6b00;
+    color: #ffffff;
+
+    border: 1px solid #ff6b00;
     border-radius: 7px;
-    background: #F28C28;
-    color: #fff;
+
+    padding: 9px 16px;
+
+    margin-right: 8px;
+
+    font-size: 14px;
     font-weight: 600;
+
     cursor: pointer;
 }
 
 .customers-container form button:hover {
-    background: #D96F0B;
-}
-
-.customers-container form button[type="button"] {
-    background: #111;
-}
-
-.customers-container form button[type="button"]:hover {
-    background: #333;
+    background: #e85f00;
 }
 
 
-/* =================================
-   CUSTOMER TABLE
-================================= */
-
-.customers-container table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
-}
-
-
-/* =================================
-   ENTIRE TABLE HEADING ROW ORANGE
-================================= */
-
-.customers-container thead {
-    background: #F28C28;
-    color: #fff;
-}
-
-.customers-container th {
-    padding: 15px 12px;
-    text-align: left;
-    font-size: 14px;
-    white-space: nowrap;
-    background: #F28C28;
-    color: #fff;
-}
-
-
-/* =================================
-   TABLE BODY
-================================= */
-
-.customers-container td {
-    padding: 14px 12px;
-    border-bottom: 1px solid #e5e5e5;
-    font-size: 14px;
-    white-space: nowrap;
-    background: #fff;
-    color: #111;
-}
-
-.customers-container tbody tr {
-    height: 55px;
-}
-
-.customers-container tbody tr:hover td {
-    background: #fff7ed;
-}
-
-
-/* =================================
-   STATUS BADGES
-================================= */
-
-/* ACTIVE = BLACK */
-
-.active {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 20px;
-    background: #111111;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-
-/* INACTIVE = RED */
-
-.inactive {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 20px;
-    background: #DC2626;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-
-/* =================================
-   EDIT BUTTON = ORANGE
-================================= */
-
-.edit-btn {
-    border: none;
-    padding: 8px 14px;
-    border-radius: 7px;
-    background: #F28C28;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    margin-right: 8px;
-}
-
-.edit-btn:hover {
-    background: #D96F0B;
-}
-
-
-/* =================================
-   DELETE BUTTON = WHITE + BLACK
-================================= */
-/* DELETE BUTTON */
-.customers-container .delete-btn,
-.customers-container button.delete-btn {
-  border: none !important;
-  padding: 8px 14px !important;
-  border-radius: 7px !important;
-  background: #f28c28 !important;
-  color: #ffffff !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  margin-left: 0 !important;
-  box-shadow: none !important;
-}
-
-.customers-container .delete-btn:hover,
-.customers-container button.delete-btn:hover {
-  background: #d96f0b !important;
-  color: #ffffff !important;
-  box-shadow: none !important;
-  transform: none !important;
-}
-
-/* =================================
-   SUCCESS MESSAGE
-================================= */
-
-.customers-container > div[style*="d4edda"] {
-    background-color: #fff7ed !important;
-    color: #111 !important;
-    border-left: 4px solid #F28C28;
-}
-
-
-/* =================================
-   ERROR MESSAGE
-================================= */
-
-.customers-container > div[style*="f8d7da"] {
-    background-color: #f5f5f5 !important;
-    color: #111 !important;
-    border-left: 4px solid #111;
-}
-
-
-/* =================================
+/* =========================
    RESPONSIVE
-================================= */
+   ========================= */
 
-@media (max-width: 1000px) {
-
-    .stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
+@media (max-width: 1050px) {
 
     .customers-container {
-        overflow-x: auto;
+        padding: 25px;
     }
 
-    .customers-container table {
+    .stats {
+        gap: 14px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+}
+
+
+@media (max-width: 800px) {
+
+    .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .top-bar {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .top-bar > button {
+        width: fit-content;
+    }
+
+    .customers-container > table {
         min-width: 900px;
     }
 }
 
 
-@media (max-width: 600px) {
+@media (max-width: 520px) {
 
     .customers-container {
-        padding: 20px;
+        padding: 20px 15px;
     }
 
     .stats {
         grid-template-columns: 1fr;
     }
 
-    .search-box {
-        width: 100%;
+    .customers-container > h1 {
+        font-size: 25px;
     }
 }
