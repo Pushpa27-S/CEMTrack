@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link,useNavigate } from "react-router-dom";
-import "./Products.css";
+import "./CustomerProducts.css";
 import products from "../data/ProductsData";
 
 function CustomerProducts() {
@@ -114,7 +114,7 @@ function CustomerProducts() {
 
   return (
 
-    <div className="products-page">
+    <div className=" customer-products-page">
 
       {/* HEADER */}
 
