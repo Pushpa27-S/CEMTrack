@@ -47,7 +47,7 @@
     padding: 22px;
     border-radius: 12px;
     border: 1px solid #e5e5e5;
-    border-top: 4px solid #f28c28;
+    border-top: 4px solid #ff6b00;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     text-align: center;
 }
@@ -55,18 +55,27 @@
 .card h3 {
     margin: 0 0 10px;
     color: #111111;
+    font-size:22px;
+    font-weight:700;
+    line-height:1.2;
+    white-space:nowrap;
 }
 
 .card p {
     margin: 0;
     font-size: 22px;
+    font-weight:600;
+    line-height:1.2;
     font-weight: bold;
     color: #111111;
+    white-space:nowrap;
 }
 
 
 /* =========================================
    BUTTONS
+   SAME LIGHT-ORANGE STYLE AS
+   DELIVERY / BILLING
 ========================================= */
 
 .report-buttons {
@@ -80,30 +89,34 @@
 .download-btn,
 .print-btn {
     padding: 12px 28px;
-    border: none;
+
+    background: #f8e2c5;
+    color: #9a4f22;
+
+    border: 1px solid #e8b57f;
     border-radius: 8px;
-    color: white;
+
     font-size: 16px;
     font-weight: 600;
+
     cursor: pointer;
-    transition: 0.3s;
+
+    box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.08);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
 }
 
-.download-btn {
-    background: #f28c28;
-}
-
-.download-btn:hover {
-    background: #d96f0b;
-    transform: translateY(-2px);
-}
-
-.print-btn {
-    background: #111111;
-}
-
+.download-btn:hover,
 .print-btn:hover {
-    background: #333333;
+    background: #f3d3aa;
+    border-color: #e2a665;
+
+    box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.12);
+
     transform: translateY(-2px);
 }
 
@@ -159,7 +172,7 @@
 
 .bill-summary div {
     border: 1px solid #dddddd;
-    border-top: 3px solid #f28c28;
+    border-top: 3px solid #ff6b00;
     padding: 12px;
     border-radius: 8px;
     display: flex;
@@ -188,10 +201,10 @@
 }
 
 .reports-table th {
-    background: #111111;
+    background: #ff6b00;
     color: #ffffff;
     padding: 12px;
-    border: 1px solid #111111;
+    border: 1px solid #ff6b00;
     text-align: center;
 }
 

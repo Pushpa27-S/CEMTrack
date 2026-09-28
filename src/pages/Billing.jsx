@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./Billing.css";
 
 const API_URL = "http://localhost:5000";
 
@@ -255,7 +256,6 @@ function Billing() {
 
           </div>
 
-
           <div class="info-section">
 
             <div class="info-box">
@@ -285,7 +285,6 @@ function Billing() {
               </p>
 
             </div>
-
 
             <div class="info-box">
 
@@ -317,7 +316,6 @@ function Billing() {
 
           </div>
 
-
           <table>
 
             <thead>
@@ -332,7 +330,6 @@ function Billing() {
               </tr>
 
             </thead>
-
 
             <tbody>
 
@@ -368,7 +365,6 @@ function Billing() {
 
           </table>
 
-
           <div class="summary">
 
             <div class="summary-row">
@@ -396,7 +392,6 @@ function Billing() {
             </div>
 
           </div>
-
 
           <div class="footer">
             Thank you for choosing CEMTrack.
@@ -437,10 +432,6 @@ function Billing() {
   return (
     <div style={styles.page}>
 
-      {/* ========================================
-          HEADER
-      ======================================== */}
-
       <div style={styles.pageHeader}>
 
         <div>
@@ -455,20 +446,14 @@ function Billing() {
 
         </div>
 
-
         <button
           onClick={fetchBills}
-          style={styles.refreshButton}
+          className="billing-refresh-button"
         >
           Refresh
         </button>
 
       </div>
-
-
-      {/* ========================================
-          ERROR
-      ======================================== */}
 
       {error && (
         <div style={styles.error}>
@@ -476,21 +461,11 @@ function Billing() {
         </div>
       )}
 
-
-      {/* ========================================
-          EMPTY
-      ======================================== */}
-
       {!error && bills.length === 0 && (
         <div style={styles.empty}>
           No billing records found.
         </div>
       )}
-
-
-      {/* ========================================
-          BILLING TABLE
-      ======================================== */}
 
       {bills.length > 0 && (
 
@@ -558,7 +533,6 @@ function Billing() {
 
             </thead>
 
-
             <tbody>
 
               {bills.map((bill) => (
@@ -614,7 +588,7 @@ function Billing() {
 
                   <td style={styles.centerTd}>
 
-                    <span style={styles.paidBadge}>
+                    <span className="billing-paid-badge">
                       {bill.payment_status || "Paid"}
                     </span>
 
@@ -624,7 +598,7 @@ function Billing() {
 
                     <button
                       onClick={() => printBill(bill)}
-                      style={styles.printButton}
+                      className="billing-print-button"
                     >
                       Print
                     </button>
@@ -649,9 +623,8 @@ function Billing() {
 
 
 // ==================================================
-// BILLING UI STYLES
-// BLACK + WHITE + ORANGE
-// FONT SIZES / WEIGHTS PRESERVED
+// ORIGINAL BILLING UI STYLES
+// THESE ARE KEPT TO PRESERVE YOUR WORKING UI
 // ==================================================
 
 const styles = {
@@ -664,14 +637,12 @@ const styles = {
     minHeight: "100vh",
   },
 
-
   pageHeader: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "25px",
   },
-
 
   title: {
     margin: 0,
@@ -680,13 +651,11 @@ const styles = {
     color: "#111",
   },
 
-
   subtitle: {
     margin: "8px 0 0",
     fontSize: "16px",
     color: "#111",
   },
-
 
   refreshButton: {
     background: "#f28c28",
@@ -699,7 +668,6 @@ const styles = {
     cursor: "pointer",
   },
 
-
   tableContainer: {
     width: "100%",
     overflowX: "auto",
@@ -709,7 +677,6 @@ const styles = {
     border: "1px solid #e5e5e5",
   },
 
-
   table: {
     width: "100%",
     minWidth: "1400px",
@@ -717,9 +684,8 @@ const styles = {
     background: "#fff",
   },
 
-
   th: {
-    background: "#111",
+    background: "#f28c28",
     color: "#fff",
     padding: "14px 10px",
     textAlign: "left",
@@ -728,11 +694,9 @@ const styles = {
     whiteSpace: "nowrap",
   },
 
-
   tr: {
     borderBottom: "1px solid #e5e5e5",
   },
-
 
   td: {
     padding: "14px 10px",
@@ -742,7 +706,6 @@ const styles = {
     background: "#fff",
   },
 
-
   centerTd: {
     padding: "14px 10px",
     textAlign: "center",
@@ -751,7 +714,6 @@ const styles = {
     background: "#fff",
   },
 
-
   rightTd: {
     padding: "14px 10px",
     textAlign: "right",
@@ -759,7 +721,6 @@ const styles = {
     whiteSpace: "nowrap",
     background: "#fff",
   },
-
 
   totalTd: {
     padding: "14px 10px",
@@ -771,7 +732,6 @@ const styles = {
     background: "#fff",
   },
 
-
   paidBadge: {
     display: "inline-block",
     background: "#f28c28",
@@ -781,7 +741,6 @@ const styles = {
     fontSize: "13px",
     fontWeight: "600",
   },
-
 
   printButton: {
     background: "#f28c28",
@@ -795,7 +754,6 @@ const styles = {
     whiteSpace: "nowrap",
   },
 
-
   error: {
     background: "#fff",
     color: "#111",
@@ -806,7 +764,6 @@ const styles = {
     border: "1px solid #ddd",
   },
 
-
   empty: {
     background: "#fff",
     padding: "50px",
@@ -815,7 +772,6 @@ const styles = {
     borderRadius: "5px",
     border: "1px solid #e5e5e5",
   },
-
 
   loading: {
     padding: "50px",
