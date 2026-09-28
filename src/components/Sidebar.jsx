@@ -28,11 +28,15 @@ function Sidebar() {
 
       {/* LOGO */}
       <div className="sidebar-logo">
+
         <h2>
           CEM<span>Track</span>
         </h2>
 
-        <p>Cement Inventory & Management System</p>
+        <p>
+          Cement Inventory & Management System
+        </p>
+
       </div>
 
 
@@ -42,10 +46,12 @@ function Sidebar() {
         <NavLink
           to="/dashboard"
           className={({ isActive }) =>
-            isActive ? "sidebar-item active" : "sidebar-item"
+            isActive
+              ? "sidebar-item active"
+              : "sidebar-item"
           }
         >
-          <span className="sidebar-icon">⌂</span>
+          <span className="sidebar-icon"></span>
           <span>Dashboard</span>
         </NavLink>
 
@@ -53,10 +59,12 @@ function Sidebar() {
         <NavLink
           to="/products"
           className={({ isActive }) =>
-            isActive ? "sidebar-item active" : "sidebar-item"
+            isActive
+              ? "sidebar-item active"
+              : "sidebar-item"
           }
         >
-          <span className="sidebar-icon">▣</span>
+          <span className="sidebar-icon"></span>
           <span>Products</span>
         </NavLink>
 
@@ -64,10 +72,12 @@ function Sidebar() {
         <NavLink
           to="/customers"
           className={({ isActive }) =>
-            isActive ? "sidebar-item active" : "sidebar-item"
+            isActive
+              ? "sidebar-item active"
+              : "sidebar-item"
           }
         >
-          <span className="sidebar-icon">♟</span>
+          <span className="sidebar-icon"></span>
           <span>Customers</span>
         </NavLink>
 
@@ -75,10 +85,12 @@ function Sidebar() {
         <NavLink
           to="/adminorders"
           className={({ isActive }) =>
-            isActive ? "sidebar-item active" : "sidebar-item"
+            isActive
+              ? "sidebar-item active"
+              : "sidebar-item"
           }
         >
-          <span className="sidebar-icon">🛒</span>
+          <span className="sidebar-icon"></span>
           <span>Orders</span>
         </NavLink>
 
@@ -86,10 +98,12 @@ function Sidebar() {
         <NavLink
           to="/billing"
           className={({ isActive }) =>
-            isActive ? "sidebar-item active" : "sidebar-item"
+            isActive
+              ? "sidebar-item active"
+              : "sidebar-item"
           }
         >
-          <span className="sidebar-icon">▤</span>
+          <span className="sidebar-icon"></span>
           <span>Billing</span>
         </NavLink>
 
@@ -97,10 +111,12 @@ function Sidebar() {
         <NavLink
           to="/reports"
           className={({ isActive }) =>
-            isActive ? "sidebar-item active" : "sidebar-item"
+            isActive
+              ? "sidebar-item active"
+              : "sidebar-item"
           }
         >
-          <span className="sidebar-icon">▥</span>
+          <span className="sidebar-icon"></span>
           <span>Reports</span>
         </NavLink>
 
@@ -108,10 +124,12 @@ function Sidebar() {
         <NavLink
           to="/stock"
           className={({ isActive }) =>
-            isActive ? "sidebar-item active" : "sidebar-item"
+            isActive
+              ? "sidebar-item active"
+              : "sidebar-item"
           }
         >
-          <span className="sidebar-icon">▦</span>
+          <span className="sidebar-icon"></span>
           <span>Stock</span>
         </NavLink>
 
@@ -122,26 +140,22 @@ function Sidebar() {
           className="sidebar-item sidebar-button"
           onClick={handleAddProduct}
         >
-          <span className="sidebar-icon">＋</span>
+          <span className="sidebar-icon"></span>
           <span>Add Product</span>
         </button>
 
-      </nav>
 
-
-      {/* LOGOUT */}
-      <div className="sidebar-bottom">
-
+        {/* LOGOUT */}
         <button
           type="button"
           className="sidebar-item logout-button"
           onClick={handleLogout}
         >
-          <span className="sidebar-icon">↪</span>
+          <span className="sidebar-icon"></span>
           <span>Logout</span>
         </button>
 
-      </div>
+      </nav>
 
     </aside>
   );

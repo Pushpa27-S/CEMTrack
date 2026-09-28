@@ -1,234 +1,274 @@
-/* =========================================================
-   CEMTrack SIDEBAR
-   BLACK + WHITE + ORANGE
-   ========================================================= */
+/* =========================
+   SIDEBAR
+========================= */
 
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100vh;
 
-  width: 240px;
-  height: 100vh;
+    background: #111;
 
-  background: #111111;
+    display: flex;
+    flex-direction: column;
 
-  display: flex;
-  flex-direction: column;
+    padding: 28px 22px;
+    box-sizing: border-box;
 
-  padding: 28px 16px;
-
-  box-sizing: border-box;
-
-  z-index: 1000;
-
-  overflow-y: auto;
+    z-index: 1000;
+    overflow-y: auto;
 }
 
 
-/* =========================================================
+/* =========================
    LOGO
-   ========================================================= */
+========================= */
 
 .sidebar-logo {
-  padding: 0 12px 28px;
+    padding: 0 10px 28px;
 }
 
 .sidebar-logo h2 {
-  margin: 0;
-
-  color: #ffffff;
-
-  font-size: 25px;
-  font-weight: 700;
-
-  letter-spacing: -0.5px;
+    margin: 0;
+    color: #fff;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 .sidebar-logo h2 span {
-  color: #ff6b00;
+    color: #ff6b00;
 }
 
 .sidebar-logo p {
-  margin: 5px 0 0;
-
-  color: #8d8d8d;
-
-  font-size: 10px;
-
-  line-height: 1.4;
+    margin: 5px 0 0;
+    color: #8d8d8d;
+    font-size: 10px;
+    line-height: 1.4;
 }
 
 
-/* =========================================================
+/* =========================
    MENU
-   ========================================================= */
+========================= */
 
 .sidebar-menu {
-  display: flex;
-  flex-direction: column;
-
-  gap: 6px;
-
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
 }
 
 
-/* =========================================================
-   SIDEBAR ITEMS
-   ========================================================= */
+/* =========================
+   EVERY SIDEBAR ITEM
+========================= */
 
 .sidebar-item {
-  width: 100%;
-  height: 44px;
+    position: relative;
 
-  display: flex;
-  align-items: center;
+    width: 100%;
+    height: 44px;
 
-  gap: 12px;
+    box-sizing: border-box;
 
-  padding: 0 14px;
+    display: flex;
+    align-items: center;
 
-  box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 
-  border: none;
-  border-radius: 9px;
+    border: none;
+    border-radius: 0;
 
-  background: transparent;
+    background: transparent;
 
-  color: #d7d7d7;
+    color: #d7d7d7;
 
-  text-decoration: none;
+    text-decoration: none;
 
-  font-family: Arial, sans-serif;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
 
-  font-size: 14px;
-  font-weight: 500;
+    cursor: pointer;
+    text-align: left;
 
-  cursor: pointer;
+    transform: none !important;
 
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
-
-  text-align: left;
+    transition: color 0.2s ease;
 }
 
 
-/* =========================================================
-   ICON
-   ========================================================= */
+/* =========================
+   ICON POSITION
+========================= */
 
-.sidebar-icon {
-  width: 20px;
+.sidebar-item .sidebar-icon {
+    position: absolute;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    left: 10px;
 
-  font-size: 16px;
+    width: 20px;
+    height: 20px;
 
-  flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
 }
 
 
-/* =========================================================
-   HOVER
-   ========================================================= */
+/* =========================
+   TEXT POSITION
+   LOCKED FOR EVERY ITEM
+========================= */
+
+.sidebar-item > span:last-child {
+    position: absolute;
+
+    left: 42px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    margin: 0;
+    padding: 0;
+
+    white-space: nowrap;
+}
+
+
+/* =========================
+   NORMAL HOVER
+   ONLY COLOR CHANGES
+========================= */
 
 .sidebar-item:hover {
-  background: #1f1f1f;
+    background: transparent !important;
 
-  color: #ff6b00;
+    color: #ff6b00 !important;
+
+    width: 100% !important;
+    height: 44px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    transform: none !important;
+
+    border: none !important;
+    box-shadow: none !important;
 }
 
 
-/* =========================================================
-   ACTIVE PAGE
-   ========================================================= */
+/* =========================
+   ACTIVE ITEM
+   ONLY COLOR CHANGES
+========================= */
 
 .sidebar-item.active {
-  background: #ff6b00;
+    background: transparent !important;
 
-  color: #ffffff;
+    color: #ff6b00 !important;
 
-  font-weight: 600;
+    width: 100% !important;
+    height: 44px !important;
 
-  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.25);
+    padding: 0 !important;
+    margin: 0 !important;
+
+    transform: none !important;
+
+    border: none !important;
+    border-radius: 0 !important;
+
+    box-shadow: none !important;
+
+    font-size: 15px !important;
+    font-weight: 500 !important;
 }
+
+
+/* =========================
+   ACTIVE + HOVER
+   STILL ONLY ORANGE
+========================= */
 
 .sidebar-item.active:hover {
-  background: #ff6b00;
+    background: transparent !important;
 
-  color: #ffffff;
+    color: #ff6b00 !important;
+
+    width: 100% !important;
+    height: 44px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    transform: none !important;
+
+    border: none !important;
+    box-shadow: none !important;
+
+    font-size: 15px !important;
+    font-weight: 500 !important;
 }
 
 
-/* =========================================================
-   ADD PRODUCT BUTTON
-   ========================================================= */
+/* =========================
+   ADD PRODUCT
+========================= */
 
 .sidebar-button {
-  margin-top: 4px;
+    margin-top: 4px !important;
 }
 
 
-/* =========================================================
+/* =========================
    LOGOUT
-   ========================================================= */
+========================= */
 
 .sidebar-bottom {
-  margin-top: auto;
-
-  padding-top: 25px;
+    margin-top: 0;
+    padding-top: 0;
 }
 
 .logout-button {
-  color: #d7d7d7;
+    color: #d7d7d7;
 }
 
 .logout-button:hover {
-  background: #1f1f1f;
+    background: transparent !important;
+    color: #ff6b00 !important;
 
-  color: #ff6b00;
+    width: 100% !important;
+    height: 44px !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    transform: none !important;
+
+    box-shadow: none !important;
 }
 
 
-/* =========================================================
-   SCROLLBAR
-   ========================================================= */
-
-.sidebar::-webkit-scrollbar {
-  width: 5px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: #111111;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: #333333;
-  border-radius: 10px;
-}
-
-
-/* =========================================================
-   SMALL SCREEN
-   ========================================================= */
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media (max-width: 900px) {
+    .sidebar {
+        width: 220px;
+        padding: 25px 18px;
+    }
 
-  .sidebar {
-    width: 210px;
-  }
-
-  .sidebar-logo h2 {
-    font-size: 22px;
-  }
-
-  .sidebar-item {
-    font-size: 13px;
-  }
-
+    .sidebar-item {
+        font-size: 15px;
+    }
 }
