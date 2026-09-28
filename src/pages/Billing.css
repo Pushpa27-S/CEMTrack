@@ -1,500 +1,75 @@
-/* =========================================
-   BILLING PAGE
-========================================= */
+/* =========================================================
+   BILLING BUTTONS
+   SAME LIGHT-ORANGE STYLE AS ORDERS DELIVERED
+   ========================================================= */
 
-.billing-container {
-    padding: 30px;
-    background: #f4f6f9;
-    min-height: 100vh;
-    box-sizing: border-box;
-}
+/* =========================
+   REFRESH
+   ========================= */
 
-
-/* =========================================
-   MAIN HEADING
-========================================= */
-
-.billing-container h1 {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 35px;
-    font-size: 40px;
-}
-
-
-/* =========================================
-   BILLING FORM
-========================================= */
-
-.billing-form {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-
-    background: white;
-
-    padding: 30px;
-
-    border-radius: 14px;
-
-    box-shadow:
-        0 5px 15px rgba(0, 0, 0, 0.10);
-
-    box-sizing: border-box;
-}
-
-
-/* =========================================
-   FORM GROUP
-========================================= */
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-
-
-.form-group label {
-    font-size: 18px;
-    font-weight: 600;
-
-    color: #222;
-
-    margin-bottom: 8px;
-}
-
-
-.form-group input,
-.form-group select {
-
-    width: 100%;
-
-    padding: 13px;
-
-    font-size: 16px;
-
-    border: 1px solid #ccc;
-
-    border-radius: 7px;
-
-    outline: none;
-
-    box-sizing: border-box;
-
-    background: white;
-}
-
-
-.form-group input:focus,
-.form-group select:focus {
-
-    border-color: #3498db;
-
-}
-
-
-/* =========================================
-   BUTTONS
-========================================= */
-
-.billing-buttons {
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    gap: 30px;
-
-    margin: 35px 0;
-
-}
-
-
-.billing-buttons button {
-
-    padding: 14px 35px;
-
-    border: none;
-
+.billing-refresh-button {
+    background: #f8e2c5;
+    color: #9a4f22;
+    border: 1px solid #e8b57f;
     border-radius: 8px;
-
-    color: white;
-
-    font-size: 17px;
-
+    padding: 11px 18px;
+    font-size: 14px;
     font-weight: 600;
-
     cursor: pointer;
+    box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.08);
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
 
-    transition: 0.3s;
-
+.billing-refresh-button:hover {
+    background: #f3d3aa;
+    border-color: #e2a665;
+    box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.12);
 }
 
 
-.save-btn {
+/* =========================
+   PAYMENT STATUS
+   ========================= */
 
-    background: #27ae60;
-
+.billing-paid-badge {
+    display: inline-block;
+    background: #f8e2c5;
+    color: #9a4f22;
+    border: 1px solid #e8b57f;
+    padding: 6px 13px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.08);
 }
 
 
-.save-btn:hover {
-
-    background: #1e8449;
-
-    transform: translateY(-2px);
-
-}
-
-
-.print-btn {
-
-    background: #3498db;
-
-}
-
-
-.print-btn:hover {
-
-    background: #2980b9;
-
-    transform: translateY(-2px);
-
-}
-
-
-.clear-btn {
-
-    background: #e74c3c;
-
-}
-
-
-.clear-btn:hover {
-
-    background: #c0392b;
-
-    transform: translateY(-2px);
-
-}
-
-
-/* =========================================
-   BILLING HISTORY
-========================================= */
-
-.billing-history-title {
-
-    margin-top: 40px;
-
-    margin-bottom: 20px;
-
-    color: #2c3e50;
-
-    font-size: 30px;
-
-}
-
-
-/* =========================================
-   BILLING TABLE
-========================================= */
-
-.billing-table {
-
-    width: 100%;
-
-    border-collapse: collapse;
-
-    background: white;
-
-    box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.08);
-
-}
-
-
-.billing-table th {
-
-    background: #3498db;
-
-    color: white;
-
-    padding: 14px;
-
-    border: 1px solid #ddd;
-
-    text-align: center;
-
-    font-size: 16px;
-
-}
-
-
-.billing-table td {
-
-    padding: 13px;
-
-    border: 1px solid #ddd;
-
-    text-align: center;
-
-    color: #333;
-
-    font-size: 16px;
-
-}
-
-
-.billing-table tbody tr:nth-child(even) {
-
-    background: #f8f9fa;
-
-}
-
-
-.total-cell {
-
-    color: green !important;
-
-    font-weight: bold;
-
-}
-
-
-.no-bills {
-
-    text-align: center !important;
-
-    padding: 20px !important;
-
-    font-weight: bold;
-
-}
-
-
-/* =========================================
-   RESPONSIVE
-========================================= */
-
-@media (max-width: 1000px) {
-
-    .billing-form {
-
-        grid-template-columns: repeat(2, 1fr);
-
-    }
-
-}
-
-
-@media (max-width: 600px) {
-
-    .billing-container {
-
-        padding: 15px;
-
-    }
-
-    .billing-container h1 {
-
-        font-size: 30px;
-
-    }
-
-    .billing-form {
-
-        grid-template-columns: 1fr;
-
-        padding: 20px;
-
-    }
-
-    .billing-buttons {
-
-        flex-direction: column;
-
-        gap: 15px;
-
-    }
-
-    .billing-buttons button {
-
-        width: 200px;
-
-    }
-
-}
-
-
-/* =========================================
+/* =========================
    PRINT
-   PRINT ONLY THE UPPER BILLING FORM
-========================================= */
-
-@media print {
-
-    /* A4 portrait */
-    @page {
-
-        size: A4 portrait;
-
-        margin: 15mm;
-
-    }
-
-
-    /* Hide everything initially */
-
-    body * {
-
-        visibility: hidden;
-
-    }
-
-
-    /* =====================================
-       SHOW BILLING HEADING
-    ===================================== */
-
-    .billing-container h1 {
-
-        visibility: visible;
-
-        display: block !important;
-
-        position: absolute;
-
-        top: 0;
-
-        left: 0;
-
-        width: 100%;
-
-        text-align: center;
-
-        color: #000 !important;
-
-        font-size: 28px;
-
-        margin: 0;
-
-    }
-
-
-    /* =====================================
-       SHOW ONLY BILLING FORM
-    ===================================== */
-
-    .billing-form {
-
-        visibility: visible;
-
-        display: grid !important;
-
-        position: absolute;
-
-        top: 70px;
-
-        left: 0;
-
-        width: 100%;
-
-        grid-template-columns: repeat(2, 1fr) !important;
-
-        gap: 18px !important;
-
-        padding: 20px !important;
-
-        background: white !important;
-
-        border: 1px solid #000;
-
-        border-radius: 0;
-
-        box-shadow: none !important;
-
-        box-sizing: border-box;
-
-    }
-
-
-    .billing-form * {
-
-        visibility: visible;
-
-    }
-
-
-    /* =====================================
-       PRINT LABELS
-    ===================================== */
-
-    .billing-form label {
-
-        color: #000 !important;
-
-        font-weight: bold;
-
-    }
-
-
-    /* =====================================
-       PRINT INPUTS
-    ===================================== */
-
-    .billing-form input,
-    .billing-form select {
-
-        color: #000 !important;
-
-        background: white !important;
-
-        border: 1px solid #000 !important;
-
-        box-shadow: none !important;
-
-    }
-
-
-    /* =====================================
-       HIDE BUTTONS
-    ===================================== */
-
-    .billing-buttons {
-
-        display: none !important;
-
-        visibility: hidden !important;
-
-    }
-
-
-    /* =====================================
-       HIDE BILLING HISTORY TITLE
-    ===================================== */
-
-    .billing-history-title {
-
-        display: none !important;
-
-        visibility: hidden !important;
-
-    }
-
-
-    /* =====================================
-       HIDE BILLING HISTORY TABLE
-    ===================================== */
-
-    .billing-table {
-
-        display: none !important;
-
-        visibility: hidden !important;
-
-    }
-
+   ========================= */
+
+.billing-print-button {
+    background: #f8e2c5;
+    color: #9a4f22;
+    border: 1px solid #e8b57f;
+    border-radius: 8px;
+    padding: 8px 13px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.08);
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.billing-print-button:hover {
+    background: #f3d3aa;
+    border-color: #e2a665;
+    box-shadow: 0 0 0 2px rgba(242, 140, 40, 0.12);
 }

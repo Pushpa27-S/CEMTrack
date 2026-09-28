@@ -4,16 +4,31 @@
 ================================= */
 
 .admin-orders-container {
-  padding: 20px;
-  background: #ffffff;
-  color: #111111;
+  width: 100%;
   min-height: 100vh;
   box-sizing: border-box;
+
+  padding: 30px 32px;
+
+  background: #f7f7f7;
+  color: #111111;
+
+  overflow-x: hidden;
 }
 
+
+/* =================================
+   PAGE HEADING
+================================= */
+
 .admin-orders-container h1 {
-  margin: 0 0 20px;
+  margin: 0 0 25px;
+
   color: #111111;
+
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 
@@ -23,25 +38,89 @@
 
 .admin-orders-table {
   width: 100%;
+
   border-collapse: collapse;
+  border-spacing: 0;
+
   background: #ffffff;
+
   border: 1px solid #e5e5e5;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.06);
+
+  table-layout: auto;
+}
+
+
+/* =================================
+   TABLE HEADER
+================================= */
+
+.admin-orders-table thead {
+  width: 100%;
+}
+
+.admin-orders-table thead tr {
+  width: 100%;
 }
 
 .admin-orders-table th {
-  padding: 10px;
+  padding: 14px 12px;
+
   text-align: left;
-  background: #111111;
+
+  background: #ff6b00;
   color: #ffffff;
-  border: 1px solid #111111;
+
+  border: 1px solid #ff6b00;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  white-space: nowrap;
 }
 
+
+/* =================================
+   TABLE BODY
+================================= */
+
 .admin-orders-table td {
-  padding: 10px;
+  padding: 14px 12px;
+
   background: #ffffff;
-  color: #111111;
-  border: 1px solid #e5e5e5;
+  color: #222222;
+
+  border-bottom: 1px solid #eeeeee;
+
+  font-size: 14px;
+
+  white-space: nowrap;
+
+  vertical-align: middle;
+}
+
+
+/* Remove unnecessary vertical heavy borders */
+
+.admin-orders-table tbody td {
+  border-left: none;
+  border-right: none;
+}
+
+
+/* =================================
+   TABLE ROWS
+================================= */
+
+.admin-orders-table tbody tr {
+  background: #ffffff;
+
+  transition: background 0.15s ease;
 }
 
 .admin-orders-table tbody tr:hover td {
@@ -50,21 +129,48 @@
 
 
 /* =================================
-   ORDER STATUS
+   ORDER STATUS DROPDOWN
 ================================= */
 
 .order-status-select {
-  padding: 7px 10px;
-  border: 1px solid #cccccc;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #111111;
+  min-width: 120px;
+
+  height: 34px;
+
+  padding: 0 30px 0 10px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #f3c39c;
+  border-radius: 7px;
+
+  background-color: #fde8d7;
+  color: #c65d00;
+
+  font-size: 13px;
+  font-weight: 600;
+
   cursor: pointer;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.order-status-select:hover {
+  border-color: #ff6b00;
+
+  background-color: #f9d9bd;
 }
 
 .order-status-select:focus {
-  outline: none;
-  border-color: #f28c28;
+  border-color: #ff6b00;
+
+  box-shadow:
+    0 0 0 2px rgba(255, 107, 0, 0.12);
 }
 
 
@@ -74,17 +180,32 @@
 
 .refresh-orders-btn {
   margin-top: 20px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 7px;
-  background: #f28c28;
+
+  height: 42px;
+
+  padding: 0 18px;
+
+  border: 1px solid #ff6b00;
+  border-radius: 8px;
+
+  background: #ff6b00;
   color: #ffffff;
+
+  font-size: 14px;
   font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .refresh-orders-btn:hover {
-  background: #d96f0b;
+  background: #e85f00;
+
+  box-shadow:
+    0 0 0 2px rgba(255, 107, 0, 0.12);
 }
 
 
@@ -109,6 +230,30 @@
 
   .admin-orders-container {
     overflow-x: auto;
+  }
+
+  .admin-orders-table {
+    min-width: 1100px;
+  }
+}
+
+
+@media (max-width: 700px) {
+
+  .admin-orders-container {
+    padding: 25px;
+  }
+
+  .admin-orders-container h1 {
+    font-size: 26px;
+  }
+}
+
+
+@media (max-width: 520px) {
+
+  .admin-orders-container {
+    padding: 20px 15px;
   }
 
   .admin-orders-table {
