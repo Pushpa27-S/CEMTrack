@@ -1,300 +1,166 @@
-/* =========================================================
-   CEMTrack — DASHBOARD
-   BLACK + WHITE + ORANGE
-   ========================================================= */
-
-
 /* =========================
-   MAIN DASHBOARD
-   ========================= */
+   DASHBOARD
+========================= */
 
 .dashboard-container {
-  width: 100%;
-
-  min-height: 100vh;
-
-  box-sizing: border-box;
-
-  padding: 30px 32px;
-
-  background: #f7f7f7;
-
-  color: #111111;
-
-  overflow-x: hidden;
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 30px 32px;
+    background: #f7f7f7;
+    color: #111;
+    overflow-x: hidden;
 }
 
-
-/* =========================
-   HEADER
-   ========================= */
-
 .dashboard-header {
-  width: 100%;
-
-  margin-bottom: 28px;
-
-  box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 28px;
 }
 
 .dashboard-header h1 {
-  margin: 0;
-
-  color: #111111;
-
-  font-size: 30px;
-
-  font-weight: 700;
-
-  line-height: 1.2;
+    margin: 0;
+    color: #111;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.2;
 }
 
 .dashboard-header p {
-  margin: 7px 0 0;
-
-  color: #777777;
-
-  font-size: 14px;
+    margin: 7px 0 0;
+    color: #777;
+    font-size: 14px;
 }
 
-
-/* =========================================================
-   DASHBOARD CARDS
-   ========================================================= */
+/* =========================
+   CARDS
+========================= */
 
 .dashboard-cards {
-
-  width: 100%;
-
-  box-sizing: border-box;
-
-  display: grid;
-
-  /*
-    THIS KEEPS ALL 4 CARDS IN ONE ROW
-  */
-
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
-
-  gap: 18px;
-
-  align-items: stretch;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
 }
-
-
-/* =========================
-   INDIVIDUAL CARD
-   ========================= */
 
 .dashboard-card {
+    min-width: 0;
+    min-height: 145px;
+    box-sizing: border-box;
 
-  min-width: 0;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-top: 4px solid #ff6b00;
+    border-radius: 10px;
 
-  min-height: 145px;
+    padding: 22px;
 
-  box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  background: #ffffff;
+    text-align: center;
 
-  border: 1px solid #e5e5e5;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
 
-  border-top: 4px solid #ff6b00;
-
-  border-radius: 10px;
-
-  padding: 22px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 16px;
-
-  box-shadow:
-    0 3px 10px rgba(0, 0, 0, 0.07);
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    transition: transform 0.2s ease,
+                box-shadow 0.2s ease;
 }
-
-
-/* =========================
-   CARD HOVER
-   ========================= */
 
 .dashboard-card:hover {
-
-  transform: translateY(-3px);
-
-  box-shadow:
-    0 7px 18px rgba(0, 0, 0, 0.10);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.10);
 }
-
-
-/* =========================
-   CARD ICON
-   ========================= */
-
-.dashboard-card-icon {
-
-  width: 48px;
-  height: 48px;
-
-  min-width: 48px;
-
-  border-radius: 10px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  background: #fff1e6;
-
-  color: #ff6b00;
-
-  font-size: 22px;
-}
-
-
-/* =========================
-   CARD CONTENT
-   ========================= */
 
 .dashboard-card-content {
-
-  min-width: 0;
+    width: 100%;
+    min-width: 0;
 }
 
-
+/* Heading */
 .dashboard-card-content h3 {
+    margin: 0 0 10px;
 
-  margin: 0 0 8px;
+    color: #111;
 
-  color: #666666;
+    font-size: 22px;
+    font-weight: 700;
 
-  font-size: 14px;
-
-  font-weight: 500;
-
-  white-space: nowrap;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
-
+/* Number */
 .dashboard-card-content p {
+    margin: 0;
 
-  margin: 0;
+    color: #111;
 
-  color: #111111;
+    font-size: 20px;
+    font-weight: 600;
 
-  font-size: 25px;
-
-  font-weight: 700;
-
-  line-height: 1.2;
-
-  white-space: nowrap;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 
-/* =========================================================
-   IMPORTANT — PREVENT OLD .CARD CSS FROM BREAKING LAYOUT
-   ========================================================= */
+/* =========================
+   PREVENT OLD CARD STYLES
+========================= */
 
 .dashboard-container .card {
-
-  width: auto;
-
-  margin: 0;
-
-  padding: 0;
-
-  border: none;
-
-  box-shadow: none;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
 }
 
 
-/* =========================================================
-   TABLET
-   ========================================================= */
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media (max-width: 1050px) {
 
-  .dashboard-container {
+    .dashboard-container {
+        padding: 25px;
+    }
 
-    padding: 25px;
-  }
+    .dashboard-cards {
+        gap: 14px;
+    }
 
-  .dashboard-cards {
+    .dashboard-card {
+        padding: 18px;
+    }
 
-    gap: 14px;
-  }
+    .dashboard-card-content h3 {
+        font-size: 20px;
+    }
 
-  .dashboard-card {
-
-    padding: 18px;
-
-    gap: 11px;
-  }
-
-  .dashboard-card-icon {
-
-    width: 42px;
-    height: 42px;
-
-    min-width: 42px;
-
-    font-size: 19px;
-  }
-
-  .dashboard-card-content h3 {
-
-    font-size: 13px;
-  }
-
-  .dashboard-card-content p {
-
-    font-size: 21px;
-  }
+    .dashboard-card-content p {
+        font-size: 18px;
+    }
 }
-
-
-/* =========================================================
-   SMALL LAPTOP / TABLET
-   ========================================================= */
 
 @media (max-width: 800px) {
 
-  .dashboard-cards {
-
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
+    .dashboard-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
 
 @media (max-width: 520px) {
 
-  .dashboard-container {
+    .dashboard-container {
+        padding: 20px 15px;
+    }
 
-    padding: 20px 15px;
-  }
+    .dashboard-header h1 {
+        font-size: 25px;
+    }
 
-  .dashboard-header h1 {
-
-    font-size: 25px;
-  }
-
-  .dashboard-cards {
-
-    grid-template-columns: 1fr;
-  }
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+    }
 }

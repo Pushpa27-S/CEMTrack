@@ -30,13 +30,9 @@ function Dashboard() {
   // ========================================
 
   return (
-
     <div className="dashboard-container">
 
-
-      {/* ================================
-          HEADER
-          ================================ */}
+      {/* HEADER */}
 
       <div className="dashboard-header">
 
@@ -52,20 +48,13 @@ function Dashboard() {
       </div>
 
 
-      {/* ================================
-          STAT CARDS
-          ================================ */}
+      {/* STAT CARDS */}
 
       <div className="dashboard-cards">
-
 
         {/* TOTAL PRODUCTS */}
 
         <div className="dashboard-card">
-
-          <div className="dashboard-card-icon">
-            📦
-          </div>
 
           <div className="dashboard-card-content">
 
@@ -86,10 +75,6 @@ function Dashboard() {
 
         <div className="dashboard-card">
 
-          <div className="dashboard-card-icon">
-            🏷️
-          </div>
-
           <div className="dashboard-card-content">
 
             <h3>
@@ -108,10 +93,6 @@ function Dashboard() {
         {/* TOTAL STOCK */}
 
         <div className="dashboard-card">
-
-          <div className="dashboard-card-icon">
-            📊
-          </div>
 
           <div className="dashboard-card-content">
 
@@ -132,10 +113,6 @@ function Dashboard() {
 
         <div className="dashboard-card">
 
-          <div className="dashboard-card-icon">
-            ◫
-          </div>
-
           <div className="dashboard-card-content">
 
             <h3>
@@ -150,12 +127,9 @@ function Dashboard() {
 
         </div>
 
-
       </div>
 
-
     </div>
-
   );
 }
 
