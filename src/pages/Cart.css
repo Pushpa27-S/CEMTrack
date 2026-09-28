@@ -1,0 +1,462 @@
+/* ================================
+   CEMTrack - Customer Cart
+   ================================ */
+
+.customer-home {
+    min-height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #fffaf5, #ffffff);
+    color: #111111;
+}
+
+/* ================================
+   Header
+   ================================ */
+
+.customer-home .customer-header {
+    width: 100%;
+    padding: 20px 50px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border-bottom: 1px solid #f2c39a;
+    box-shadow: 0 3px 12px rgba(255, 107, 0, 0.08);
+}
+
+.customer-home .customer-logo h2 {
+    margin: 0;
+    color: #ff6b00;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.customer-home .customer-logo span {
+    display: block;
+    margin-top: 3px;
+    color: #777777;
+    font-size: 13px;
+}
+
+.customer-home .customer-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ================================
+   Header Buttons
+   ================================ */
+
+.customer-home .cart-top-btn,
+.customer-home .customer-logout-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    padding: 10px 18px;
+    box-sizing: border-box;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.customer-home .cart-top-btn {
+    background: #ffffff;
+    border: 1px solid #ffb36b;
+    color: #ff6b00;
+}
+
+.customer-home .cart-top-btn:hover {
+    background: #fff7ed;
+    border-color: #ff8a33;
+}
+
+.customer-home .customer-logout-btn {
+    background: #ff6b00;
+    border: 1px solid #ff6b00;
+    color: #ffffff;
+}
+
+.customer-home .customer-logout-btn:hover {
+    background: #e85f00;
+    border-color: #e85f00;
+}
+
+/* ================================
+   Main Cart Section
+   ================================ */
+
+.customer-home .customer-actions {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 40px 55px 50px;
+    box-sizing: border-box;
+}
+
+.customer-home .customer-actions h2 {
+    margin: 0 0 25px;
+    color: #111111;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* ================================
+   Cart Grid
+   ================================ */
+
+.customer-home .customer-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 22px;
+    width: 100%;
+}
+
+/* ================================
+   Cart Product Card
+   ================================ */
+
+.customer-home .customer-feature-card {
+    width: 100%;
+    min-height: 270px;
+    padding: 28px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #e4e4e4;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.customer-home .customer-feature-card:hover {
+    border-color: #d8d8d8;
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* ================================
+   Cart Information / Summary
+   ================================ */
+
+.customer-home .info-box {
+    width: 100%;
+    padding: 26px;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1px solid #f2c39a;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(255, 107, 0, 0.07);
+}
+
+.customer-home .info-box h3 {
+    margin: 0 0 10px;
+    color: #ff6b00;
+}
+
+.customer-home .info-box p {
+    margin: 0;
+    color: #666666;
+    line-height: 1.5;
+}
+
+/* ================================
+   Payment Popup Overlay
+   ================================ */
+
+.customer-home .product-modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    z-index: 9999 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 25px !important;
+    box-sizing: border-box !important;
+
+    background: rgba(0, 0, 0, 0.60) !important;
+
+    overflow-y: auto !important;
+}
+
+/* ================================
+   Payment Popup
+   ================================ */
+
+.customer-home .product-modal-overlay .product-modal {
+    position: relative !important;
+
+    width: 100% !important;
+    max-width: 520px !important;
+    max-height: calc(100vh - 50px) !important;
+
+    margin: auto !important;
+    padding: 30px !important;
+    box-sizing: border-box !important;
+
+    background: #ffffff !important;
+
+    border: 1px solid #e4e4e4 !important;
+    border-radius: 12px !important;
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25) !important;
+
+    overflow-y: auto !important;
+
+    text-align: center !important;
+}
+
+/* ================================
+   Popup Close Button
+   ================================ */
+
+.customer-home .product-modal-overlay .modal-close {
+    position: absolute;
+
+    top: 12px;
+    right: 15px;
+
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ffffff;
+
+    border: 1px solid #efb0b0;
+    border-radius: 50%;
+
+    color: #c62828;
+
+    font-size: 24px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.customer-home .product-modal-overlay .modal-close:hover {
+    background: #fde8e8;
+    border-color: #c62828;
+}
+
+/* ================================
+   Payment Popup Heading
+   ================================ */
+
+.customer-home .product-modal-overlay .product-modal h2 {
+    margin: 0 0 12px;
+    color: #111111;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.customer-home .product-modal-overlay .product-modal h3 {
+    margin: 15px 0;
+    color: #ea580c !important;
+    font-size: 19px;
+}
+
+.customer-home .product-modal-overlay .product-modal p {
+    color: #555555;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ================================
+   Payment Mode / Bank Dropdown
+   ================================ */
+
+.customer-home .product-modal-overlay select {
+    width: 100%;
+    padding: 12px 13px;
+    margin-top: 8px;
+
+    box-sizing: border-box;
+
+    background: #fffaf5;
+
+    border: 1px solid #ffb36b;
+    border-radius: 7px;
+
+    color: #111111;
+
+    font-size: 14px;
+
+    outline: none;
+    cursor: pointer;
+
+    box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.08);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.customer-home .product-modal-overlay select:hover {
+    background: #fff8f1;
+    border-color: #ff8a33;
+}
+
+.customer-home .product-modal-overlay select:focus {
+    background: #fff8f1;
+    border-color: #ff8a33;
+
+    box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.14);
+}
+
+/* ================================
+   Payment Inputs
+   ================================ */
+
+.customer-home .product-modal-overlay input {
+    width: 100%;
+
+    padding: 12px 13px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+
+    color: #111111;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.customer-home .product-modal-overlay input:focus {
+    background: #fffdfb;
+    border-color: #ffb36b;
+
+    box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.10);
+}
+
+/* ================================
+   Payment Buttons
+   ================================ */
+
+.customer-home .product-modal-overlay button {
+    font-family: inherit;
+}
+
+/* ================================
+   Confirm Payment Button
+   ================================ */
+
+.customer-home .product-modal-overlay .cart-top-btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 160px;
+
+    padding: 12px 20px;
+
+    box-sizing: border-box;
+
+    background: #ff6b00;
+    border: 1px solid #ff6b00;
+    border-radius: 7px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    box-shadow: 0 3px 8px rgba(255, 107, 0, 0.20);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.customer-home .product-modal-overlay .cart-top-btn:hover {
+    background: #e85f00;
+    border-color: #e85f00;
+
+    box-shadow: 0 5px 12px rgba(255, 107, 0, 0.25);
+
+    transform: translateY(-1px);
+}
+
+/* ================================
+   Responsive
+   ================================ */
+
+@media (max-width: 850px) {
+
+    .customer-home .customer-header {
+        padding: 18px 30px;
+    }
+
+    .customer-home .customer-actions {
+        padding: 35px 30px;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .customer-home .customer-header {
+        padding: 18px 20px;
+    }
+
+    .customer-home .customer-header-actions {
+        gap: 7px;
+    }
+
+    .customer-home .cart-top-btn,
+    .customer-home .customer-logout-btn {
+        min-width: auto;
+        padding: 9px 12px;
+    }
+
+    .customer-home .customer-actions {
+        padding: 25px 20px;
+    }
+
+    .customer-home .customer-actions h2 {
+        font-size: 24px;
+    }
+
+    .customer-home .product-modal-overlay {
+        padding: 15px !important;
+    }
+
+    .customer-home .product-modal-overlay .product-modal {
+        max-height: calc(100vh - 30px) !important;
+        padding: 25px 20px !important;
+    }
+}
