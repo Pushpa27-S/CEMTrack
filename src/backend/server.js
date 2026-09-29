@@ -8,6 +8,7 @@ import db from "./db.js";
 import customerRoutes from "./routes/customerRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import inventoryRoutes from "./routes/inventoryRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
 
 import jwt from "jsonwebtoken";
 
@@ -53,6 +54,10 @@ app.use(
   inventoryRoutes
 );
 
+app.use(
+  "/api/admin/reports",
+  reportRoutes
+);
 
 // ==================================================
 // STATIC IMAGES
@@ -3742,7 +3747,11 @@ app.use(
       req.method,
       req.originalUrl
     );
-
+    
+app.use(
+  "/api/admin/reports",
+  reportRoutes
+);
 
     return res.status(404).json({
 
