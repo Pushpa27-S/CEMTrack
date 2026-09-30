@@ -1,319 +1,691 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "./CustomerLogin.css";
+import "./MyProfile.css";
 
 function MyProfile() {
 
-const [editing, setEditing] = useState(false);
+  const emptyProfile = {
+    name: "",
+    email: "",
+    phone: "",
+    address: ""
+  };
 
-const [profile, setProfile] = useState({
-name: "Customer",
-email: "customer@gmail.com",
-phone: "9876543210",
-address: "Chennai, Tamil Nadu"
-});
+  const [profile, setProfile] = useState(emptyProfile);
+  const [originalProfile, setOriginalProfile] = useState(emptyProfile);
 
-const handleChange = (e) => {
-
-setProfile({
-  ...profile,
-  [e.target.name]: e.target.value
-});
-
-};
-
-const handleSave = () => {
-
-localStorage.setItem(
-  "customerProfile",
-  JSON.stringify(profile)
-);
-
-setEditing(false);
-
-alert("Profile updated successfully!");
-
-};
-
-return (
-
-<div className="customer-home">
-
-  {/* HEADER */}
-
-  <header className="customer-header">
-
-    <div className="customer-logo">
-
-      <h2>CEMTrack</h2>
-
-      <span>My Profile</span>
-
-    </div>
-
-    <div className="customer-header-actions">
-
-      <Link
-        to="/customer-products"
-        className="cart-top-btn"
-      >
-        🛍️ Products
-      </Link>
-
-      <Link
-        to="/cart"
-        className="cart-top-btn"
-      >
-        🛒 Cart
-      </Link>
-
-      <Link
-        to="/my-orders"
-        className="cart-top-btn"
-      >
-        📦 Orders
-      </Link>
-
-      <Link
-        to="/customer-home"
-        className="cart-top-btn"
-      >
-        🏠 Home
-      </Link>
-
-    </div>
-
-  </header>
+  const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
 
-  {/* PROFILE */}
+  // ==================================================
+  // LOAD CURRENT CUSTOMER
+  // ==================================================
 
-  <section className="customer-actions">
+  useEffect(() => {
 
-    <h1>👤 My Profile</h1>
+    const storedCustomer =
+      JSON.parse(
+        localStorage.getItem("customer") || "{}"
+      );
 
-    <div
-      className="info-box"
-      style={{
-        maxWidth: "700px",
-        margin: "0 auto"
-      }}
-    >
+    const storedCustomerId =
+      localStorage.getItem("customer_id");
 
-      {/* PROFILE ICON */}
+    /*
+      IMPORTANT:
+      The customer object contains the actual logged-in
+      customer ID. Use that first.
 
-      <div
-        style={{
-          textAlign: "center",
-          marginBottom: "25px"
-        }}
-      >
+      Example:
+      customer = { customer_id: 101, customer_name: "Amit Verma" }
 
-        <div
-          style={{
-            width: "90px",
-            height: "90px",
-            margin: "0 auto",
-            borderRadius: "50%",
-            background: "#ecfdf5",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "45px"
-          }}
-        >
-          👤
+      This prevents an old customer_id value such as 104
+      from loading another customer's profile.
+    */
+
+    const customerId =
+      storedCustomer.customer_id ||
+      storedCustomerId;
+
+
+    console.log(
+      "CURRENT CUSTOMER ID:",
+      customerId
+    );
+
+    console.log(
+      "CURRENT CUSTOMER:",
+      storedCustomer
+    );
+
+
+    if (!customerId) {
+
+      console.error(
+        "Customer ID not found in localStorage."
+      );
+
+      setLoading(false);
+      return;
+    }
+
+
+    fetch(
+      `http://localhost:5000/api/admin/customers/${customerId}`
+    )
+      .then(async (response) => {
+
+        const data =
+          await response.json();
+
+        console.log(
+          "PROFILE API RESPONSE:",
+          data
+        );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.message ||
+            "Unable to load customer profile."
+          );
+
+        }
+
+        return data;
+
+      })
+
+
+      .then((data) => {
+
+        /*
+          Backend response:
+
+          {
+            success: true,
+            customer: {
+              id: 101,
+              name: "Amit Verma",
+              phone: "9876500001",
+              email: "amit@gmail.com",
+              address: "Koramangala, Bangalore"
+            }
+          }
+        */
+
+        const customer =
+          data.customer || data;
+
+
+        const customerData = {
+
+          name:
+            customer.name ||
+            customer.customer_name ||
+            "",
+
+          email:
+            customer.email ||
+            "",
+
+          phone:
+            customer.phone ||
+            customer.phone_no ||
+            "",
+
+          address:
+            customer.address ||
+            ""
+
+        };
+
+
+        console.log(
+          "PROFILE DATA:",
+          customerData
+        );
+
+
+        setProfile(customerData);
+
+        setOriginalProfile(customerData);
+
+
+        /*
+          Keep localStorage customer information
+          synchronized with the customer returned
+          from the database.
+        */
+
+        const updatedCustomer = {
+
+          ...storedCustomer,
+
+          customer_id:
+            Number(customer.id || customer.customer_id),
+
+          customer_name:
+            customer.name ||
+            customer.customer_name ||
+            "",
+
+          email:
+            customer.email ||
+            ""
+
+        };
+
+
+        localStorage.setItem(
+          "customer",
+          JSON.stringify(updatedCustomer)
+        );
+
+
+        localStorage.setItem(
+          "customer_id",
+          String(
+            customer.id ||
+            customer.customer_id
+          )
+        );
+
+
+        localStorage.setItem(
+          "customer_name",
+          customer.name ||
+          customer.customer_name ||
+          ""
+        );
+
+
+        localStorage.setItem(
+          "customer_email",
+          customer.email ||
+          ""
+        );
+
+      })
+
+
+      .catch((error) => {
+
+        console.error(
+          "PROFILE LOAD ERROR:",
+          error
+        );
+
+      })
+
+
+      .finally(() => {
+
+        setLoading(false);
+
+      });
+
+  }, []);
+
+
+  // ==================================================
+  // HANDLE INPUT
+  // ==================================================
+
+  const handleChange = (e) => {
+
+    const {
+      name,
+      value
+    } = e.target;
+
+
+    setProfile((previous) => ({
+
+      ...previous,
+
+      [name]: value
+
+    }));
+
+  };
+
+
+  // ==================================================
+  // SAVE PROFILE
+  // ==================================================
+
+  const handleSave = async () => {
+
+    const storedCustomer =
+      JSON.parse(
+        localStorage.getItem("customer") || "{}"
+      );
+
+
+    /*
+      IMPORTANT:
+      Again use customer_id from the stored
+      customer object first.
+    */
+
+    const customerId =
+      storedCustomer.customer_id ||
+      localStorage.getItem("customer_id");
+
+
+    if (!customerId) {
+
+      alert(
+        "Customer ID not found. Please login again."
+      );
+
+      return;
+    }
+
+
+    setSaving(true);
+
+
+    try {
+
+      const response =
+        await fetch(
+          `http://localhost:5000/api/admin/customers/${customerId}`,
+          {
+            method: "PUT",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+              customer_name:
+                profile.name,
+
+              email:
+                profile.email,
+
+              phone_no:
+                profile.phone,
+
+              address:
+                profile.address
+
+            })
+
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.message ||
+          "Unable to update profile."
+        );
+
+      }
+
+
+      // Update original profile
+      setOriginalProfile(profile);
+
+      // Exit edit mode
+      setEditing(false);
+
+
+      // ==================================================
+      // UPDATE LOCAL STORAGE
+      // ==================================================
+
+      const updatedCustomer = {
+
+        ...storedCustomer,
+
+        customer_id:
+          Number(customerId),
+
+        customer_name:
+          profile.name,
+
+        email:
+          profile.email
+
+      };
+
+
+      localStorage.setItem(
+        "customer",
+        JSON.stringify(updatedCustomer)
+      );
+
+
+      localStorage.setItem(
+        "customer_id",
+        String(customerId)
+      );
+
+
+      localStorage.setItem(
+        "customer_name",
+        profile.name
+      );
+
+
+      localStorage.setItem(
+        "customer_email",
+        profile.email
+      );
+
+
+      alert(
+        "Profile updated successfully!"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "PROFILE UPDATE ERROR:",
+        error
+      );
+
+
+      alert(
+        error.message ||
+        "Unable to update profile."
+      );
+
+
+    } finally {
+
+      setSaving(false);
+
+    }
+
+  };
+
+
+  // ==================================================
+  // CANCEL EDIT
+  // ==================================================
+
+  const handleCancel = () => {
+
+    setProfile(originalProfile);
+
+    setEditing(false);
+
+  };
+
+
+  // ==================================================
+  // LOADING
+  // ==================================================
+
+  if (loading) {
+
+    return (
+
+      <div className="my-profile-page">
+
+        <div className="profile-loading">
+          Loading profile...
         </div>
 
-        <h2>
-          {profile.name}
-        </h2>
-
-        <p>
-          CEMTrack Customer
-        </p>
-
       </div>
 
+    );
 
-      {/* NAME */}
-
-      <label>
-        <strong>Full Name</strong>
-      </label>
-
-      <input
-        type="text"
-        name="name"
-        value={profile.name}
-        onChange={handleChange}
-        disabled={!editing}
-        style={{
-          width: "100%",
-          padding: "12px",
-          marginTop: "8px",
-          marginBottom: "18px",
-          border: "1px solid #d1d5db",
-          borderRadius: "8px",
-          boxSizing: "border-box"
-        }}
-      />
+  }
 
 
-      {/* EMAIL */}
+  // ==================================================
+  // PAGE
+  // ==================================================
 
-      <label>
-        <strong>Email Address</strong>
-      </label>
+  return (
 
-      <input
-        type="email"
-        name="email"
-        value={profile.email}
-        onChange={handleChange}
-        disabled={!editing}
-        style={{
-          width: "100%",
-          padding: "12px",
-          marginTop: "8px",
-          marginBottom: "18px",
-          border: "1px solid #d1d5db",
-          borderRadius: "8px",
-          boxSizing: "border-box"
-        }}
-      />
+    <div className="my-profile-page">
 
 
-      {/* PHONE */}
+      {/* HEADER */}
 
-      <label>
-        <strong>Phone Number</strong>
-      </label>
+      <header className="profile-header">
 
-      <input
-        type="tel"
-        name="phone"
-        value={profile.phone}
-        onChange={handleChange}
-        disabled={!editing}
-        style={{
-          width: "100%",
-          padding: "12px",
-          marginTop: "8px",
-          marginBottom: "18px",
-          border: "1px solid #d1d5db",
-          borderRadius: "8px",
-          boxSizing: "border-box"
-        }}
-      />
+        <div className="profile-header-logo">
+
+          <h2>
+            CEMTrack
+          </h2>
+
+          <span>
+            My Profile
+          </span>
+
+        </div>
 
 
-      {/* ADDRESS */}
+        <div className="profile-header-actions">
 
-      <label>
-        <strong>Address</strong>
-      </label>
+          <Link to="/customer-products">
+            🛍️ Products
+          </Link>
 
-      <textarea
-        name="address"
-        value={profile.address}
-        onChange={handleChange}
-        disabled={!editing}
-        rows="4"
-        style={{
-          width: "100%",
-          padding: "12px",
-          marginTop: "8px",
-          marginBottom: "20px",
-          border: "1px solid #d1d5db",
-          borderRadius: "8px",
-          resize: "vertical",
-          boxSizing: "border-box"
-        }}
-      />
+          <Link to="/cart">
+            🛒 Cart
+          </Link>
+
+          <Link to="/my-orders">
+            📦 Orders
+          </Link>
+
+          <Link to="/customer-home">
+            🏠 Home
+          </Link>
+
+        </div>
+
+      </header>
 
 
-      {/* BUTTONS */}
+      {/* MAIN */}
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "12px",
-          marginTop: "10px"
-        }}
-      >
+      <main className="profile-main">
 
-        {!editing ? (
 
-          <button
-            type="button"
-            className="cart-top-btn"
-            onClick={() =>
-              setEditing(true)
-            }
-          >
-            ✏️ Edit Profile
-          </button>
+        <div className="profile-page-title">
 
-        ) : (
+          <h1>
+            👤 My Profile
+          </h1>
 
-          <>
+        </div>
 
-            <button
-              type="button"
-              className="cart-top-btn"
-              onClick={handleSave}
-            >
-              💾 Save Changes
-            </button>
 
-            <button
-              type="button"
-              onClick={() =>
-                setEditing(false)
-              }
-              style={{
-                padding: "10px 18px",
-                border: "none",
-                borderRadius: "8px",
-                background: "#6c757d",
-                color: "white",
-                cursor: "pointer",
-                fontWeight: "600"
-              }}
-            >
-              Cancel
-            </button>
+        {/* PROFILE CARD */}
 
-          </>
+        <div className="profile-card">
 
-        )}
 
-      </div>
+          <div className="profile-avatar">
+            👤
+          </div>
+
+
+          <div className="profile-customer-name">
+
+            <h2>
+              {profile.name || "Customer"}
+            </h2>
+
+            <p>
+              CEMTrack Customer
+            </p>
+
+          </div>
+
+
+          {/* FORM */}
+
+          <div className="profile-form">
+
+
+            {/* FULL NAME */}
+
+            <div className="profile-field">
+
+              <label>
+                Full Name
+              </label>
+
+              <input
+                type="text"
+                name="name"
+                value={profile.name}
+                onChange={handleChange}
+                disabled={!editing}
+              />
+
+            </div>
+
+
+            {/* EMAIL */}
+
+            <div className="profile-field">
+
+              <label>
+                Email Address
+              </label>
+
+              <input
+                type="email"
+                name="email"
+                value={profile.email}
+                onChange={handleChange}
+                disabled={!editing}
+              />
+
+            </div>
+
+
+            {/* PHONE */}
+
+            <div className="profile-field">
+
+              <label>
+                Phone Number
+              </label>
+
+              <input
+                type="text"
+                name="phone"
+                value={profile.phone}
+                onChange={handleChange}
+                disabled={!editing}
+              />
+
+            </div>
+
+
+            {/* ADDRESS */}
+
+            <div className="profile-field">
+
+              <label>
+                Address
+              </label>
+
+              <textarea
+                name="address"
+                value={profile.address}
+                onChange={handleChange}
+                disabled={!editing}
+              />
+
+            </div>
+
+
+            {/* BUTTONS */}
+
+            <div className="profile-buttons">
+
+
+              {!editing ? (
+
+                <button
+                  type="button"
+                  className="edit-profile-btn"
+                  onClick={() =>
+                    setEditing(true)
+                  }
+                >
+                  ✏️ Edit Profile
+                </button>
+
+              ) : (
+
+                <>
+
+                  <button
+                    type="button"
+                    className="save-profile-btn"
+                    onClick={handleSave}
+                    disabled={saving}
+                  >
+
+                    {saving
+                      ? "Saving..."
+                      : "💾 Save Profile"}
+
+                  </button>
+
+
+                  <button
+                    type="button"
+                    className="cancel-profile-btn"
+                    onClick={handleCancel}
+                    disabled={saving}
+                  >
+                    Cancel
+                  </button>
+
+                </>
+
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        {/* BACK */}
+
+        <div className="profile-back">
+
+          <Link to="/customer-home">
+            ← Back to Customer Home
+          </Link>
+
+        </div>
+
+
+      </main>
 
     </div>
 
-  </section>
-
-
-  {/* BACK */}
-
-  <div
-    style={{
-      margin: "0 40px 40px"
-    }}
-  >
-
-    <Link to="/customer-home">
-      ← Back to Customer Home
-    </Link>
-
-  </div>
-
-</div>
-
-);
+  );
 
 }
 

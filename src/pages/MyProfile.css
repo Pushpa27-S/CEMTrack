@@ -1,0 +1,437 @@
+/* ==================================================
+   MY PROFILE PAGE
+   ================================================== */
+
+.my-profile-page {
+  min-height: 100vh;
+  background: #fffaf5;
+  color: #111;
+}
+
+
+/* ==================================================
+   HEADER
+   ================================================== */
+
+.profile-header {
+  height: 80px;
+  padding: 0 55px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #f2b27c;
+
+  box-sizing: border-box;
+}
+
+
+/* LOGO */
+
+.profile-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-header-logo h2 {
+  margin: 0;
+
+  color: #f26b21;
+
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.profile-header-logo span {
+  color: #666;
+  font-size: 15px;
+}
+
+
+/* HEADER BUTTONS */
+
+.profile-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-header-actions a {
+  text-decoration: none;
+
+  padding: 11px 18px;
+
+  border: 1px solid #f2a66a;
+
+  border-radius: 9px;
+
+  color: #e85d04;
+
+  background: #ffffff;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  transition: 0.2s ease;
+}
+
+.profile-header-actions a:hover {
+  background: #fff4e8;
+  border-color: #e85d04;
+}
+
+
+/* ==================================================
+   MAIN
+   ================================================== */
+
+.profile-main {
+  padding: 42px 20px 35px;
+}
+
+
+/* ==================================================
+   PAGE TITLE
+   ================================================== */
+
+.profile-page-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.profile-page-title h1 {
+  margin: 0;
+
+  font-size: 36px;
+  font-weight: 700;
+
+  color: #111;
+}
+
+
+/* ==================================================
+   PROFILE CARD
+   ================================================== */
+
+.profile-card {
+  width: 750px;
+  max-width: 95%;
+
+  margin: 0 auto;
+
+  padding: 38px;
+
+  background: #ffffff;
+
+  border: 1px solid #f2b27c;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 8px 25px rgba(242, 107, 33, 0.08);
+
+  box-sizing: border-box;
+}
+
+
+/* ==================================================
+   AVATAR
+   ================================================== */
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+
+  margin: 0 auto 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #fff4e8;
+
+  border: 1px solid #f2b27c;
+
+  font-size: 52px;
+}
+
+
+/* ==================================================
+   CUSTOMER NAME
+   ================================================== */
+
+.profile-customer-name {
+  text-align: center;
+
+  margin-bottom: 30px;
+}
+
+.profile-customer-name h2 {
+  margin: 0;
+
+  font-size: 27px;
+
+  color: #111;
+}
+
+.profile-customer-name p {
+  margin: 7px 0 0;
+
+  color: #666;
+
+  font-size: 16px;
+}
+
+
+/* ==================================================
+   FORM
+   ================================================== */
+
+.profile-form {
+  width: 100%;
+}
+
+
+/* ==================================================
+   FIELD
+   ================================================== */
+
+.profile-field {
+  margin-bottom: 20px;
+}
+
+.profile-field label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #111;
+
+  font-size: 15px;
+  font-weight: 600;
+}
+
+
+/* INPUT */
+
+.profile-field input,
+.profile-field textarea {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 13px 14px;
+
+  border: 1px solid #f2b27c;
+
+  border-radius: 10px;
+
+  background: #fffaf5;
+
+  color: #333;
+
+  font-size: 15px;
+
+  outline: none;
+}
+
+
+/* DISABLED INPUT */
+
+.profile-field input:disabled,
+.profile-field textarea:disabled {
+  opacity: 1;
+
+  cursor: default;
+
+  color: #444;
+}
+
+
+/* ACTIVE INPUT */
+
+.profile-field input:focus,
+.profile-field textarea:focus {
+  border-color: #f26b21;
+
+  box-shadow:
+    0 0 0 3px rgba(242, 107, 33, 0.10);
+}
+
+
+/* ADDRESS */
+
+.profile-field textarea {
+  min-height: 100px;
+
+  resize: vertical;
+}
+
+
+/* ==================================================
+   BUTTONS
+   ================================================== */
+
+.profile-buttons {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 30px;
+}
+
+
+/* EDIT */
+
+.edit-profile-btn,
+.save-profile-btn {
+  border: none;
+
+  padding: 12px 25px;
+
+  border-radius: 9px;
+
+  background: #ff6900;
+
+  color: #ffffff;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.edit-profile-btn:hover,
+.save-profile-btn:hover {
+  background: #e85d04;
+}
+
+
+/* CANCEL */
+
+.cancel-profile-btn {
+  padding: 11px 24px;
+
+  border-radius: 9px;
+
+  border: 1px solid #f26b21;
+
+  background: #ffffff;
+
+  color: #e85d04;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.cancel-profile-btn:hover {
+  background: #fff4e8;
+}
+
+
+/* ==================================================
+   BACK LINK
+   ================================================== */
+
+.profile-back {
+  width: 750px;
+  max-width: 95%;
+
+  margin: 28px auto 0;
+}
+
+.profile-back a {
+  color: #0066cc;
+
+  text-decoration: none;
+
+  font-size: 15px;
+
+  font-weight: 600;
+}
+
+.profile-back a:hover {
+  text-decoration: underline;
+}
+
+
+/* ==================================================
+   LOADING
+   ================================================== */
+
+.profile-loading {
+  min-height: 400px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 18px;
+
+  color: #666;
+}
+
+
+/* ==================================================
+   MOBILE
+   ================================================== */
+
+@media (max-width: 800px) {
+
+  .profile-header {
+    height: auto;
+
+    padding: 18px 20px;
+
+    flex-direction: column;
+
+    gap: 15px;
+  }
+
+  .profile-header-actions {
+    flex-wrap: wrap;
+
+    justify-content: center;
+  }
+
+  .profile-card {
+    padding: 25px 20px;
+  }
+
+}
+
+@media (max-width: 500px) {
+
+  .profile-header-logo span {
+    display: none;
+  }
+
+  .profile-header-actions a {
+    padding: 9px 12px;
+
+    font-size: 13px;
+  }
+
+  .profile-page-title h1 {
+    font-size: 30px;
+  }
+
+}
