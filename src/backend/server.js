@@ -226,6 +226,9 @@ app.post(
       const customer =
         rows[0];
 
+        console.log("LOGIN EMAIL:", email);
+        console.log("CUSTOMER FOUND:", customer);
+
 
       if (
         customer.password !==
