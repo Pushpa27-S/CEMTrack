@@ -1,4 +1,43 @@
 import db from "../db.js";
+// ==========================================
+// CUSTOMER VALIDATION
+// ==========================================
+
+const isValidCustomerName = (value) => {
+  return (
+    typeof value === "string" &&
+    /^[A-Za-z\s]+$/.test(value.trim())
+  );
+};
+
+const isValidEmail = (value) => {
+  return (
+    typeof value === "string" &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
+  );
+};
+
+const isValidPassword = (value) => {
+  return (
+    typeof value === "string" &&
+    value.length >= 8 &&
+    /[A-Z]/.test(value) &&
+    /[a-z]/.test(value) &&
+    /[0-9]/.test(value) &&
+    /[^A-Za-z0-9]/.test(value)
+  );
+};
+
+const isValidPhone = (value) => {
+  return /^\d{10}$/.test(String(value));
+};
+
+const isValidAddress = (value) => {
+  return (
+    typeof value === "string" &&
+    value.trim().length > 0
+  );
+};
 
 // ==========================================
 // GET ALL CUSTOMERS
@@ -155,6 +194,79 @@ export const addCustomer = async (req, res) => {
       });
 
     }
+    // ==========================================
+// VALIDATE CUSTOMER NAME
+// ==========================================
+
+if (!isValidCustomerName(customer_name)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid customer name. Numbers are not allowed."
+  });
+
+}
+
+
+// ==========================================
+// VALIDATE EMAIL
+// ==========================================
+
+if (!isValidEmail(email)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid email address."
+  });
+
+}
+
+
+// ==========================================
+// VALIDATE PASSWORD
+// ==========================================
+
+if (!isValidPassword(password)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Password must be at least 8 characters and contain uppercase, lowercase, number and special character."
+  });
+
+}
+
+
+// ==========================================
+// VALIDATE PHONE NUMBER
+// ==========================================
+
+if (!isValidPhone(phone_no)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid 10-digit phone number."
+  });
+
+}
+
+
+// ==========================================
+// VALIDATE ADDRESS
+// ==========================================
+
+if (!isValidAddress(address)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Address is required."
+  });
+
+}
 
     const [existing] = await db.query(
       "SELECT customer_id FROM customer WHERE email = ?",

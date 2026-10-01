@@ -2,6 +2,35 @@ import React, { useEffect, useState, useRef } from "react";
 import "./Customers.css";
 
 const API_URL = "http://localhost:5000/api/admin/customers";
+// ==========================================
+// CUSTOMER VALIDATION
+// ==========================================
+
+const validateCustomerName = (value) => {
+  return /^[A-Za-z\s]+$/.test(value.trim());
+};
+
+const validateEmail = (value) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+};
+
+const validatePassword = (value) => {
+  return (
+    value.length >= 8 &&
+    /[A-Z]/.test(value) &&
+    /[a-z]/.test(value) &&
+    /[0-9]/.test(value) &&
+    /[^A-Za-z0-9]/.test(value)
+  );
+};
+
+const validatePhone = (value) => {
+  return /^\d{10}$/.test(value);
+};
+
+const validateAddress = (value) => {
+  return value.trim().length > 0;
+};
 
 function Customers() {
   // ==============================
@@ -95,6 +124,60 @@ function Customers() {
     setMessage("");
     setError("");
 
+  // ==========================================
+  // VALIDATE CUSTOMER NAME
+  // ==========================================
+
+  if (!validateCustomerName(newCustomer.customer_name)) {
+    setError(
+      "Please enter a valid customer name. Numbers are not allowed."
+    );
+    return;
+  }
+
+  // ==========================================
+  // VALIDATE EMAIL
+  // ==========================================
+
+  if (!validateEmail(newCustomer.email)) {
+    setError(
+      "Please enter a valid email address."
+    );
+    return;
+  }
+
+  // ==========================================
+  // VALIDATE PASSWORD
+  // ==========================================
+
+  if (!validatePassword(newCustomer.password)) {
+    setError(
+      "Password must be at least 8 characters and contain uppercase, lowercase, number and special character."
+    );
+    return;
+  }
+
+  // ==========================================
+  // VALIDATE PHONE NUMBER
+  // ==========================================
+
+  if (!validatePhone(newCustomer.phone_no)) {
+    setError(
+      "Please enter a valid 10-digit phone number."
+    );
+    return;
+  }
+
+  // ==========================================
+  // VALIDATE ADDRESS
+  // ==========================================
+
+  if (!validateAddress(newCustomer.address)) {
+    setError(
+      "Address is required."
+    );
+    return;
+  }
     try {
       const response = await fetch(API_URL, {
         method: "POST",
