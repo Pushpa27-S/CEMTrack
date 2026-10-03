@@ -2,31 +2,62 @@ import { NavLink, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 
 function Sidebar() {
+
   const navigate = useNavigate();
 
+
+  // ==================================================
+  // LOGOUT
+  // ==================================================
+
   const handleLogout = () => {
+
     const confirmLogout = window.confirm(
       "Are you sure you want to logout?"
     );
 
     if (confirmLogout) {
+
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("role");
 
-      navigate("/adminlogin", { replace: true });
+      navigate(
+        "/adminlogin",
+        { replace: true }
+      );
+
     }
+
   };
+
+
+  // ==================================================
+  // ADD PRODUCT
+  // ==================================================
 
   const handleAddProduct = () => {
-    navigate("/products", {
-      state: { openAddProduct: true }
-    });
+
+    navigate(
+      "/products",
+      {
+        state: {
+          openAddProduct: true
+        }
+      }
+    );
+
   };
 
+
   return (
+
     <aside className="sidebar">
 
-      {/* LOGO */}
+
+      {/* ==================================================
+          LOGO
+          ================================================== */}
+
       <div className="sidebar-logo">
 
         <h2>
@@ -40,8 +71,15 @@ function Sidebar() {
       </div>
 
 
-      {/* MENU */}
+
+      {/* ==================================================
+          MENU
+          ================================================== */}
+
       <nav className="sidebar-menu">
+
+
+        {/* DASHBOARD */}
 
         <NavLink
           to="/dashboard"
@@ -51,10 +89,18 @@ function Sidebar() {
               : "sidebar-item"
           }
         >
+
           <span className="sidebar-icon"></span>
-          <span>Dashboard</span>
+
+          <span>
+            Dashboard
+          </span>
+
         </NavLink>
 
+
+
+        {/* PRODUCTS */}
 
         <NavLink
           to="/products"
@@ -64,10 +110,18 @@ function Sidebar() {
               : "sidebar-item"
           }
         >
+
           <span className="sidebar-icon"></span>
-          <span>Products</span>
+
+          <span>
+            Products
+          </span>
+
         </NavLink>
 
+
+
+        {/* CUSTOMERS */}
 
         <NavLink
           to="/customers"
@@ -77,10 +131,18 @@ function Sidebar() {
               : "sidebar-item"
           }
         >
+
           <span className="sidebar-icon"></span>
-          <span>Customers</span>
+
+          <span>
+            Customers
+          </span>
+
         </NavLink>
 
+
+
+        {/* ORDERS */}
 
         <NavLink
           to="/adminorders"
@@ -90,10 +152,18 @@ function Sidebar() {
               : "sidebar-item"
           }
         >
+
           <span className="sidebar-icon"></span>
-          <span>Orders</span>
+
+          <span>
+            Orders
+          </span>
+
         </NavLink>
 
+
+
+        {/* BILLING */}
 
         <NavLink
           to="/billing"
@@ -103,10 +173,39 @@ function Sidebar() {
               : "sidebar-item"
           }
         >
+
           <span className="sidebar-icon"></span>
-          <span>Billing</span>
+
+          <span>
+            Billing
+          </span>
+
         </NavLink>
 
+
+
+        {/* CONTACT MESSAGES */}
+
+        <NavLink
+          to="/contact-messages"
+          className={({ isActive }) =>
+            isActive
+              ? "sidebar-item active"
+              : "sidebar-item"
+          }
+        >
+
+          <span className="sidebar-icon"></span>
+
+          <span>
+            Contact Messages
+          </span>
+
+        </NavLink>
+
+
+
+        {/* REPORTS */}
 
         <NavLink
           to="/reports"
@@ -116,10 +215,18 @@ function Sidebar() {
               : "sidebar-item"
           }
         >
+
           <span className="sidebar-icon"></span>
-          <span>Reports</span>
+
+          <span>
+            Reports
+          </span>
+
         </NavLink>
 
+
+
+        {/* STOCK */}
 
         <NavLink
           to="/stock"
@@ -129,36 +236,58 @@ function Sidebar() {
               : "sidebar-item"
           }
         >
+
           <span className="sidebar-icon"></span>
-          <span>Stock</span>
+
+          <span>
+            Stock
+          </span>
+
         </NavLink>
 
 
+
         {/* ADD PRODUCT */}
+
         <button
           type="button"
           className="sidebar-item sidebar-button"
           onClick={handleAddProduct}
         >
+
           <span className="sidebar-icon"></span>
-          <span>Add Product</span>
+
+          <span>
+            Add Product
+          </span>
+
         </button>
 
 
+
         {/* LOGOUT */}
+
         <button
           type="button"
           className="sidebar-item logout-button"
           onClick={handleLogout}
         >
+
           <span className="sidebar-icon"></span>
-          <span>Logout</span>
+
+          <span>
+            Logout
+          </span>
+
         </button>
+
 
       </nav>
 
     </aside>
+
   );
+
 }
 
 export default Sidebar;
