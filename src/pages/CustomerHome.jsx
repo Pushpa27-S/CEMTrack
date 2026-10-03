@@ -1,21 +1,158 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./CustomerHome.css";
 
 function CustomerHome() {
 
-  return (
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
 
+  /* =========================================
+     AUTOMATIC CUSTOMER MESSAGE
+     ========================================= */
+
+  useEffect(() => {
+
+    const customerId =
+      localStorage.getItem("customer_id");
+
+    if (!customerId) {
+      return;
+    }
+
+    const checkMessages = async () => {
+
+      try {
+
+        const response = await fetch(
+          `http://localhost:5000/api/contact/customer/${customerId}`
+        );
+
+        const data = await response.json();
+
+        if (
+          !data.success ||
+          !data.messages ||
+          data.messages.length === 0
+        ) {
+          return;
+        }
+
+        const latestReply = data.messages.find(
+          (msg) =>
+            msg.admin_reply &&
+            msg.replied_at
+        );
+
+        if (!latestReply) {
+          return;
+        }
+
+        const replyKey =
+          `cemtrack_reply_seen_${customerId}_${latestReply.message_id}`;
+
+        const alreadySeen =
+          localStorage.getItem(replyKey);
+
+        if (!alreadySeen) {
+
+          setPopupMessage(
+            latestReply.admin_reply
+          );
+
+          setShowPopup(true);
+
+          localStorage.setItem(
+            replyKey,
+            "true"
+          );
+        }
+
+      } catch (error) {
+
+        console.error(
+          "CONTACT MESSAGE CHECK ERROR:",
+          error
+        );
+
+      }
+
+    };
+
+    checkMessages();
+
+    const interval =
+      setInterval(checkMessages, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+
+  }, []);
+
+
+  return (
     <div className="customer-home">
 
-      {/* TOP HEADER */}
+
+      {/* =========================================
+          AUTOMATIC THANK YOU POPUP
+          ========================================= */}
+
+      {showPopup && (
+
+        <div
+          className="customer-popup-overlay"
+        >
+
+          <div
+            className="customer-popup"
+          >
+
+            <div className="customer-popup-icon">
+              ✓
+            </div>
+
+            <h2>
+              CEMTrack Cement
+            </h2>
+
+            <p>
+              {popupMessage}
+            </p>
+
+            <button
+              className="customer-popup-btn"
+              onClick={() => setShowPopup(false)}
+            >
+              OK
+            </button>
+
+          </div>
+
+        </div>
+
+      )}
+
+
+      {/* =========================================
+          HEADER
+          ========================================= */}
 
       <header className="customer-header">
 
         <div className="customer-logo">
-          <h2>CEMTrack</h2>
-          <span>Customer Portal</span>
+
+          <h2>
+            CEMTrack
+          </h2>
+
+          <span>
+            Customer Portal
+          </span>
+
         </div>
+
 
         <div className="customer-header-actions">
 
@@ -25,6 +162,7 @@ function CustomerHome() {
           >
             🛒 Cart
           </Link>
+
 
           <Link
             to="/adminlogin"
@@ -38,24 +176,25 @@ function CustomerHome() {
       </header>
 
 
-      {/* WELCOME SECTION */}
+      {/* =========================================
+          WELCOME SECTION
+          ========================================= */}
 
       <section className="welcome-section">
 
         <div>
 
-          <p className="welcome-small">
+          <span className="welcome-small-text">
             Welcome back!
-          </p>
+          </span>
 
           <h1>
             Welcome Customer
           </h1>
 
-          <p className="welcome-message">
-            Find the right cement products,
-            manage your cart and track your orders
-            easily with CEMTrack.
+          <p>
+            Find the right cement products, manage your cart
+            and track your orders easily with CEMTrack.
           </p>
 
         </div>
@@ -63,7 +202,9 @@ function CustomerHome() {
       </section>
 
 
-      {/* QUICK ACTIONS */}
+      {/* =========================================
+          CUSTOMER ACTIONS
+          ========================================= */}
 
       <section className="customer-actions">
 
@@ -71,10 +212,11 @@ function CustomerHome() {
           What would you like to do?
         </h2>
 
+
         <div className="customer-card-grid">
 
 
-          {/* PRODUCTS */}
+          {/* BROWSE PRODUCTS */}
 
           <Link
             to="/customer-products"
@@ -85,23 +227,19 @@ function CustomerHome() {
               🛍️
             </div>
 
-            <div>
+            <h3>
+              Browse Products
+            </h3>
 
-              <h3>
-                Browse Products
-              </h3>
-
-              <p>
-                Explore available cement brands,
-                categories, prices and stock.
-              </p>
-
-            </div>
+            <p>
+              Explore available cement brands,
+              categories, prices and stock.
+            </p>
 
           </Link>
 
 
-          {/* CART */}
+          {/* MY CART */}
 
           <Link
             to="/cart"
@@ -112,23 +250,19 @@ function CustomerHome() {
               🛒
             </div>
 
-            <div>
+            <h3>
+              My Cart
+            </h3>
 
-              <h3>
-                My Cart
-              </h3>
-
-              <p>
-                View your selected products
-                and manage quantities.
-              </p>
-
-            </div>
+            <p>
+              View your selected products
+              and manage quantities.
+            </p>
 
           </Link>
 
 
-          {/* ORDERS */}
+          {/* MY ORDERS */}
 
           <Link
             to="/my-orders"
@@ -139,23 +273,19 @@ function CustomerHome() {
               📦
             </div>
 
-            <div>
+            <h3>
+              My Orders
+            </h3>
 
-              <h3>
-                My Orders
-              </h3>
-
-              <p>
-                View your current and previous
-                cement orders.
-              </p>
-
-            </div>
+            <p>
+              View your current and previous
+              cement orders.
+            </p>
 
           </Link>
 
 
-          {/* PROFILE */}
+          {/* MY PROFILE */}
 
           <Link
             to="/my-profile"
@@ -166,18 +296,14 @@ function CustomerHome() {
               👤
             </div>
 
-            <div>
+            <h3>
+              My Profile
+            </h3>
 
-              <h3>
-                My Profile
-              </h3>
-
-              <p>
-                View and manage your
-                customer information.
-              </p>
-
-            </div>
+            <p>
+              View and manage your customer
+              information.
+            </p>
 
           </Link>
 
@@ -187,11 +313,14 @@ function CustomerHome() {
       </section>
 
 
-      {/* INFORMATION SECTION */}
+      {/* =========================================
+          CUSTOMER INFORMATION
+          ========================================= */}
 
       <section className="customer-info">
 
-        <div className="info-box">
+
+        <div>
 
           <h3>
             CEMTrack
@@ -205,7 +334,8 @@ function CustomerHome() {
 
         </div>
 
-        <div className="info-box">
+
+        <div>
 
           <h3>
             Need Help?
@@ -218,12 +348,12 @@ function CustomerHome() {
 
         </div>
 
+
       </section>
 
+
     </div>
-
   );
-
 }
 
 export default CustomerHome;

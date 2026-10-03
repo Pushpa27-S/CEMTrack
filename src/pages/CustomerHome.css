@@ -1,10 +1,233 @@
 /* =========================================
+   CUSTOMER HOME - MAIN CONTAINER
+   ========================================= */
+
+.customer-home {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #111111;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =========================================
+   CUSTOMER HEADER
+   ========================================= */
+
+.customer-header {
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 54px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #eadfd5;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   CUSTOMER LOGO
+   ========================================= */
+
+.customer-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.customer-logo h2 {
+  margin: 0;
+
+  color: #ff6b00;
+
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.customer-logo span {
+  color: #777777;
+
+  font-size: 14px;
+  font-weight: 400;
+}
+
+
+/* =========================================
+   HEADER ACTIONS
+   ========================================= */
+
+.customer-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+/* =========================================
+   CART BUTTON
+   ========================================= */
+
+.cart-top-btn {
+  min-width: 108px;
+  height: 44px;
+
+  padding: 0 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #ff6b00;
+  border-radius: 8px;
+
+  color: #ff6b00;
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.cart-top-btn:hover {
+  background: #ff6b00;
+  color: #ffffff;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================
+   LOGOUT BUTTON
+   ========================================= */
+
+.customer-logout-btn {
+  min-width: 108px;
+  height: 44px;
+
+  padding: 0 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  background: #ff6b00;
+
+  border: 1px solid #ff6b00;
+  border-radius: 8px;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.customer-logout-btn:hover {
+  background: #e85f00;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================
+   WELCOME SECTION
+   ========================================= */
+
+.welcome-section {
+  margin: 38px 42px 0;
+
+  padding: 42px;
+
+  box-sizing: border-box;
+
+  background: linear-gradient(
+    135deg,
+    #ff6b00,
+    #a9360e
+  );
+
+  border-radius: 16px;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.10);
+}
+
+.welcome-section h1 {
+  margin: 0 0 10px;
+
+  color: #ffffff;
+
+  font-size: 36px;
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+.welcome-section p {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 17px;
+  font-weight: 500;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================
+   CUSTOMER ACTIONS
+   ========================================= */
+
+.customer-actions {
+  margin: 66px 42px 0;
+}
+
+.customer-actions h2 {
+  margin: 0 0 28px;
+
+  color: #111111;
+
+  font-size: 30px;
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+
+/* =========================================
    CUSTOMER CARD GRID
    ========================================= */
 
 .customer-card-grid {
   display: grid;
+
   grid-template-columns: repeat(2, 1fr);
+
   gap: 20px;
 }
 
@@ -15,6 +238,7 @@
 
 .customer-feature-card {
   min-height: 190px;
+
   padding: 24px;
 
   box-sizing: border-box;
@@ -27,12 +251,15 @@
 
   border: 1px solid #eadfd5;
   border-top: 4px solid #ff6b00;
+
   border-radius: 10px;
 
   color: #111111;
+
   text-decoration: none;
 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06);
 
   transition:
     transform 0.2s ease,
@@ -44,20 +271,23 @@
 
 /* =========================================
    ALTERNATING CARD COLOURS
+
    Browse Products = Orange
-   My Cart        = White
-   My Orders      = White
-   My Profile     = Orange
+   My Cart         = White
+   My Orders       = White
+   My Profile      = Orange
    ========================================= */
 
-.customer-home .customer-feature-card:nth-child(1),
-.customer-home .customer-feature-card:nth-child(4) {
+.customer-home
+.customer-feature-card:nth-child(1),
+.customer-home
+.customer-feature-card:nth-child(4) {
   background: #fff7ed !important;
 }
 
 
 /* =========================================
-   EMOJI AREA
+   EMOJI / ICON AREA
    ========================================= */
 
 .feature-icon {
@@ -94,7 +324,8 @@
 
   border-color: #e8b57f;
 
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.09);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.09);
 }
 
 
@@ -124,4 +355,342 @@
   font-weight: 400;
 
   line-height: 1.55;
+}
+
+
+/* =========================================
+   CUSTOMER INFORMATION SECTION
+   ========================================= */
+
+.customer-info {
+  margin: 72px 42px 0;
+
+  padding: 30px 0 70px;
+
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 20px;
+
+  box-sizing: border-box;
+}
+
+.customer-info > div {
+  padding: 0 16px;
+}
+
+.customer-info h3 {
+  margin: 0 0 6px;
+
+  color: #111111;
+
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.customer-info p {
+  margin: 0;
+
+  color: #333333;
+
+  font-size: 15px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================
+   AUTOMATIC POPUP
+   ========================================= */
+
+.customer-home > div[style] {
+  backdrop-filter: blur(3px);
+}
+
+.customer-home > div[style] > div {
+  border-top: 5px solid #ff6b00;
+}
+
+.customer-home > div[style] h2 {
+  color: #ff6b00;
+}
+
+
+/* =========================================
+   POPUP BUTTON
+   ========================================= */
+
+.customer-home > div[style] button:hover {
+  background: #ff6b00 !important;
+}
+
+
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
+
+@media (max-width: 900px) {
+
+  .customer-header {
+    padding: 0 30px;
+  }
+
+  .welcome-section {
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+
+  .customer-actions {
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+
+  .customer-info {
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .customer-header {
+    height: auto;
+
+    padding: 18px 20px;
+
+    flex-direction: column;
+
+    gap: 15px;
+  }
+
+  .customer-logo {
+    width: 100%;
+
+    justify-content: center;
+  }
+
+  .customer-header-actions {
+    width: 100%;
+
+    justify-content: center;
+  }
+
+  .welcome-section {
+    margin: 25px 20px 0;
+
+    padding: 30px 25px;
+  }
+
+  .welcome-section h1 {
+    font-size: 28px;
+  }
+
+  .welcome-section p {
+    font-size: 15px;
+  }
+
+  .customer-actions {
+    margin: 45px 20px 0;
+  }
+
+  .customer-actions h2 {
+    font-size: 25px;
+  }
+
+  .customer-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-info {
+    margin: 50px 20px 0;
+
+    grid-template-columns: 1fr;
+
+    padding-bottom: 40px;
+  }
+
+}
+
+
+@media (max-width: 450px) {
+
+  .customer-logo {
+    gap: 8px;
+  }
+
+  .customer-logo h2 {
+    font-size: 23px;
+  }
+
+  .customer-logo span {
+    font-size: 12px;
+  }
+
+  .customer-header-actions {
+    flex-direction: column;
+  }
+
+  .cart-top-btn,
+  .customer-logout-btn {
+    width: 100%;
+  }
+
+  .welcome-section {
+    padding: 25px 20px;
+  }
+
+  .welcome-section h1 {
+    font-size: 25px;
+  }
+
+  .customer-feature-card {
+    min-height: 170px;
+
+    padding: 20px;
+  }
+
+}
+
+/* =========================================
+   AUTOMATIC CUSTOMER POPUP
+   ========================================= */
+
+.customer-popup-overlay {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.65);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 9999;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+}
+
+
+.customer-popup {
+  width: 100%;
+  max-width: 450px;
+
+  padding: 35px 30px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border-radius: 14px;
+
+  border-top: 5px solid #ff6b00;
+
+  text-align: center;
+
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.25);
+
+  animation: customerPopupShow 0.25s ease;
+}
+
+
+.customer-popup-icon {
+  width: 55px;
+  height: 55px;
+
+  margin: 0 auto 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fff7ed;
+
+  border: 2px solid #ff6b00;
+
+  border-radius: 50%;
+
+  color: #ff6b00;
+
+  font-size: 27px;
+  font-weight: 700;
+}
+
+
+.customer-popup h2 {
+  margin: 0 0 14px;
+
+  color: #111111;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+
+.customer-popup p {
+  margin: 0;
+
+  color: #555555;
+
+  font-size: 15px;
+
+  line-height: 1.6;
+}
+
+
+.customer-popup-btn {
+  margin-top: 25px;
+
+  min-width: 100px;
+
+  padding: 11px 25px;
+
+  background: #ff6b00;
+
+  border: none;
+
+  border-radius: 7px;
+
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.customer-popup-btn:hover {
+  background: #111111;
+
+  transform: translateY(-1px);
+}
+
+
+@keyframes customerPopupShow {
+
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+
 }
