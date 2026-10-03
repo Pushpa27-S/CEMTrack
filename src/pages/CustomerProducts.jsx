@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link,useNavigate } from "react-router-dom";
 import "./CustomerProducts.css";
-import products from "../data/ProductsData";
+import productsData from "../data/ProductsData";
 
 function CustomerProducts() {
+
+  const [products, setProducts] = useState(productsData);
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
@@ -11,6 +13,105 @@ function CustomerProducts() {
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+
+
+  // ======================================================
+  // GET PRICE AND STOCK FROM DATABASE
+  // ======================================================
+
+  useEffect(() => {
+
+    const fetchProductDetails = async () => {
+
+      try {
+
+        const response = await fetch(
+          "http://localhost:5000/api/admin/products"
+        );
+
+        const data = await response.json();
+        console.log("DATABASE PRODUCTS:", data.products);
+console.log("FULL DATABASE RESPONSE:", data);
+
+        if (!data.success) {
+
+          console.error(
+            "Failed to fetch product details from database"
+          );
+
+          return;
+
+        }
+
+
+        // Keep ProductsData.js as the main product list.
+        // Only update PRICE and STOCK from database.
+
+        setProducts((currentProducts) => {
+
+          return currentProducts.map((localProduct) => {
+
+            const normalizeText = (value) => {
+
+              return String(value || "")
+                .toLowerCase()
+                .replace(/\s+/g, " ")
+                .trim();
+
+            };
+
+
+          const databaseProduct =
+  data.products.find(
+    (dbProduct) =>
+      Number(dbProduct.product_id) ===
+      Number(localProduct.id)
+  );
+            // If matching database product is found,
+            // ONLY price and stock are replaced.
+
+            if (databaseProduct) {
+
+              return {
+
+                ...localProduct,
+
+                price: Number(databaseProduct.price),
+
+                stock: Number(
+                  databaseProduct.stock_quantity
+                ),
+
+              };
+
+            }
+
+
+            // If no matching database product is found,
+            // keep the existing ProductsData.js product unchanged.
+
+            return localProduct;
+
+          });
+
+        });
+
+      } catch (error) {
+
+        console.error(
+          "Error fetching product details:",
+          error
+        );
+
+      }
+
+    };
+
+
+    fetchProductDetails();
+
+  }, []);
+
 
   const filteredProducts = products.filter((product) => {
 
@@ -26,6 +127,7 @@ function CustomerProducts() {
 
   });
 
+
   // Open product details popup
   const handleProductClick = (product) => {
 
@@ -34,6 +136,7 @@ function CustomerProducts() {
 
   };
 
+
   // Close popup
   const closeDetails = () => {
 
@@ -41,6 +144,7 @@ function CustomerProducts() {
     setSelectedProduct(null);
 
   };
+
 
   // Add product to cart
   const handleAddToCart = () => {
@@ -111,6 +215,7 @@ function CustomerProducts() {
     );
 
   };
+
 
   return (
 
@@ -284,14 +389,16 @@ function CustomerProducts() {
               {selectedProduct.stock > 0
                 ? "Add to Cart"
                 : "Out of Stock"}
+
             </button> 
+
             <button
               type="button"
               className="view-cart-btn"
               onClick={() => navigate("/cart")}
-             >
-            🛒 View Cart
-           </button>
+            >
+              🛒 View Cart
+            </button>
 
 
           </div>
