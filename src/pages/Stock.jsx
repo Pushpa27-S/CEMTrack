@@ -33,6 +33,8 @@ function Stock() {
 
   const [loading, setLoading] = useState(true);
 
+  const [selectedRow, setSelectedRow] = useState(null);
+
 
   // ========================================
   // GET STOCK FROM DATABASE
@@ -891,6 +893,16 @@ function Stock() {
                 <tr
                   key={
                     item.product_id
+                  }
+                  className={
+                    selectedRow === item.product_id
+                      ? "selected-table-row"
+                      : ""
+                  }
+                  onClick={() =>
+                    setSelectedRow(
+                      item.product_id
+                    )
                   }
                 >
 
