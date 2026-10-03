@@ -68,13 +68,22 @@ function CustomerLogin() {
 
 
         // ==================================================
-        // IMPORTANT:
-        // STORE THE CURRENT CUSTOMER ID
+        // STORE CURRENT CUSTOMER ID
         // ==================================================
 
         localStorage.setItem(
           "customer_id",
           String(data.customer.customer_id)
+        );
+
+
+        // ==================================================
+        // VERIFY CUSTOMER ID WAS SAVED
+        // ==================================================
+
+        console.log(
+          "CUSTOMER ID SAVED:",
+          localStorage.getItem("customer_id")
         );
 
 

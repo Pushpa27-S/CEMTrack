@@ -10,6 +10,30 @@ const imageDirectory = path.join(
   __dirname,
   "../public/images/products"
 );
+// ======================================================
+// PRODUCT VALIDATION
+// ======================================================
+
+const isValidName = (value) => {
+  return typeof value === "string" &&
+    /^[A-Za-z\s]+$/.test(value.trim());
+};
+
+const isValidNumber = (value) => {
+  return value !== "" &&
+    value !== null &&
+    value !== undefined &&
+    !isNaN(value) &&
+    Number(value) >= 0;
+};
+
+const isValidWholeNumber = (value) => {
+  return value !== "" &&
+    value !== null &&
+    value !== undefined &&
+    /^\d+$/.test(String(value)) &&
+    Number(value) >= 0;
+};
 
 // Make sure image directory exists
 await fs.mkdir(imageDirectory, { recursive: true });
@@ -210,35 +234,79 @@ export const addProduct = async (req, res) => {
     }
 
 
-    // Validate numbers
+    // ==================================================
+// VALIDATE PRODUCT NAME
+// ==================================================
 
-    if (Number(price) < 0) {
+if (!isValidName(product_name)) {
 
-      return res.status(400).json({
-        success: false,
-        message: "Price cannot be negative"
-      });
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid product name. Numbers are not allowed."
+  });
 
-    }
+}
 
-    if (Number(stock_quantity) < 0) {
 
-      return res.status(400).json({
-        success: false,
-        message: "Stock quantity cannot be negative"
-      });
+// ==================================================
+// VALIDATE BRAND
+// ==================================================
 
-    }
+if (!isValidName(brand)) {
 
-    if (Number(minimum_stock) < 0) {
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid brand name. Numbers are not allowed."
+  });
 
-      return res.status(400).json({
-        success: false,
-        message: "Minimum stock cannot be negative"
-      });
+}
 
-    }
 
+// ==================================================
+// VALIDATE PRICE
+// ==================================================
+
+if (!isValidNumber(price)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid price. Numbers only."
+  });
+
+}
+
+
+// ==================================================
+// VALIDATE INITIAL STOCK
+// ==================================================
+
+if (!isValidWholeNumber(stock_quantity)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid initial stock. Whole numbers only."
+  });
+
+}
+
+
+// ==================================================
+// VALIDATE MINIMUM STOCK
+// ==================================================
+
+if (!isValidWholeNumber(minimum_stock)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid minimum stock. Whole numbers only."
+  });
+
+}
 
     // ==================================================
     // INSERT PRODUCT
@@ -402,6 +470,80 @@ export const updateProduct = async (req, res) => {
       stock_quantity,
       old_stock_quantity
     } = req.body;
+
+    // ==================================================
+// VALIDATE PRODUCT NAME
+// ==================================================
+
+if (!isValidName(product_name)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid product name. Numbers are not allowed."
+  });
+
+}
+
+
+// ==================================================
+// VALIDATE BRAND
+// ==================================================
+
+if (!isValidName(brand)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid brand name. Numbers are not allowed."
+  });
+
+}
+
+
+// ==================================================
+// VALIDATE PRICE
+// ==================================================
+
+if (!isValidNumber(price)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid price. Numbers only."
+  });
+
+}
+
+
+// ==================================================
+// VALIDATE AVAILABLE STOCK
+// ==================================================
+
+if (!isValidWholeNumber(stock_quantity)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid available stock. Whole numbers only."
+  });
+
+}
+
+
+// ==================================================
+// VALIDATE MINIMUM STOCK
+// ==================================================
+
+if (!isValidWholeNumber(minimum_stock)) {
+
+  return res.status(400).json({
+    success: false,
+    message:
+      "Please enter a valid minimum stock. Whole numbers only."
+  });
+
+}
 
 
     // ==================================================

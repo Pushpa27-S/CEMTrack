@@ -7,6 +7,21 @@ import "./Products.css";
 // ========================================
 
 const API_URL = "http://localhost:5000/api/admin/products";
+// ========================================
+// PRODUCT VALIDATION
+// ========================================
+
+const validateProductName = (value) => {
+  return /^[A-Za-z\s]+$/.test(value.trim());
+};
+
+const validateNumber = (value) => {
+  return /^\d+(\.\d+)?$/.test(value);
+};
+
+const validateWholeNumber = (value) => {
+  return /^\d+$/.test(value);
+};
 
 
 // ========================================
@@ -494,11 +509,40 @@ const [editMinimumStock, setEditMinimumStock] =
   // ADD PRODUCT
   // ========================================
 
-  const handleAddProduct = async (e) => {
+      const handleAddProduct = async (e) => {
 
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
+  // ========================================
+  // VALIDATION
+  // ========================================
+
+  if (!validateProductName(newProductName)) {
+    alert("Please enter a valid product name. Numbers are not allowed.");
+    return;
+  }
+
+  if (!validateProductName(newBrand)) {
+    alert("Please enter a valid brand name. Numbers are not allowed.");
+    return;
+  }
+
+  if (!validateNumber(newPrice) || Number(newPrice) < 0) {
+    alert("Please enter a valid price. Numbers only.");
+    return;
+  }
+
+  if (!validateWholeNumber(newStock)) {
+    alert("Please enter a valid initial stock. Whole numbers only.");
+    return;
+  }
+
+  if (!validateWholeNumber(newMinimumStock)) {
+    alert("Please enter a valid minimum stock. Whole numbers only.");
+    return;
+  }
+
+  try {
 
       const response = await fetch(
         API_URL,
@@ -597,6 +641,30 @@ const [editMinimumStock, setEditMinimumStock] =
 
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
+    
+  // ========================================
+  // VALIDATION
+  // ========================================
+
+  if (!validateProductName(editProductName)) {
+    alert("Please enter a valid product name. Numbers are not allowed.");
+    return;
+  }
+
+  if (!validateNumber(editPrice) || Number(editPrice) < 0) {
+    alert("Please enter a valid price. Numbers only.");
+    return;
+  }
+
+  if (!validateWholeNumber(editStock)) {
+    alert("Please enter a valid available stock. Whole numbers only.");
+    return;
+  }
+
+  if (!validateWholeNumber(editMinimumStock)) {
+    alert("Please enter a valid minimum stock. Whole numbers only.");
+    return;
+  }
 
     if (!selectedProduct) {
       alert("No product selected.");
