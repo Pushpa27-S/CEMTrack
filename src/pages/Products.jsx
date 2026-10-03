@@ -12,7 +12,19 @@ const API_URL = "http://localhost:5000/api/admin/products";
 // ========================================
 
 const validateProductName = (value) => {
-  return /^[A-Za-z\s]+$/.test(value.trim());
+  const name = value.trim();
+
+  // Allow letters and spaces.
+  if (/^[A-Za-z\s]+$/.test(name)) {
+    return true;
+  }
+
+  // Allow OPC 53 as the only number-containing exception.
+  if (/^(?:[A-Za-z\s]+\s)?OPC\s53$/i.test(name)) {
+    return true;
+  }
+
+  return false;
 };
 
 const validateNumber = (value) => {
@@ -518,12 +530,12 @@ const [editMinimumStock, setEditMinimumStock] =
   // ========================================
 
   if (!validateProductName(newProductName)) {
-    alert("Please enter a valid product name. Numbers are not allowed.");
+    alert("Please enter a valid product name. ");
     return;
   }
 
   if (!validateProductName(newBrand)) {
-    alert("Please enter a valid brand name. Numbers are not allowed.");
+    alert("Please enter a valid brand name.");
     return;
   }
 
@@ -647,7 +659,7 @@ const [editMinimumStock, setEditMinimumStock] =
   // ========================================
 
   if (!validateProductName(editProductName)) {
-    alert("Please enter a valid product name. Numbers are not allowed.");
+    alert("Please enter a valid product name. ");
     return;
   }
 

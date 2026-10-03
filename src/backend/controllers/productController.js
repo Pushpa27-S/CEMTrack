@@ -15,8 +15,24 @@ const imageDirectory = path.join(
 // ======================================================
 
 const isValidName = (value) => {
-  return typeof value === "string" &&
-    /^[A-Za-z\s]+$/.test(value.trim());
+
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  const name = value.trim();
+
+  // Letters and spaces are allowed
+  if (/^[A-Za-z\s]+$/.test(name)) {
+    return true;
+  }
+
+  // OPC 53 is the only allowed number-containing exception
+  if (/^(?:[A-Za-z\s]+\s)?OPC\s53$/i.test(name)) {
+    return true;
+  }
+
+  return false;
 };
 
 const isValidNumber = (value) => {
@@ -243,7 +259,7 @@ if (!isValidName(product_name)) {
   return res.status(400).json({
     success: false,
     message:
-      "Please enter a valid product name. Numbers are not allowed."
+      "Please enter a valid product name."
   });
 
 }
@@ -258,7 +274,7 @@ if (!isValidName(brand)) {
   return res.status(400).json({
     success: false,
     message:
-      "Please enter a valid brand name. Numbers are not allowed."
+      "Please enter a valid brand name."
   });
 
 }
@@ -480,7 +496,7 @@ if (!isValidName(product_name)) {
   return res.status(400).json({
     success: false,
     message:
-      "Please enter a valid product name. Numbers are not allowed."
+      "Please enter a valid product name."
   });
 
 }
@@ -495,7 +511,7 @@ if (!isValidName(brand)) {
   return res.status(400).json({
     success: false,
     message:
-      "Please enter a valid brand name. Numbers are not allowed."
+      "Please enter a valid brand name."
   });
 
 }
