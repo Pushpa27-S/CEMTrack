@@ -9,7 +9,7 @@ import customerRoutes from "./routes/customerRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import inventoryRoutes from "./routes/inventoryRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
-
+import authenicateToken from "./middleware/authMiddleware.js";
 import jwt from "jsonwebtoken";
 
 dotenv.config();
@@ -964,170 +964,71 @@ app.post(
 
 // ==================================================
 // CART - VIEW CUSTOMER CART
-// ==================================================
+// =================================================
 
-app.get(
+
+     app.get(
   "/api/cart/:customerId",
+  authenicateToken,
   async (req, res) => {
+    
 
     try {
 
-      const {
-        email,
-        password
-      } = req.body;
-
-
-      if (!email || !password) {
-
-        return res.status(400).json({
-
-          success: false,
-
-          message:
-            "Email and password are required"
-
-        });
-
-      }
-
-
-      if (!process.env.JWT_SECRET) {
-
-        return res.status(500).json({
-
-          success: false,
-
-          message:
-            "JWT_SECRET is not configured"
-
-        });
-
-      }
-
-
-      const [rows] =
-        await db.query(
-
-          `SELECT
-            owner_id,
-            owner_name,
-            email,
-            password
-           FROM owner
-           WHERE email = ?`,
-
-          [email]
-
-        );
-
-
-      if (rows.length === 0) {
-
-        return res.status(401).json({
-
-          success: false,
-
-          message:
-            "Invalid email or password"
-
-        });
-
-      }
-
-
-      const owner =
-        rows[0];
-
-
+      const { customerId } = req.params;
       if (
-        owner.password !==
-        password
-      ) {
+  req.user.role !== "customer" ||
+  Number(req.user.customer_id) !== Number(customerId)
+) {
+  return res.status(403).json({
+    success: false,
+    message: "You are not authorized to access this cart"
+  });
+}
 
-        return res.status(401).json({
+      const [rows] = await db.query(
+        `SELECT
+          c.cart_id,
+          c.customer_id,
+          c.product_id,
+          p.product_name,
+          p.brand,
+          p.category,
+          p.price,
+          p.stock_quantity,
+          c.quantity,
+          (p.price * c.quantity) AS item_total
+         FROM cart c
+         INNER JOIN products p
+           ON c.product_id = p.product_id
+         WHERE c.customer_id = ?`,
+        [customerId]
+      );
 
-          success: false,
-
-          message:
-            "Invalid email or password"
-
-        });
-
-      }
-
-
-      const token =
-        jwt.sign(
-
-          {
-
-            owner_id:
-              owner.owner_id,
-
-            role:
-              "admin"
-
-          },
-
-          process.env.JWT_SECRET,
-
-          {
-            expiresIn:
-              "2h"
-          }
-
-        );
-
+      const total = rows.reduce(
+        (sum, item) => sum + Number(item.item_total),
+        0
+      );
 
       return res.json({
-
         success: true,
-
-        message:
-          "Admin login successful",
-
-        token,
-
-        owner: {
-
-          owner_id:
-            owner.owner_id,
-
-          owner_name:
-            owner.owner_name,
-
-          email:
-            owner.email
-
-        }
-
+        cart: rows,
+        total: total.toFixed(2)
       });
 
     } catch (error) {
 
-      console.error(
-        "ADMIN LOGIN ERROR:",
-        error
-      );
+      console.error("Get cart error:", error);
 
       return res.status(500).json({
-
         success: false,
-
-        message:
-          "Server error",
-
-        error:
-          error.message
-
+        message: "Failed to fetch cart",
+        error: error.message
       });
 
     }
-
   }
 );
-
 
 // ==================================================
 // GET ALL PRODUCTS
@@ -2446,7 +2347,19 @@ app.post(
 
 app.get(
   "/api/orders/customer/:customerId",
+  authenicateToken,
   async (req, res) => {
+    const { customerId } = req.params;
+
+if (
+  req.user.role !== "customer" ||
+  Number(req.user.customer_id) !== Number(customerId)
+) {
+  return res.status(403).json({
+    success: false,
+    message: "You are not authorized to access these orders"
+  });
+}
 
     try {
 
@@ -2454,6 +2367,15 @@ app.get(
         customerId
       } = req.params;
 
+if (
+  req.user.role !== "customer" ||
+  Number(req.user.customer_id) !== Number(customerId)
+) {
+  return res.status(403).json({
+    success: false,
+    message: "You are not authorized to access these orders"
+  });
+}
 
       const [rows] =
         await db.query(
@@ -2523,6 +2445,7 @@ app.get(
 
 app.get(
   "/api/orders/:orderId",
+  authenicateToken,
   async (req, res) => {
 
     try {
@@ -2531,6 +2454,14 @@ app.get(
         orderId
       } = req.params;
 
+if (
+  req.user.role !== "customer"
+) {
+  return res.status(403).json({
+    success: false,
+    message: "You are not authorized to access this order"
+  });
+}
 
       const [rows] =
         await db.query(
