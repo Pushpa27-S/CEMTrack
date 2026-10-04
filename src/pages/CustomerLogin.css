@@ -300,7 +300,6 @@
 
 /* =========================================================
    PROFILE INPUT FIELDS
-   THIS IS THE IMPORTANT SECTION
    ========================================================= */
 
 .customer-home .customer-actions .info-box input,
@@ -326,7 +325,6 @@
 
   font-size: 14px;
 
-  /* VISIBLE LIGHT ORANGE GLOW */
   box-shadow:
     inset 0 0 8px rgba(255, 107, 0, 0.08),
     0 0 0 3px rgba(255, 107, 0, 0.08) !important;
@@ -358,7 +356,6 @@
 
 /* =========================================
    WHEN EDITING / CLICKING FIELD
-   STRONGER GLOW
    ========================================= */
 
 .customer-home .customer-actions .info-box input:focus,
@@ -376,7 +373,6 @@
 
 /* =========================================
    DISABLED PROFILE FIELDS
-   KEEP THE LIGHT ORANGE APPEARANCE
    ========================================= */
 
 .customer-home .customer-actions .info-box input:disabled,

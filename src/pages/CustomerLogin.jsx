@@ -159,9 +159,9 @@ function CustomerLogin() {
 
 
   return (
-    <div className="login-page">
+    <div className="customer-login-page">
 
-      <div className="login-card">
+      <div className="customer-login-card">
 
         <h1>CEMTrack</h1>
 

@@ -30,7 +30,12 @@ import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import ProtectedCustomerRoute from "./components/ProtectedCustomerRoute";
 
 
+
 import "./App.css";""
+import ContactMessage from "./pages/Contact Message";
+
+import "./App.css";
+
 
 function App() {
   return (
@@ -118,27 +123,42 @@ function App() {
           element={<Customers />}
         />
 
-        {/* ORDERS */}
+        {/* ================= ORDERS ================= */}
 
         <Route
           path="/adminorders"
           element={<AdminOrders />}
         />
 
+        {/* ================= BILLING ================= */}
+
         <Route
           path="/billing"
           element={<Billing />}
         />
+
+        {/* ================= CONTACT MESSAGES ================= */}
+
+        <Route
+          path="/contact-messages"
+          element={<ContactMessage />}
+        />
+
+        {/* ================= REPORTS ================= */}
 
         <Route
           path="/reports"
           element={<Reports />}
         />
 
+        {/* ================= STOCK ================= */}
+
         <Route
           path="/stock"
           element={<Stock />}
         />
+
+        {/* ================= SEARCH ================= */}
 
         <Route
           path="/search"

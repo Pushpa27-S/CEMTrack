@@ -196,7 +196,7 @@ const products = [
     },
 
     {
-      id: 24,
+      id: 25,
       brand: "Birla White Cement",
       category: "White Cement",
       price: 830,

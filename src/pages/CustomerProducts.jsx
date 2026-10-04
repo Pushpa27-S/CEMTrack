@@ -1,5 +1,10 @@
+<<<<<<< Updated upstream
 import React, { useState, useEffect } from "react";
 import { Link,useNavigate } from "react-router-dom";
+=======
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+>>>>>>> Stashed changes
 import "./CustomerProducts.css";
 import productsData from "../data/ProductsData";
 
@@ -9,11 +14,13 @@ function CustomerProducts() {
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
-  const navigate=useNavigate();
+
+  const navigate = useNavigate();
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
 
+<<<<<<< Updated upstream
 
   // ======================================================
   // GET PRICE AND STOCK FROM DATABASE
@@ -112,6 +119,11 @@ console.log("FULL DATABASE RESPONSE:", data);
 
   }, []);
 
+=======
+  // ==================================================
+  // FILTER PRODUCTS
+  // ==================================================
+>>>>>>> Stashed changes
 
   const filteredProducts = products.filter((product) => {
 
@@ -127,8 +139,15 @@ console.log("FULL DATABASE RESPONSE:", data);
 
   });
 
+<<<<<<< Updated upstream
 
   // Open product details popup
+=======
+  // ==================================================
+  // OPEN PRODUCT DETAILS
+  // ==================================================
+
+>>>>>>> Stashed changes
   const handleProductClick = (product) => {
 
     setSelectedProduct(product);
@@ -136,8 +155,15 @@ console.log("FULL DATABASE RESPONSE:", data);
 
   };
 
+<<<<<<< Updated upstream
 
   // Close popup
+=======
+  // ==================================================
+  // CLOSE PRODUCT DETAILS
+  // ==================================================
+
+>>>>>>> Stashed changes
   const closeDetails = () => {
 
     setShowDetails(false);
@@ -145,27 +171,81 @@ console.log("FULL DATABASE RESPONSE:", data);
 
   };
 
+<<<<<<< Updated upstream
 
   // Add product to cart
+=======
+  // ==================================================
+  // ADD PRODUCT TO CART
+  // MAXIMUM 2 DIFFERENT PRODUCTS
+  // ==================================================
+
+>>>>>>> Stashed changes
   const handleAddToCart = () => {
 
     if (!selectedProduct) {
       return;
     }
 
-    if (selectedProduct.stock === 0) {
-      alert("This product is currently out of stock.");
+    // Check stock
+    if (
+      selectedProduct.stock === undefined ||
+      selectedProduct.stock <= 0
+    ) {
+
+      alert(
+        "This product is currently out of stock."
+      );
+
       return;
+
     }
 
-    // Get existing cart
-    const existingCart =
-      JSON.parse(localStorage.getItem("cart")) || [];
+    // ==================================================
+    // GET EXISTING CART
+    // ==================================================
 
-    // Check if product already exists
-    const alreadyInCart = existingCart.find(
-      (item) => item.id === selectedProduct.id
-    );
+    let existingCart = [];
+
+    try {
+
+      const savedCart =
+        localStorage.getItem("cart");
+
+      if (savedCart) {
+
+        const parsedCart =
+          JSON.parse(savedCart);
+
+        if (Array.isArray(parsedCart)) {
+
+          existingCart = parsedCart;
+
+        }
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "CART LOAD ERROR:",
+        error
+      );
+
+      existingCart = [];
+
+    }
+
+    // ==================================================
+    // CHECK IF SAME PRODUCT ALREADY EXISTS
+    // ==================================================
+
+    const alreadyInCart =
+      existingCart.some(
+        (item) =>
+          Number(item.id) ===
+          Number(selectedProduct.id)
+      );
 
     if (alreadyInCart) {
 
@@ -177,9 +257,27 @@ console.log("FULL DATABASE RESPONSE:", data);
       );
 
       return;
+
     }
 
-    // Product information saved to cart
+    // ==================================================
+    // MAXIMUM 2 DIFFERENT PRODUCTS
+    // ==================================================
+
+    if (existingCart.length >= 2) {
+
+      alert(
+        "You can select only 2 different products at a time."
+      );
+
+      return;
+
+    }
+
+    // ==================================================
+    // CREATE CART PRODUCT
+    // ==================================================
+
     const cartProduct = {
 
       id: selectedProduct.id,
@@ -194,18 +292,27 @@ console.log("FULL DATABASE RESPONSE:", data);
 
       image: selectedProduct.image,
 
-      quantity: 1,
+      quantity: 1
 
     };
 
-    // Save product to cart
+    // ==================================================
+    // ADD PRODUCT TO CART
+    // ==================================================
+
+    const updatedCart = [
+      ...existingCart,
+      cartProduct
+    ];
+
     localStorage.setItem(
       "cart",
-      JSON.stringify([
-        ...existingCart,
-        cartProduct
-      ])
+      JSON.stringify(updatedCart)
     );
+
+    // ==================================================
+    // SUCCESS MESSAGE
+    // ==================================================
 
     alert(
       selectedProduct.brand +
@@ -216,16 +323,26 @@ console.log("FULL DATABASE RESPONSE:", data);
 
   };
 
+<<<<<<< Updated upstream
+=======
+  // ==================================================
+  // PAGE
+  // ==================================================
+>>>>>>> Stashed changes
 
   return (
 
-    <div className=" customer-products-page">
+    <div className="customer-products-page">
 
-      {/* HEADER */}
+      {/* ==================================================
+          HEADER
+      ================================================== */}
 
       <div className="products-header">
 
-        <h1>Available Cement Products</h1>
+        <h1>
+          Available Cement Products
+        </h1>
 
         <div className="top-bar">
 
@@ -247,7 +364,9 @@ console.log("FULL DATABASE RESPONSE:", data);
 
             <label htmlFor="category">
 
-              <strong>Category :</strong>
+              <strong>
+                Category :
+              </strong>
 
             </label>
 
@@ -259,13 +378,21 @@ console.log("FULL DATABASE RESPONSE:", data);
               }
             >
 
-              <option>All</option>
+              <option>
+                All
+              </option>
 
-              <option>OPC 53</option>
+              <option>
+                OPC 53
+              </option>
 
-              <option>PPC</option>
+              <option>
+                PPC
+              </option>
 
-              <option>White Cement</option>
+              <option>
+                White Cement
+              </option>
 
             </select>
 
@@ -275,117 +402,69 @@ console.log("FULL DATABASE RESPONSE:", data);
 
       </div>
 
-      {/* PRODUCT IMAGES */}
+      {/* ==================================================
+          PRODUCT GRID
+      ================================================== */}
 
       <div className="product-grid">
 
         {filteredProducts.length > 0 ? (
 
-          filteredProducts.map((product) => (
+          filteredProducts.map(
+            (product) => (
 
-            <div
-              className="product-card"
-              key={product.id}
-            >
+              <div
+                className="product-card"
+                key={product.id}
+              >
 
-              <img
-                src={product.image}
-                alt={product.brand}
-                className="product-image"
-                onClick={() =>
-                  handleProductClick(product)
-                }
-                style={{ cursor: "pointer" }}
-              />
+                <img
+                  src={product.image}
+                  alt={product.brand}
+                  className="product-image"
+                  onClick={() =>
+                    handleProductClick(product)
+                  }
+                  style={{
+                    cursor: "pointer"
+                  }}
+                />
 
-            </div>
+              </div>
 
-          ))
+            )
+          )
 
         ) : (
 
-          <p>No products found.</p>
+          <p>
+            No products found.
+          </p>
 
         )}
 
       </div>
 
-      {/* PRODUCT DETAILS POPUP */}
+      {/* ==================================================
+          PRODUCT DETAILS POPUP
+      ================================================== */}
 
-      {showDetails && selectedProduct && (
-
-        <div
-          className="product-modal-overlay"
-          onClick={closeDetails}
-        >
+      {showDetails &&
+        selectedProduct && (
 
           <div
-            className="product-modal"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
+            className="product-modal-overlay"
+            onClick={closeDetails}
           >
 
-            {/* CLOSE */}
-
-            <button
-              type="button"
-              className="modal-close"
-              onClick={closeDetails}
-            >
-              ×
-            </button>
-
-            {/* PRODUCT IMAGE */}
-
-            <img
-              src={selectedProduct.image}
-              alt={selectedProduct.brand}
-              className="modal-image"
-            />
-
-            {/* PRODUCT NAME */}
-
-            <h2>
-              {selectedProduct.brand}
-            </h2>
-
-            {/* CATEGORY */}
-
-            <p>
-              <strong>Category:</strong>{" "}
-              {selectedProduct.category}
-            </p>
-
-            {/* PRICE */}
-
-            <p>
-              <strong>Price:</strong>{" "}
-              ₹{selectedProduct.price} / Bag
-            </p>
-
-            {/* STOCK */}
-
-            <p>
-              <strong>Availability:</strong>{" "}
-
-              {selectedProduct.stock > 0
-                ? `${selectedProduct.stock} Bags Available`
-                : "Out of Stock"}
-
-            </p>
-
-            {/* ADD TO CART */}
-
-            <button
-              type="button"
-              className="add-btn"
-              disabled={
-                selectedProduct.stock === 0
+            <div
+              className="product-modal"
+              onClick={(e) =>
+                e.stopPropagation()
               }
-              onClick={handleAddToCart}
             >
 
+<<<<<<< Updated upstream
               {selectedProduct.stock > 0
                 ? "Add to Cart"
                 : "Out of Stock"}
@@ -399,13 +478,107 @@ console.log("FULL DATABASE RESPONSE:", data);
             >
               🛒 View Cart
             </button>
+=======
+              {/* CLOSE BUTTON */}
+>>>>>>> Stashed changes
 
+              <button
+                type="button"
+                className="modal-close"
+                onClick={closeDetails}
+              >
+                ×
+              </button>
+
+              {/* PRODUCT IMAGE */}
+
+              <img
+                src={selectedProduct.image}
+                alt={selectedProduct.brand}
+                className="modal-image"
+              />
+
+              {/* PRODUCT NAME */}
+
+              <h2>
+                {selectedProduct.brand}
+              </h2>
+
+              {/* CATEGORY */}
+
+              <p>
+
+                <strong>
+                  Category:
+                </strong>{" "}
+
+                {selectedProduct.category}
+
+              </p>
+
+              {/* PRICE */}
+
+              <p>
+
+                <strong>
+                  Price:
+                </strong>{" "}
+
+                ₹{selectedProduct.price} / Bag
+
+              </p>
+
+              {/* STOCK */}
+
+              <p>
+
+                <strong>
+                  Availability:
+                </strong>{" "}
+
+                {selectedProduct.stock > 0
+                  ? `${selectedProduct.stock} Bags Available`
+                  : "Out of Stock"}
+
+              </p>
+
+              {/* ADD TO CART */}
+
+              <button
+                type="button"
+                className="add-btn"
+                disabled={
+                  !selectedProduct.stock ||
+                  selectedProduct.stock <= 0
+                }
+                onClick={handleAddToCart}
+              >
+
+                {selectedProduct.stock > 0
+                  ? "Add to Cart"
+                  : "Out of Stock"}
+
+              </button>
+
+              {/* VIEW CART */}
+
+              <button
+                type="button"
+                className="view-cart-btn"
+                onClick={() =>
+                  navigate("/cart")
+                }
+              >
+
+                🛒 View Cart
+
+              </button>
+
+            </div>
 
           </div>
 
-        </div>
-
-      )}
+        )}
 
     </div>
 

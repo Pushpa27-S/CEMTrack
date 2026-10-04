@@ -3670,6 +3670,259 @@ app.put(
 
 
 // ==================================================
+// REPORT ROUTES
+// ==================================================
+
+app.use(
+  "/api/admin/reports",
+  reportRoutes
+);
+
+
+// ==================================================
+// CONTACT MESSAGE
+// ==================================================
+
+app.post("/api/contact", async (req, res) => {
+
+  try {
+
+    const {
+      customer_id,
+      name,
+      email,
+      subject,
+      message
+    } = req.body;
+
+    if (
+      !name ||
+      !email ||
+      !subject ||
+      !message
+    ) {
+
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
+
+    }
+
+    await db.query(
+  `INSERT INTO contact_messages
+   (
+     customer_id,
+     name,
+     email,
+     subject,
+     message,
+     admin_reply,
+     replied_at
+   )
+   VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+  [
+    customer_id || null,
+    name,
+    email,
+    subject,
+    message,
+    "Thank you for shopping with CEMTrack Cement. We have received your query and will assist you shortly."
+  ]
+);
+
+    return res.status(201).json({
+      success: true,
+      message: "Your message has been sent successfully!"
+    });
+
+  } catch (error) {
+
+    console.error(
+      "CONTACT MESSAGE ERROR:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to send message",
+      error: error.message
+    });
+
+  }
+
+});
+
+
+// ==================================================
+// ADMIN - GET CONTACT MESSAGES
+// ==================================================
+
+app.get("/api/admin/contact-messages", async (req, res) => {
+
+  try {
+
+    const [rows] = await db.query(
+      `SELECT
+        message_id,
+        customer_id,
+        name,
+        email,
+        subject,
+        message,
+        created_at,
+        admin_reply,
+        replied_at
+       FROM contact_messages
+       ORDER BY created_at DESC`
+    );
+
+    return res.json({
+      success: true,
+      messages: rows
+    });
+
+  } catch (error) {
+
+    console.error(
+      "GET CONTACT MESSAGES ERROR:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load contact messages",
+      error: error.message
+    });
+
+  }
+
+});
+
+
+// ==================================================
+// ADMIN - REPLY TO CONTACT MESSAGE
+// ==================================================
+
+app.put(
+  "/api/admin/contact-messages/:messageId/reply",
+  async (req, res) => {
+
+    try {
+
+      const { messageId } = req.params;
+      const { admin_reply } = req.body;
+
+      if (
+        !admin_reply ||
+        !admin_reply.trim()
+      ) {
+
+        return res.status(400).json({
+          success: false,
+          message: "Reply message is required"
+        });
+
+      }
+
+      const [result] = await db.query(
+        `UPDATE contact_messages
+         SET
+           admin_reply = ?,
+           replied_at = CURRENT_TIMESTAMP
+         WHERE message_id = ?`,
+        [
+          admin_reply.trim(),
+          messageId
+        ]
+      );
+
+      if (result.affectedRows === 0) {
+
+        return res.status(404).json({
+          success: false,
+          message: "Contact message not found"
+        });
+
+      }
+
+      return res.json({
+        success: true,
+        message: "Reply sent successfully"
+      });
+
+    } catch (error) {
+
+      console.error(
+        "ADMIN REPLY ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: "Unable to send reply",
+        error: error.message
+      });
+
+    }
+
+  }
+);
+
+// ==================================================
+// CUSTOMER - GET MY CONTACT MESSAGES
+// ==================================================
+
+app.get(
+  "/api/contact/customer/:customerId",
+  async (req, res) => {
+
+    try {
+
+      const { customerId } = req.params;
+
+      const [rows] = await db.query(
+        `SELECT
+          message_id,
+          customer_id,
+          name,
+          email,
+          subject,
+          message,
+          created_at,
+          admin_reply,
+          replied_at
+         FROM contact_messages
+         WHERE customer_id = ?
+         ORDER BY created_at DESC`,
+        [customerId]
+      );
+
+      return res.json({
+        success: true,
+        messages: rows
+      });
+
+    } catch (error) {
+
+      console.error(
+        "GET CUSTOMER CONTACT MESSAGES ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: "Unable to load your messages",
+        error: error.message
+      });
+
+    }
+
+  }
+);
+
+
+// ==================================================
 // 404 ROUTE HANDLER
 // ==================================================
 
@@ -3681,11 +3934,6 @@ app.use(
       req.method,
       req.originalUrl
     );
-    
-app.use(
-  "/api/admin/reports",
-  reportRoutes
-);
 
     return res.status(404).json({
 
@@ -3712,13 +3960,11 @@ app.use(
       error
     );
 
-
     if (res.headersSent) {
 
       return next(error);
 
     }
-
 
     return res.status(500).json({
 
