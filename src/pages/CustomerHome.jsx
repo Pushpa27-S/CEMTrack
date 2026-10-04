@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import "./CustomerHome.css";
 
 function CustomerHome() {
-<<<<<<< HEAD
-=======
 
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
@@ -93,7 +91,7 @@ function CustomerHome() {
   }, []);
 
 
->>>>>>> b47205cdad27bb3aa6ca5627d5787a6a301b6307
+
   return (
     <div className="customer-home">
 
@@ -225,13 +223,11 @@ function CustomerHome() {
 
 
         <div className="customer-card-grid">
-
-<<<<<<< HEAD
           {/* PRODUCTS */}
-=======
+
 
           {/* BROWSE PRODUCTS */}
->>>>>>> b47205cdad27bb3aa6ca5627d5787a6a301b6307
+
 
           <Link
             to="/customer-products"

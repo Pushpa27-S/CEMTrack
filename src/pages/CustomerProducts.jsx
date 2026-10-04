@@ -1,10 +1,5 @@
-<<<<<<< Updated upstream
 import React, { useState, useEffect } from "react";
 import { Link,useNavigate } from "react-router-dom";
-=======
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
->>>>>>> Stashed changes
 import "./CustomerProducts.css";
 import productsData from "../data/ProductsData";
 
@@ -20,7 +15,7 @@ function CustomerProducts() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
 
-<<<<<<< Updated upstream
+
 
   // ======================================================
   // GET PRICE AND STOCK FROM DATABASE
@@ -119,11 +114,11 @@ console.log("FULL DATABASE RESPONSE:", data);
 
   }, []);
 
-=======
+
   // ==================================================
   // FILTER PRODUCTS
   // ==================================================
->>>>>>> Stashed changes
+
 
   const filteredProducts = products.filter((product) => {
 
@@ -139,15 +134,15 @@ console.log("FULL DATABASE RESPONSE:", data);
 
   });
 
-<<<<<<< Updated upstream
+
 
   // Open product details popup
-=======
+
   // ==================================================
   // OPEN PRODUCT DETAILS
   // ==================================================
 
->>>>>>> Stashed changes
+
   const handleProductClick = (product) => {
 
     setSelectedProduct(product);
@@ -155,15 +150,14 @@ console.log("FULL DATABASE RESPONSE:", data);
 
   };
 
-<<<<<<< Updated upstream
+
 
   // Close popup
-=======
+
   // ==================================================
   // CLOSE PRODUCT DETAILS
   // ==================================================
 
->>>>>>> Stashed changes
   const closeDetails = () => {
 
     setShowDetails(false);
@@ -171,16 +165,16 @@ console.log("FULL DATABASE RESPONSE:", data);
 
   };
 
-<<<<<<< Updated upstream
+
 
   // Add product to cart
-=======
+
   // ==================================================
   // ADD PRODUCT TO CART
   // MAXIMUM 2 DIFFERENT PRODUCTS
   // ==================================================
 
->>>>>>> Stashed changes
+
   const handleAddToCart = () => {
 
     if (!selectedProduct) {
@@ -323,12 +317,9 @@ console.log("FULL DATABASE RESPONSE:", data);
 
   };
 
-<<<<<<< Updated upstream
-=======
   // ==================================================
   // PAGE
-  // ==================================================
->>>>>>> Stashed changes
+  // =================================================
 
   return (
 
@@ -462,13 +453,14 @@ console.log("FULL DATABASE RESPONSE:", data);
               onClick={(e) =>
                 e.stopPropagation()
               }
-            >
-
-<<<<<<< Updated upstream
+            ><button type="button"
+            className="add-to-cart-btn"
+            onClick={() =>
+              addToCart(selectedProduct)}
+              >
               {selectedProduct.stock > 0
                 ? "Add to Cart"
                 : "Out of Stock"}
-
             </button> 
 
             <button
@@ -478,9 +470,8 @@ console.log("FULL DATABASE RESPONSE:", data);
             >
               🛒 View Cart
             </button>
-=======
+
               {/* CLOSE BUTTON */}
->>>>>>> Stashed changes
 
               <button
                 type="button"
