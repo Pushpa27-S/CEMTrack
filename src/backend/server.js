@@ -331,6 +331,69 @@ app.post(
 
   }
 );
+// ================================
+// CUSTOMER REGISTRATION
+// ================================
+
+app.post("/api/register", async (req, res) => {
+  try {
+    const {
+      customer_name,
+      email,
+      password,
+      phone_no,
+      address
+    } = req.body;
+
+    if (!customer_name || !email || !password || !phone_no || !address) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
+    }
+
+    const hashedPassword = password;
+
+    const [existingCustomer] = await db.query(
+      "SELECT customer_id FROM customer WHERE email = ?",
+      [email]
+    );
+
+    if (existingCustomer.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already registered"
+      });
+    }
+
+    await db.query(
+      `INSERT INTO customer
+       (customer_name, email, password, phone_no, address)
+       VALUES (?, ?, ?, ?, ?)`,
+      [
+        customer_name,
+        email,
+        hashedPassword,
+        phone_no,
+        address
+      ]
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: "Registration successful"
+    });
+
+  } catch (error) {
+    console.error("Registration error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Registration failed",
+      error: error.message
+    });
+  }
+});
 
 
 // ==================================================
