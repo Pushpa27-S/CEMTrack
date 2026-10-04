@@ -26,8 +26,11 @@ import CustomerProducts from "./pages/CustomerProducts";
 import Cart from "./pages/Cart";
 import MyOrders from "./pages/MyOrders";
 import MyProfile from "./pages/MyProfile";
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import ProtectedCustomerRoute from "./components/ProtectedCustomerRoute";
 
-import "./App.css";
+
+import "./App.css";""
 
 function App() {
   return (
@@ -72,6 +75,7 @@ function App() {
         path="/adminlogin"
         element={<AdminLogin />}
       />
+       <Route path="/customerlogin"element={<CustomerLogin/>} />
 
       <Route
         path="/register"
@@ -86,41 +90,19 @@ function App() {
 
       {/* ================= CUSTOMER ================= */}
 
-      <Route
-        path="/customerlogin"
-        element={<CustomerLogin />}
-      />
+     {/* CUSTOMER */}
+<Route element={<ProtectedCustomerRoute />}>
+  <Route path="/customer-home" element={<CustomerHome />} />
+  <Route path="/customer-products" element={<CustomerProducts />} />
+  <Route path="/cart" element={<Cart />} />
+  <Route path="/my-orders" element={<MyOrders />} />
+  <Route path="/my-profile" element={<MyProfile />} />
 
-      <Route
-        path="/customer-home"
-        element={<CustomerHome />}
-      />
-
-      <Route
-        path="/customer-products"
-        element={<CustomerProducts />}
-      />
-
-      <Route
-        path="/cart"
-        element={<Cart />}
-      />
-
-      <Route
-        path="/my-orders"
-        element={<MyOrders />}
-      />
-
-      <Route
-        path="/my-profile"
-        element={<MyProfile />}
-      />
-
-
+</Route>
       {/* ================= ADMIN ================= */}
 
-      <Route element={<AdminLayout />}>
-
+      <Route element={<ProtectedAdminRoute />}>
+      <Route element={<AdminLayout/>}>
         <Route
           path="/dashboard"
           element={<Dashboard />}
@@ -163,6 +145,7 @@ function App() {
           element={<Search />}
         />
 
+      </Route>
       </Route>
 
     </Routes>

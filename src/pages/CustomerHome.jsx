@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 import "./CustomerHome.css";
 
 function CustomerHome() {
-
   return (
-
     <div className="customer-home">
 
       {/* TOP HEADER */}
@@ -27,8 +25,16 @@ function CustomerHome() {
           </Link>
 
           <Link
-            to="/adminlogin"
+            to="/customerlogin"
             className="customer-logout-btn"
+            onClick={() => {
+              localStorage.removeItem("customerLoggedIn");
+              localStorage.removeItem("token");
+              localStorage.removeItem("customer_id");
+              localStorage.removeItem("customer");
+              localStorage.removeItem("customer_name");
+              localStorage.removeItem("customer_email");
+            }}
           >
             Logout
           </Link>
@@ -72,7 +78,6 @@ function CustomerHome() {
         </h2>
 
         <div className="customer-card-grid">
-
 
           {/* PRODUCTS */}
 
@@ -181,7 +186,6 @@ function CustomerHome() {
 
           </Link>
 
-
         </div>
 
       </section>
@@ -221,9 +225,7 @@ function CustomerHome() {
       </section>
 
     </div>
-
   );
-
 }
 
 export default CustomerHome;

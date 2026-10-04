@@ -10,8 +10,9 @@ function Sidebar() {
     );
 
     if (confirmLogout) {
-      localStorage.removeItem("isLoggedIn");
-      localStorage.removeItem("role");
+      localStorage.removeItem("adminLoggedIn");
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("owner");
 
       navigate("/adminlogin", { replace: true });
     }
