@@ -25,8 +25,12 @@ const handleChange = (e) => {
     value
   } = e.target;
 
-  // Name should contain letters and spaces only
-  if (name === "name") {
+  // Name and Subject should contain
+  // letters and spaces only
+  if (
+    name === "name" ||
+    name === "subject"
+  ) {
 
     const lettersOnly =
       /^[A-Za-z\s]*$/;
@@ -43,24 +47,46 @@ const handleChange = (e) => {
   }));
 
 };
+  
 
   // ==================================================
-  // SEND MESSAGE
-  // ==================================================
+// SEND MESSAGE
+// ==================================================
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
 
-    e.preventDefault();
-    if (!/^[A-Za-z\s]+$/.test(formData.name.trim())) {
+  e.preventDefault();
 
-  alert("Name should contain letters only.");
 
-  return;
-}
+  // NAME VALIDATION
 
-    setSending(true);
+  if (!/^[A-Za-z\s]+$/.test(formData.name.trim())) {
 
-    try {
+    alert(
+      "Name should contain letters and spaces only."
+    );
+
+    return;
+  }
+
+
+  // SUBJECT VALIDATION
+
+  if (!/^[A-Za-z\s]+$/.test(formData.subject.trim())) {
+
+    alert(
+      "Subject should contain letters and spaces only."
+    );
+
+    return;
+  }
+
+
+  setSending(true);
+
+  try {
+
+  
 
       // Get logged-in customer's ID
       const customerId =
