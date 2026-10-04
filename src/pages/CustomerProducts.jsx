@@ -33,7 +33,7 @@ function CustomerProducts() {
 
         const data = await response.json();
         console.log("DATABASE PRODUCTS:", data.products);
-console.log("FULL DATABASE RESPONSE:", data);
+        console.log("FULL DATABASE RESPONSE:", data);
 
         if (!data.success) {
 
@@ -63,12 +63,13 @@ console.log("FULL DATABASE RESPONSE:", data);
             };
 
 
-          const databaseProduct =
-  data.products.find(
-    (dbProduct) =>
-      Number(dbProduct.product_id) ===
-      Number(localProduct.id)
-  );
+            const databaseProduct =
+              data.products.find(
+                (dbProduct) =>
+                  Number(dbProduct.product_id) ===
+                  Number(localProduct.id)
+              );
+
             // If matching database product is found,
             // ONLY price and stock are replaced.
 
@@ -453,23 +454,7 @@ console.log("FULL DATABASE RESPONSE:", data);
               onClick={(e) =>
                 e.stopPropagation()
               }
-            ><button type="button"
-            className="add-to-cart-btn"
-            onClick={() =>
-              addToCart(selectedProduct)}
-              >
-              {selectedProduct.stock > 0
-                ? "Add to Cart"
-                : "Out of Stock"}
-            </button> 
-
-            <button
-              type="button"
-              className="view-cart-btn"
-              onClick={() => navigate("/cart")}
             >
-              🛒 View Cart
-            </button>
 
               {/* CLOSE BUTTON */}
 
