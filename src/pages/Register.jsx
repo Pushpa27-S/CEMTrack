@@ -130,8 +130,15 @@ function Register() {
             name="name"
             placeholder="Full Name"
             value={form.name}
-            onChange={handleChange}
-            required
+            onChange={(e)=> {const value=
+              e.target.value.replace(/[^A-Za-z\s]/g,"");
+              handleChange({
+                target:{
+                  name:"name",
+                  value:value
+                }
+              });
+            }}
           />
 
           <input

@@ -17,15 +17,14 @@ function Sidebar() {
     );
 
     if (confirmLogout) {
-<<<<<<< HEAD
       localStorage.removeItem("adminLoggedIn");
       localStorage.removeItem("adminToken");
       localStorage.removeItem("owner");
-=======
+
 
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("role");
->>>>>>> b47205cdad27bb3aa6ca5627d5787a6a301b6307
+
 
       navigate(
         "/adminlogin",
