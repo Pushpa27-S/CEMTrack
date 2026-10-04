@@ -189,27 +189,6 @@ function Sidebar() {
 
 
 
-        {/* CONTACT MESSAGES */}
-
-        <NavLink
-          to="/contact-messages"
-          className={({ isActive }) =>
-            isActive
-              ? "sidebar-item active"
-              : "sidebar-item"
-          }
-        >
-
-          <span className="sidebar-icon"></span>
-
-          <span>
-            Contact Messages
-          </span>
-
-        </NavLink>
-
-
-
         {/* REPORTS */}
 
         <NavLink

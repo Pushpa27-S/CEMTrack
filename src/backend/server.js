@@ -1866,7 +1866,7 @@ app.delete(
 
 
 // ==================================================
-// CREATE ORDER
+// CREATE ORDER - MULTIPLE PRODUCTS IN ONE ORDER GROUP
 // ==================================================
 
 app.post(
@@ -1879,220 +1879,280 @@ app.post(
 
       const {
         customer_id,
-        product_id,
-        quantity
+        items
       } = req.body;
-
 
       console.log(
         "ORDER DATA RECEIVED:",
         req.body
       );
 
-
       if (
         !customer_id ||
-        !product_id ||
-        !quantity
+        !Array.isArray(items) ||
+        items.length === 0
       ) {
 
         return res.status(400).json({
-
           success: false,
-
           message:
-            "customer_id, product_id and quantity are required"
-
+            "customer_id and at least one product are required"
         });
 
       }
-
-
-      const itemQuantity =
-        Number(quantity);
-
-
-      if (
-        !Number.isInteger(itemQuantity) ||
-        itemQuantity <= 0
-      ) {
-
-        return res.status(400).json({
-
-          success: false,
-
-          message:
-            "Quantity must be greater than zero"
-
-        });
-
-      }
-
 
       connection =
         await db.getConnection();
 
-
       await connection.beginTransaction();
 
+      let orderGroupId = null;
+      const createdOrders = [];
 
-      const [products] =
+      let grandTotal = 0;
+
+      // ==================================================
+      // PROCESS EVERY PRODUCT IN THE CART
+      // ==================================================
+
+      for (const item of items) {
+
+        const productId =
+          Number(
+            item.product_id ||
+            item.id
+          );
+
+        const quantity =
+          Number(
+            item.quantity
+          ) || 1;
+
+        if (
+          !Number.isInteger(productId) ||
+          productId <= 0
+        ) {
+
+          throw new Error(
+            "Invalid product ID"
+          );
+
+        }
+
+        if (
+          !Number.isInteger(quantity) ||
+          quantity <= 0
+        ) {
+
+          throw new Error(
+            "Quantity must be greater than zero"
+          );
+
+        }
+
+        // ==================================================
+        // LOCK PRODUCT ROW
+        // ==================================================
+
+        const [products] =
+          await connection.query(
+            `SELECT
+              product_id,
+              product_name,
+              price,
+              stock_quantity
+             FROM products
+             WHERE product_id = ?
+             FOR UPDATE`,
+            [productId]
+          );
+
+        if (products.length === 0) {
+
+          throw new Error(
+            `Product ${productId} not found`
+          );
+
+        }
+
+        const product =
+          products[0];
+
+        // ==================================================
+        // CHECK STOCK
+        // ==================================================
+
+        if (
+          Number(product.stock_quantity) <
+          quantity
+        ) {
+
+          throw new Error(
+            `${product.product_name} does not have enough stock`
+          );
+
+        }
+
+        // ==================================================
+        // CALCULATE AMOUNT
+        // ==================================================
+
+        const unitPrice =
+          Number(product.price);
+
+        const subtotal =
+          Number(
+            (
+              unitPrice *
+              quantity
+            ).toFixed(2)
+          );
+
+        const GST =
+          Number(
+            (
+              subtotal *
+              0.18
+            ).toFixed(2)
+          );
+
+        const discount = 20;
+
+        const totalAmount =
+          Number(
+            (
+              subtotal +
+              GST -
+              discount
+            ).toFixed(2)
+          );
+
+        grandTotal += totalAmount;
+
+        // ==================================================
+        // CREATE ORDER ROW
+        // ==================================================
+
+        const [orderResult] =
+          await connection.query(
+            `INSERT INTO orders
+            (
+              order_group_id,
+              customer_id,
+              product_id,
+              quantity,
+              unit_price,
+              GST,
+              discount,
+              total_amount,
+              order_date,
+              delivery_status
+            )
+            VALUES
+            (
+              ?,
+              ?,
+              ?,
+              ?,
+              ?,
+              ?,
+              ?,
+              ?,
+              NOW(),
+              ?
+            )`,
+            [
+              orderGroupId,
+              customer_id,
+              productId,
+              quantity,
+              unitPrice,
+              GST,
+              discount,
+              totalAmount,
+              "Confirmed"
+            ]
+          );
+
+        const orderId =
+          orderResult.insertId;
+
+        // ==================================================
+        // FIRST ORDER BECOMES THE GROUP ID
+        // ==================================================
+
+        if (!orderGroupId) {
+
+          orderGroupId =
+            orderId;
+
+          await connection.query(
+            `UPDATE orders
+             SET order_group_id = ?
+             WHERE order_id = ?`,
+            [
+              orderGroupId,
+              orderId
+            ]
+          );
+
+        }
+
+        // ==================================================
+        // UPDATE STOCK
+        // ==================================================
+
         await connection.query(
-
-          `SELECT
-            product_id,
-            product_name,
-            price,
-            stock_quantity
-           FROM products
-           WHERE product_id = ?
-           FOR UPDATE`,
-
-          [product_id]
-
-        );
-
-
-      if (products.length === 0) {
-
-        await connection.rollback();
-
-        return res.status(404).json({
-
-          success: false,
-
-          message:
-            "Product not found"
-
-        });
-
-      }
-
-
-      const product =
-        products[0];
-
-
-      if (
-        Number(product.stock_quantity) <
-        itemQuantity
-      ) {
-
-        await connection.rollback();
-
-        return res.status(400).json({
-
-          success: false,
-
-          message:
-            `Only ${product.stock_quantity} bags are available`
-
-        });
-
-      }
-
-
-      const unitPrice =
-        Number(product.price);
-
-
-      const subtotal =
-        Number(
-          (
-            unitPrice *
-            itemQuantity
-          ).toFixed(2)
-        );
-
-
-      const GST =
-        Number(
-          (
-            subtotal *
-            0.18
-          ).toFixed(2)
-        );
-
-
-      const discount =
-        20;
-
-
-      const totalAmount =
-        Number(
-          (
-            subtotal +
-            GST -
-            discount
-          ).toFixed(2)
-        );
-
-
-      const [orderResult] =
-        await connection.query(
-
-          `INSERT INTO orders
-          (
-            customer_id,
-            product_id,
+          `UPDATE products
+           SET stock_quantity =
+             stock_quantity - ?
+           WHERE product_id = ?`,
+          [
             quantity,
-            unit_price,
-            GST,
-            discount,
-            total_amount,
-            order_date,
-            delivery_status
-          )
-          VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)`,
+            productId
+          ]
+        );
 
+        // ==================================================
+        // REMOVE PRODUCT FROM CART
+        // ==================================================
+
+        await connection.query(
+          `DELETE FROM cart
+           WHERE customer_id = ?
+           AND product_id = ?`,
           [
             customer_id,
-            product_id,
-            itemQuantity,
-            unitPrice,
-            GST,
-            discount,
-            totalAmount,
-            "Confirmed"
+            productId
           ]
-
         );
 
+        createdOrders.push({
+          order_id: orderId,
+          order_group_id: orderGroupId,
+          product_id: productId,
+          quantity: quantity,
+          unit_price: unitPrice,
+          subtotal: subtotal,
+          GST: GST,
+          discount: discount,
+          total_amount: totalAmount,
+          delivery_status: "Confirmed"
+        });
 
-      await connection.query(
+      }
 
-        `UPDATE products
-         SET stock_quantity =
-           stock_quantity - ?
-         WHERE product_id = ?`,
+      await connection.commit();
 
-        [
-          itemQuantity,
-          product_id
-        ]
-
+      console.log(
+        "Order group created:",
+        orderGroupId
       );
 
-
-      await connection.query(
-
-        `DELETE FROM cart
-         WHERE customer_id = ?
-         AND product_id = ?`,
-
-        [
-          customer_id,
-          product_id
-        ]
-
+      console.log(
+        "Orders created:",
+        createdOrders
       );
-
-
-      await connection.commit();      console.log(
-        "Order created:",
-        orderResult.insertId
-      );
-
 
       return res.status(201).json({
 
@@ -2101,42 +2161,18 @@ app.post(
         message:
           "Order created successfully",
 
-        order: {
+        order_group_id:
+          orderGroupId,
 
-          order_id:
-            orderResult.insertId,
+        total_amount:
+          Number(
+            grandTotal.toFixed(2)
+          ),
 
-          customer_id:
-            Number(customer_id),
-
-          product_id:
-            Number(product_id),
-
-          quantity:
-            itemQuantity,
-
-          unit_price:
-            unitPrice,
-
-          subtotal:
-            subtotal,
-
-          GST:
-            GST,
-
-          discount:
-            discount,
-
-          total_amount:
-            totalAmount,
-
-          delivery_status:
-            "Confirmed"
-
-        }
+        orders:
+          createdOrders
 
       });
-
 
     } catch (error) {
 
@@ -2157,25 +2193,23 @@ app.post(
 
       }
 
-
       console.error(
         "Create order error:",
         error
       );
-
 
       return res.status(500).json({
 
         success: false,
 
         message:
+          error.message ||
           "Failed to create order",
 
         error:
           error.message
 
       });
-
 
     } finally {
 
@@ -2190,7 +2224,6 @@ app.post(
   }
 );
 
-
 // ==================================================
 // PAYMENT
 // ==================================================
@@ -2203,6 +2236,7 @@ app.post(
 
       const {
         order_id,
+        order_group_id,
         customer_id,
         payment_method
       } = req.body;
@@ -2210,6 +2244,7 @@ app.post(
 
       if (
         !order_id ||
+        !order_group_id ||
         !customer_id ||
         !payment_method
       ) {
@@ -2219,27 +2254,30 @@ app.post(
           success: false,
 
           message:
-            "order_id, customer_id and payment_method are required"
+            "order_id, order_group_id, customer_id and payment_method are required"
 
         });
 
       }
 
 
+      // GET ALL ORDERS IN THIS ORDER GROUP
       const [orders] =
         await db.query(
 
           `SELECT
             order_id,
+            order_group_id,
             customer_id,
             total_amount,
             delivery_status
            FROM orders
-           WHERE order_id = ?
-           AND customer_id = ?`,
+           WHERE order_group_id = ?
+           AND customer_id = ?
+           ORDER BY order_id ASC`,
 
           [
-            order_id,
+            order_group_id,
             customer_id
           ]
 
@@ -2253,20 +2291,27 @@ app.post(
           success: false,
 
           message:
-            "Order not found"
+            "Order group not found"
 
         });
 
       }
 
 
-      const order =
-        orders[0];
+      // CALCULATE TOTAL FOR ALL PRODUCTS
+      let amount = 0;
+
+      for (const order of orders) {
+
+        amount +=
+          Number(order.total_amount);
+
+      }
 
 
-      const amount =
+      amount =
         Number(
-          order.total_amount
+          amount.toFixed(2)
         );
 
 
@@ -2286,6 +2331,8 @@ app.post(
       }
 
 
+      // CHECK WHETHER THIS ORDER GROUP
+      // HAS ALREADY BEEN PAID
       const [existingPayments] =
         await db.query(
 
@@ -2293,12 +2340,12 @@ app.post(
             payment_id,
             payment_status
            FROM payment
-           WHERE order_id = ?
+           WHERE order_group_id = ?
            AND customer_id = ?
            LIMIT 1`,
 
           [
-            order_id,
+            order_group_id,
             customer_id
           ]
 
@@ -2314,7 +2361,7 @@ app.post(
           success: false,
 
           message:
-            "Payment has already been recorded for this order",
+            "Payment has already been recorded for this order group",
 
           payment_id:
             existingPayments[0].payment_id,
@@ -2327,21 +2374,25 @@ app.post(
       }
 
 
+      // RECORD ONE PAYMENT FOR
+      // THE COMPLETE ORDER GROUP
       const [paymentResult] =
         await db.query(
 
           `INSERT INTO payment
           (
             order_id,
+            order_group_id,
             customer_id,
             amount,
             payment_method,
             payment_status
           )
-          VALUES (?, ?, ?, ?, ?)`,
+          VALUES (?, ?, ?, ?, ?, ?)`,
 
           [
             order_id,
+            order_group_id,
             customer_id,
             amount,
             payment_method,
@@ -2365,6 +2416,9 @@ app.post(
 
           order_id:
             Number(order_id),
+
+          order_group_id:
+            Number(order_group_id),
 
           customer_id:
             Number(customer_id),
@@ -2405,7 +2459,6 @@ app.post(
 
   }
 );
-
 
 // ==================================================
 // CUSTOMER - VIEW ALL ORDERS
@@ -3725,11 +3778,154 @@ const updateOrderStatus =
 
   };
 
+  // ==================================================
+// ADMIN - UPDATE ORDER STATUS
+// ==================================================
 
 app.put(
   "/api/admin/orders/:orderId/status",
-  updateOrderStatus
-  );
+  async (req, res) => {
+
+    try {
+
+      const {
+        orderId
+      } = req.params;
+
+      const {
+        delivery_status
+      } = req.body;
+
+
+      const allowedStatuses = [
+        "Confirmed",
+        "Processing",
+        "Shipped",
+        "Out for Delivery",
+        "Delivered",
+        "Cancelled"
+      ];
+
+
+      if (
+        !allowedStatuses.includes(
+          delivery_status
+        )
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Invalid order status"
+
+        });
+
+      }
+
+
+      // FIND THE ORDER GROUP
+      const [orders] =
+        await db.query(
+
+          `SELECT
+            order_id,
+            order_group_id,
+            customer_id
+           FROM orders
+           WHERE order_id = ?`,
+
+          [
+            orderId
+          ]
+
+        );
+
+
+      if (orders.length === 0) {
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "Order not found"
+
+        });
+
+      }
+
+
+      const order =
+        orders[0];
+
+
+      // USE THE GROUP ID
+      // SO ALL PRODUCTS CHANGE TOGETHER
+      const orderGroupId =
+        order.order_group_id ||
+        order.order_id;
+
+
+      // UPDATE ALL PRODUCTS
+      // IN THE SAME ORDER GROUP
+      const [result] =
+        await db.query(
+
+          `UPDATE orders
+           SET delivery_status = ?
+           WHERE order_group_id = ?`,
+
+          [
+            delivery_status,
+            orderGroupId
+          ]
+
+        );
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          "Order status updated successfully for all products",
+
+        order_group_id:
+          Number(orderGroupId),
+
+        delivery_status:
+          delivery_status,
+
+        updated_orders:
+          result.affectedRows
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "ADMIN ORDER STATUS ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Failed to update order status",
+
+        error:
+          error.message
+
+      });
+
+    }
+
+  }
+);
 
 
 // ==================================================

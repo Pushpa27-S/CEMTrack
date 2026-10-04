@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
-import AdminLayout from "./layouts/AdminLayout";
+import AdminLayout from "./Layouts/AdminLayout";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -135,13 +135,6 @@ function App() {
         <Route
           path="/billing"
           element={<Billing />}
-        />
-
-        {/* ================= CONTACT MESSAGES ================= */}
-
-        <Route
-          path="/contact-messages"
-          element={<ContactMessage />}
         />
 
         {/* ================= REPORTS ================= */}

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import "./AdminOrders.css";
 
@@ -162,16 +161,20 @@ function AdminOrders() {
                     }
                   >
 
-                    <option value="Pending">
-                      Pending
-                    </option>
-
                     <option value="Confirmed">
                       Confirmed
                     </option>
 
                     <option value="Processing">
                       Processing
+                    </option>
+
+                    <option value="Shipped">
+                      Shipped
+                    </option>
+
+                    <option value="Out for Delivery">
+                      Out for Delivery
                     </option>
 
                     <option value="Delivered">

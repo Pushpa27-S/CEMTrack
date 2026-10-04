@@ -221,222 +221,303 @@ function Cart() {
   };
 
   // ===============================
-  // CONFIRM PAYMENT + ORDER
-  // ===============================
+// CONFIRM PAYMENT + ORDER
+// ===============================
 
-  const confirmPayment = async () => {
-    if (cart.length === 0) {
-      alert("Your cart is empty.");
-      return;
-    }
+const confirmPayment = async () => {
 
-    if (!validatePayment()) {
-      return;
-    }
+  if (cart.length === 0) {
+    alert("Your cart is empty.");
+    return;
+  }
 
-    // GET LOGGED-IN CUSTOMER
-    const customer = JSON.parse(
-      localStorage.getItem("customer") || "null"
+  if (!validatePayment()) {
+    return;
+  }
+
+  // GET LOGGED-IN CUSTOMER
+  const customer = JSON.parse(
+    localStorage.getItem("customer") || "null"
+  );
+
+  const token =
+    localStorage.getItem("token");
+
+  if (!customer?.customer_id) {
+
+    alert(
+      "Customer information not found. Please login again."
     );
 
-    const token =
-      localStorage.getItem("token");
+    return;
+  }
 
-    if (!customer?.customer_id) {
-      alert(
-        "Customer information not found. Please login again."
-      );
+  if (!token) {
 
-      return;
-    }
+    alert(
+      "Login session expired. Please login again."
+    );
 
-    if (!token) {
-      alert(
-        "Login session expired. Please login again."
-      );
+    return;
+  }
 
-      return;
-    }
+  const customerId =
+    Number(customer.customer_id);
 
-    // IMPORTANT:
-    // Use the actual logged-in customer's ID.
-    // Do NOT use 101.
-    const customerId =
-      Number(customer.customer_id);
+  try {
 
-    try {
-      const createdOrders = [];
+    // ==================================================
+    // PREPARE ALL CART PRODUCTS
+    // ==================================================
 
-      // CREATE AN ORDER FOR EACH PRODUCT
-      // IN THE CART
-      for (const item of cart) {
-        const productId =
-          item.product_id || item.id;
+    const items = cart.map((item) => {
 
-        const quantity =
-          Number(item.quantity) || 1;
-
-        if (!productId) {
-          alert(
-            "Invalid product found in cart."
-          );
-
-          return;
-        }
-
-        // ===============================
-        // CREATE ORDER
-        // ===============================
-
-        const orderResponse =
-          await fetch(
-            "http://localhost:5000/api/orders",
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json",
-
-                Authorization:
-                  `Bearer ${token}`,
-              },
-
-              body: JSON.stringify({
-                customer_id:
-                  customerId,
-
-                product_id:
-                  productId,
-
-                quantity:
-                  quantity,
-              }),
-            }
-          );
-
-        const orderData =
-          await orderResponse.json();
-
-        if (
-          !orderResponse.ok ||
-          !orderData.success
-        ) {
-          alert(
-            orderData.message ||
-              "Failed to create order."
-          );
-
-          return;
-        }
-
-        const orderId =
-          orderData.order.order_id;
-
-        // ===============================
-        // RECORD PAYMENT
-        // ===============================
-
-        console.log(
-          "SENDING PAYMENT REQUEST"
+      const productId =
+        Number(
+          item.product_id || item.id
         );
 
-        const paymentResponse =
-          await fetch(
-            "http://localhost:5000/api/payment",
-            {
-              method: "POST",
+      const quantity =
+        Number(item.quantity) || 1;
 
-              headers: {
-                "Content-Type":
-                  "application/json",
-
-                Authorization:
-                  `Bearer ${token}`,
-              },
-
-              body: JSON.stringify({
-                order_id:
-                  orderId,
-
-                customer_id:
-                  customerId,
-
-                payment_method:
-                  paymentMode,
-              }),
-            }
-          );
-
-        console.log(
-          "PAYMENT RESPONSE RECEIVED"
+      if (!productId) {
+        throw new Error(
+          "Invalid product found in cart."
         );
-
-        console.log(
-          "PAYMENT STATUS:",
-          paymentResponse.status
-        );
-
-        const paymentData =
-          await paymentResponse.json();
-
-        if (
-          !paymentResponse.ok ||
-          !paymentData.success
-        ) {
-          alert(
-            paymentData.message ||
-              "Payment failed."
-          );
-
-          return;
-        }
-
-        createdOrders.push(orderId);
       }
 
-      // ===============================
-      // SUCCESS
-      // ===============================
+      return {
+        product_id: productId,
+        quantity: quantity
+      };
 
-      localStorage.removeItem("cart");
+    });
 
-      setCart([]);
+    console.log(
+      "CREATING ONE ORDER GROUP:",
+      {
+        customer_id: customerId,
+        items: items
+      }
+    );
 
-      setShowPaymentPopup(false);
+    // ==================================================
+    // CREATE ONE ORDER GROUP
+    // ==================================================
 
-      setUpiId("");
-      setCardNumber("");
-      setCardName("");
-      setExpiry("");
-      setCvv("");
-      setBank("");
+    const orderResponse =
+      await fetch(
+        "http://localhost:5000/api/orders",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            Authorization:
+              `Bearer ${token}`,
+          },
+
+          body: JSON.stringify({
+
+            customer_id:
+              customerId,
+
+            items:
+              items
+
+          }),
+
+        }
+      );
+
+    const orderData =
+      await orderResponse.json();
+
+    console.log(
+      "ORDER RESPONSE:",
+      orderData
+    );
+
+    if (
+      !orderResponse.ok ||
+      !orderData.success
+    ) {
 
       alert(
-        "Payment successful!\n\n" +
-          "Customer ID: " +
-          customerId +
-          "\n" +
-          "Order ID(s): " +
-          createdOrders.join(", ") +
-          "\n" +
-          "Amount Paid: ₹" +
-          cartTotal.toFixed(2)
+        orderData.message ||
+        "Failed to create order."
       );
 
-      navigate("/my-orders");
-
-    } catch (error) {
-      console.error(
-        "Order/Payment Error:",
-        error
-      );
-
-      alert(
-        "Cannot connect to backend server."
-      );
+      return;
     }
-  };
+
+    // ==================================================
+    // GET ORDER GROUP INFORMATION
+    // ==================================================
+
+    const orderGroupId =
+      orderData.order_group_id;
+
+    const createdOrders =
+      orderData.orders || [];
+
+    if (!orderGroupId) {
+
+      alert(
+        "Order group was not created correctly."
+      );
+
+      return;
+    }
+
+    console.log(
+      "ORDER GROUP ID:",
+      orderGroupId
+    );
+
+    console.log(
+      "CREATED ORDERS:",
+      createdOrders
+    );
+
+    // ==================================================
+    // RECORD ONE PAYMENT FOR THE WHOLE ORDER GROUP
+    // ==================================================
+
+    const firstOrder =
+      createdOrders[0];
+
+    if (!firstOrder?.order_id) {
+
+      alert(
+        "Order was created but order ID was not returned."
+      );
+
+      return;
+    }
+
+    console.log(
+      "SENDING PAYMENT REQUEST"
+    );
+
+    const paymentResponse =
+      await fetch(
+        "http://localhost:5000/api/payment",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            Authorization:
+              `Bearer ${token}`,
+          },
+
+          body: JSON.stringify({
+
+            order_id:
+              firstOrder.order_id,
+
+            order_group_id:
+              orderGroupId,
+
+            customer_id:
+              customerId,
+
+            payment_method:
+              paymentMode
+
+          }),
+
+        }
+      );
+
+    console.log(
+      "PAYMENT RESPONSE RECEIVED"
+    );
+
+    console.log(
+      "PAYMENT STATUS:",
+      paymentResponse.status
+    );
+
+    const paymentData =
+      await paymentResponse.json();
+
+    console.log(
+      "PAYMENT DATA:",
+      paymentData
+    );
+
+    if (
+      !paymentResponse.ok ||
+      !paymentData.success
+    ) {
+
+      alert(
+        paymentData.message ||
+        "Payment failed."
+      );
+
+      return;
+    }
+
+    // ==================================================
+    // SUCCESS
+    // ==================================================
+
+    localStorage.removeItem("cart");
+
+    setCart([]);
+
+    setShowPaymentPopup(false);
+
+    setUpiId("");
+    setCardNumber("");
+    setCardName("");
+    setExpiry("");
+    setCvv("");
+    setBank("");
+
+    alert(
+      "Payment successful!\n\n" +
+      "Customer ID: " +
+      customerId +
+      "\n" +
+      "Order Group ID: " +
+      orderGroupId +
+      "\n" +
+      "Products Ordered: " +
+      createdOrders.length +
+      "\n" +
+      "Amount Paid: ₹" +
+      Number(
+        paymentData.payment?.amount ||
+        orderData.total_amount ||
+        cartTotal
+      ).toFixed(2)
+    );
+
+    navigate("/my-orders");
+
+  } catch (error) {
+
+    console.error(
+      "Order/Payment Error:",
+      error
+    );
+
+    alert(
+      error.message ||
+      "Cannot connect to backend server."
+    );
+
+  }
+
+};
 
   // ===============================
   // RETURN
