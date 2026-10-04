@@ -15,23 +15,34 @@ function Contact() {
 
 
   // ==================================================
-  // HANDLE INPUT
-  // ==================================================
+// HANDLE INPUT
+// ==================================================
 
-  const handleChange = (e) => {
+const handleChange = (e) => {
 
-    const {
-      name,
-      value
-    } = e.target;
+  const {
+    name,
+    value
+  } = e.target;
 
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value
-    }));
+  // Name should contain letters and spaces only
+  if (name === "name") {
 
-  };
+    const lettersOnly =
+      /^[A-Za-z\s]*$/;
 
+    if (!lettersOnly.test(value)) {
+      return;
+    }
+
+  }
+
+  setFormData((previous) => ({
+    ...previous,
+    [name]: value
+  }));
+
+};
 
   // ==================================================
   // SEND MESSAGE
@@ -40,6 +51,12 @@ function Contact() {
   const handleSubmit = async (e) => {
 
     e.preventDefault();
+    if (!/^[A-Za-z\s]+$/.test(formData.name.trim())) {
+
+  alert("Name should contain letters only.");
+
+  return;
+}
 
     setSending(true);
 
